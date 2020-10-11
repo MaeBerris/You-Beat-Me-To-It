@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import AppProvider from './components/AppContext';
-import App from './components/App';
+import FireBaseContextProvider from "./components/FirebaseContext";
+import App from "./components/App";
 
 ReactDOM.render(
-  <AppProvider>
+  <FireBaseContextProvider>
     <App />
-  </AppProvider>,
-  document.getElementById('root')
+  </FireBaseContextProvider>,
+  document.getElementById("root")
 );
