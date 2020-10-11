@@ -1,9 +1,15 @@
 import { createGlobalStyle } from "styled-components";
+import COLORS from "./COLORS";
 
 const GlobalStyle = createGlobalStyle`
 *{
   box-sizing:border-box;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Roboto Condensed", sans-serif;
+  color: white;
+}
+
+body{
+  background: ${COLORS.main}
 }
 
 html, body, div, span, applet, object, iframe,
