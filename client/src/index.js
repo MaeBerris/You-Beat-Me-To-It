@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import FireBaseContextProvider from "./components/FirebaseContext";
+import FireBaseContextProvider from "./FirebaseContext";
 import App from "./components/App";
 
 ReactDOM.render(
