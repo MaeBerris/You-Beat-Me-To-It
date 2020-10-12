@@ -2,9 +2,13 @@ import React from "react";
 import styled from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 import Button from "../Button/Button";
+import { CurrentUserContext } from "../../CurrentUserContext";
+import { useHistory } from "react-router-dom";
 
 const SignInHost = () => {
   const [nickName, setNickName] = React.useState("");
+  const { setCurrentUser } = React.useContext(CurrentUserContext);
+  const history = useHistory();
   return (
     <Wrapper>
       <GenericLabel>Nickname:</GenericLabel>
@@ -17,7 +21,31 @@ const SignInHost = () => {
           }
         }}
       />
-      <Button>Create Private Game</Button>
+      <Button
+        handler={() => {
+          console.log("inEvent");
+          fetch("/createRoom", {
+            method: "POST",
+            body: JSON.stringify({
+              nickName: nickName,
+            }),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              setNickName("");
+              setCurrentUser(data.userInfo);
+              console.log("data", data);
+              history.push(`/lobby/${data.roomInfo.roomId}`);
+            })
+            .catch((err) => console.log(err));
+        }}
+      >
+        Create Private Game
+      </Button>
     </Wrapper>
   );
 };

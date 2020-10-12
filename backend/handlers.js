@@ -1,4 +1,5 @@
 "use strict";
+const { v4: uuidv4 } = require("uuid");
 
 const admin = require("firebase-admin");
 
@@ -22,112 +23,130 @@ admin.initializeApp({
 
 const db = admin.database();
 
-const queryDatabase = async (key) => {
-  const ref = db.ref(key);
-  let data;
-  await ref.once(
-    "value",
-    (snapshot) => {
-      data = snapshot.val();
+const shortUuidCreator = () => {
+  const longUuid = uuidv4();
+  const shortUuid = longUuid.split("-");
+  return shortUuid[0];
+};
+
+const createRoom = (req, res) => {
+  const { nickName } = req.body;
+  const host = {
+    playerId: shortUuidCreator(),
+    role: "host",
+    nickName: nickName,
+    points: 0,
+  };
+  // const RoomId = shortUuidCreator();
+  const RoomId = "room1";
+
+  const roomInfo = {
+    roomId: RoomId,
+    roomLocation: "lobby",
+    phase: "loading",
+    players: [host],
+    selectedPlaylistId: false,
+    playlist: false,
+    currentTrack: {
+      trackId: false,
+      trackTitle: false,
+      artist: false,
+      correctGuesses: [false],
     },
-    (err) => {
-      console.log(err);
-    }
-  );
+  };
 
-  return data;
-};
-const getUser = async (email) => {
-  const data = (await queryDatabase("appUsers")) || {};
-  console.log("data", data);
-
-  const dataValue = Object.keys(data)
-    .map((item) => data[item])
-    .find((obj) => obj.email === email);
-
-  return dataValue || false;
-};
-
-const createUser = async (req, res) => {
-  const returningUser = await getUser(req.body.email);
-  console.log(returningUser);
-  if (returningUser) {
+  const RoomKey = db.ref(`Rooms/${RoomId}`);
+  RoomKey.set(roomInfo).then(() => {
     res
-      .status(200)
-      .json({ status: 200, data: req.body, message: "returning user" });
-    return;
-  } else {
-    const appUserRef = db.ref("appUsers");
-
-    appUserRef.push(req.body).then(() => {
-      res.status(200).json({
-        status: 200,
-        data: req.body,
-        message: "new user",
-      });
-    });
-  }
-};
-
-const startLoop = (req, res) => {
-  const { roomId } = req.query;
-  const RoomRef = db.ref(`Rooms/${roomId}`);
-  let phase = "loading";
-  let firstPass = true;
-  let time = 0;
-  let round = 1;
-  setInterval(() => {
-    // console.log(time);
-    if (time % 1000 === 0) {
-      console.log(time / 1000);
-    }
-
-    let isGameOver = round > 5;
-    if (isGameOver) {
-      RoomRef.update({ phase: "gameOver" });
-      phase = "gameOver";
-    }
-    if (phase === "loading" && firstPass === true) {
-      //at the end of the loading phase, start the playPhase
-      console.log("loading");
-      let gamePhaseTimeout = setTimeout(() => {
-        RoomRef.update({ phase: "play" });
-        phase = "play";
-        firstPass = true;
-      }, 5000);
-      firstPass = false;
-    }
-    if (phase === "play" && firstPass === true) {
-      //at the end of the play phase, start loading phase
-      console.log("playing");
-      let playTimeout = setTimeout(() => {
-        RoomRef.update({ phase: "loading" });
-        phase = "loading";
-        firstPass = true;
-        round = round + 1;
-      }, 5000);
-      firstPass = false;
-    }
-    if (phase === "gameOver" && firstPass === true) {
-      console.log("gameOver");
-      let gameOverTimeout = setTimeout(() => {
-        RoomRef.update({ phase: "loading" });
-        phase = "loading";
-        round = 1;
-        firstPass = true;
-      }, 5000);
-      firstPass = false;
-    }
-    time = time + 100;
-  }, 100);
-
-  res.status(200).json("gameLoop Started");
+      .status(201)
+      .json({ message: "success", userInfo: host, roomInfo: roomInfo });
+  });
 };
 
 module.exports = {
-  createUser,
-  startLoop,
+  createRoom,
 };
+
+// const queryDatabase = async (key) => {
+//   const ref = db.ref(key);
+//   let data;
+//   await ref.once(
+//     "value",
+//     (snapshot) => {
+//       data = snapshot.val();
+//     },
+//     (err) => {
+//       console.log(err);
+//     }
+//   );
+
+//   return data;
+// };
+// const getUser = async (email) => {
+//   const data = (await queryDatabase("appUsers")) || {};
+//   console.log("data", data);
+
+//   const dataValue = Object.keys(data)
+//     .map((item) => data[item])
+//     .find((obj) => obj.email === email);
+
+//   return dataValue || false;
+// };
+
+// const startLoop = (req, res) => {
+//   const { roomId } = req.query;
+//   const RoomRef = db.ref(`Rooms/${roomId}`);
+//   let phase = "loading";
+//   let firstPass = true;
+//   let time = 0;
+//   let round = 1;
+//   setInterval(() => {
+//     // console.log(time);
+//     if (time % 1000 === 0) {
+//       console.log(time / 1000);
+//     }
+
+//     let isGameOver = round > 5;
+//     if (isGameOver) {
+//       RoomRef.update({ phase: "gameOver" });
+//       phase = "gameOver";
+//     }
+//     if (phase === "loading" && firstPass === true) {
+//       //at the end of the loading phase, start the playPhase
+//       console.log("loading");
+//       let gamePhaseTimeout = setTimeout(() => {
+//         RoomRef.update({ phase: "play" });
+//         phase = "play";
+//         firstPass = true;
+//       }, 5000);
+//       firstPass = false;
+//     }
+//     if (phase === "play" && firstPass === true) {
+//       //at the end of the play phase, start loading phase
+//       console.log("playing");
+//       let playTimeout = setTimeout(() => {
+//         RoomRef.update({ phase: "loading" });
+//         phase = "loading";
+//         firstPass = true;
+//         round = round + 1;
+//       }, 5000);
+//       firstPass = false;
+//     }
+//     if (phase === "gameOver" && firstPass === true) {
+//       console.log("gameOver");
+//       let gameOverTimeout = setTimeout(() => {
+//         RoomRef.update({ phase: "loading" });
+//         phase = "loading";
+//         round = 1;
+//         firstPass = true;
+//       }, 5000);
+//       firstPass = false;
+//     }
+//     time = time + 100;
+//   }, 100);
+
+//   res.status(200).json("gameLoop Started");
+// };
 
 // React.useEffect(() => {
 //   const gamePhaseRef = db.ref("Rooms/RoomId/phase");
@@ -151,44 +170,44 @@ module.exports = {
 //   }
 // }, [setGamePhase, gamePhase]);
 
-// const dataStructure = {
-//   Rooms: {
-//     //RoomUuid
-//     "abcd-345": {
-//       roomId: "abcd-345",
-//       roomLocation: "gameRoom",
-//       phase: "play",
-//       players: [
-//         {
-//           playerId: "q234",
-//           role: "host",
-//           userName: "PetitePoire",
-//           points: 300,
-//         },
-//         {
-//           playerId: "23po",
-//           role: "player",
-//           userName: "LucyTheWinner",
-//           points: 5500,
-//         },
-//       ],
-//       selectedPlaylistId: "123456",
-//       playlist: {
-//         //...deezerData
-//       },
-//       currentTrack: {
-//         trackId: "2045",
-//         trackTitle: "She Loves You",
-//         artist: "The Beatles",
-//         correctGuesses: [
-//           {
-//             playerId: "q234",
-//             userName: "PetitePoire",
-//             pointsAwarded: 300,
-//             time: 23.52,
-//           },
-//         ],
-//       },
-//     },
-//   },
-// };
+const dataStructure = {
+  Rooms: {
+    //RoomUuid
+    "abcd-345": {
+      roomId: "abcd-345",
+      roomLocation: "gameRoom",
+      phase: "play",
+      players: [
+        {
+          playerId: "q234",
+          role: "host",
+          userName: "PetitePoire",
+          points: 300,
+        },
+        {
+          playerId: "23po",
+          role: "player",
+          userName: "LucyTheWinner",
+          points: 5500,
+        },
+      ],
+      selectedPlaylistId: "123456",
+      playlist: {
+        //...deezerData
+      },
+      currentTrack: {
+        trackId: "2045",
+        trackTitle: "She Loves You",
+        artist: "The Beatles",
+        correctGuesses: [
+          {
+            playerId: "q234",
+            userName: "PetitePoire",
+            pointsAwarded: 300,
+            time: 23.52,
+          },
+        ],
+      },
+    },
+  },
+};

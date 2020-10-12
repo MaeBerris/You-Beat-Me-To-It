@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import COLORS from "../../COLORS";
 
-const Button = ({ children }) => {
-  return <StyledButton>{children}</StyledButton>;
+const Button = ({ children, handler }) => {
+  return <StyledButton onClick={handler}>{children}</StyledButton>;
 };
 
 export default Button;
