@@ -5,7 +5,7 @@ import Button from "../Button/Button";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useHistory } from "react-router-dom";
 
-const SignInHost = () => {
+const SignInHost = ({ buttonHandler, buttonMessage }) => {
   const [nickName, setNickName] = React.useState("");
   const { setCurrentUser } = React.useContext(CurrentUserContext);
   const history = useHistory();
@@ -22,29 +22,11 @@ const SignInHost = () => {
         }}
       />
       <Button
-        handler={() => {
-          console.log("inEvent");
-          fetch("/createRoom", {
-            method: "POST",
-            body: JSON.stringify({
-              nickName: nickName,
-            }),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              setNickName("");
-              setCurrentUser(data.userInfo);
-              console.log("data", data);
-              history.push(`/lobby/${data.roomInfo.roomId}`);
-            })
-            .catch((err) => console.log(err));
-        }}
+        handler={() =>
+          buttonHandler(nickName, setNickName, setCurrentUser, history)
+        }
       >
-        Create Private Game
+        {buttonMessage}
       </Button>
     </Wrapper>
   );
