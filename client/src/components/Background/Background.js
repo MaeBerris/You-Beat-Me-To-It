@@ -17,7 +17,6 @@ const Wrapper = styled.div`
   background-color: ${COLORS.main};
   position: relative;
   overflow: hidden;
-  z-index: -10;
 `;
 
 const Shape1 = styled.div`
@@ -29,7 +28,6 @@ const Shape1 = styled.div`
   top: -400px;
   left: -100px;
   background-color: ${COLORS.secondary};
-  z-index: -10;
 `;
 
 const Shape2 = styled.div`
@@ -40,10 +38,11 @@ const Shape2 = styled.div`
   bottom: -450px;
   right: 300px;
   background-color: ${COLORS.tertiary};
-  z-index: -10;
 `;
 
 const ChildWrapper = styled.div`
+  position: relative;
+  z-index: 3;
   min-height: 100vh;
 `;
 
