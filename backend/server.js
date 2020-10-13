@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const { createRoom } = require("./handlers");
+const { createRoom, searchPlaylist } = require("./handlers");
 
 require("dotenv").config();
 const PORT = process.env.PORT || 8000;
@@ -25,6 +25,7 @@ express()
   .use(express.urlencoded({ extended: false }))
 
   .post("/createRoom", createRoom)
+  .get("/searchPlaylist", searchPlaylist)
   // .get("/startLoop", startLoop)
 
   .listen(PORT, () => console.log(`Listening on port ${PORT}`));

@@ -6,6 +6,7 @@ import Background from "./Background/Background";
 import Header from "./Header/Header";
 import SignIn from "./SignIn/SignIn";
 import HostHandler from "./SignIn/HostHandler";
+import HostLobby from "./Lobby/HostLobby";
 import GlobalStyles from "../GlobalStyles";
 import { CurrentUserContext } from "../CurrentUserContext";
 
@@ -23,14 +24,15 @@ const App = () => {
             />
           </Route>
           <Route path="/lobby/:roomId">
-            {currentUser ? (
-              <div>Lobby</div>
+            <HostLobby />
+            {/* {currentUser ? (
+              <HostLobby />
             ) : (
               <SignIn
                 buttonHandler={console.log("dog")}
                 buttonMessage="Join your friends game !"
               />
-            )}
+            )} */}
           </Route>
           <Route path="/gameroom/:roomId">gameroom</Route>
         </Switch>

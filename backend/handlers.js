@@ -1,5 +1,6 @@
 "use strict";
 const { v4: uuidv4 } = require("uuid");
+const fetch = require("node-fetch");
 
 const admin = require("firebase-admin");
 
@@ -63,8 +64,25 @@ const createRoom = (req, res) => {
   });
 };
 
+const searchPlaylist = (req, res) => {
+  const { searchTerm } = req.query;
+  fetch(`https://api.deezer.com/search/playlist?q=${searchTerm}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((response) => {
+      res.status(200).json({ searchResults: response.data });
+    })
+    .catch((err) => res.status(500).json({ message: "error" }));
+};
+
 module.exports = {
   createRoom,
+  searchPlaylist,
 };
 
 // const queryDatabase = async (key) => {
