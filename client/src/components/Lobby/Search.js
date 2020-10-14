@@ -5,7 +5,7 @@ import Button from "../Button/Button";
 
 function searchToUrl(searchTerm) {
   const searchArray = searchTerm.split(" ");
-  const searchString = searchArray.join("_");
+  const searchString = searchArray.join("%20");
   return searchString;
 }
 

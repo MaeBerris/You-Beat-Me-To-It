@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import COLORS from "../../COLORS";
 
 const GenericLabel = ({ children }) => {
   return (

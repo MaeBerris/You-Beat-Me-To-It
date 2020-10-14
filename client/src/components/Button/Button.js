@@ -18,7 +18,7 @@ const StyledButton = styled.button`
   border: none;
   background: linear-gradient(
     to right,
-    ${COLORS.midnight},
+    ${COLORS.tertiary},
     ${COLORS.secondary}
   );
 `;

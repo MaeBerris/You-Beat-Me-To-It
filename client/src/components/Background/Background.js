@@ -40,12 +40,22 @@ const Shape2 = styled.div`
   background-color: ${COLORS.tertiary};
 `;
 
+const Shape3 = styled.div`
+  border-bottom: 400px solid #893dd4;
+  border-left: 55px solid transparent;
+  border-right: 55px solid transparent;
+  height: 0px;
+  width: 350px;
+  position: absolute;
+  right: -150px;
+  top: 20%;
+  transform: rotate(70deg);
+`;
+
 const ChildWrapper = styled.div`
   position: relative;
   z-index: 3;
   min-height: 100vh;
 `;
-
-const Shape3 = styled.div``;
 
 export default Background;
