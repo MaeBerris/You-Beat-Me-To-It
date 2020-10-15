@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
-import Button from "../Button/Button";
-import LobbyContext from "../../LobbyContext";
+// import Button from "../Button/Button";
+import { LobbyContext } from "../../LobbyContext";
 
 function searchToUrl(searchTerm) {
   const searchArray = searchTerm.split(" ");
@@ -12,7 +12,13 @@ function searchToUrl(searchTerm) {
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = React.useState("");
-  const {}
+  const {
+    playlistState,
+    startSearch,
+    receivePlaylists,
+    selectPlaylist,
+    deletePlaylist,
+  } = React.useContext(LobbyContext);
   return (
     <SearchPlaylist>
       <GenericLabel>Search for a playlist:</GenericLabel>
@@ -25,6 +31,7 @@ const Search = () => {
             console.log(ev.key);
             switch (ev.key) {
               case "Enter": {
+                startSearch();
                 let string = searchToUrl(searchTerm);
                 fetch(`/searchPlaylist?searchTerm=${string}`, {
                   method: "GET",
@@ -34,7 +41,10 @@ const Search = () => {
                   },
                 })
                   .then((res) => res.json())
-                  .then((data) => console.log(data));
+                  .then((data) => {
+                    console.log(data);
+                    receivePlaylists(data.searchResults);
+                  });
               }
             }
           }}
@@ -56,7 +66,15 @@ const Search = () => {
           Search
         </Button> */}
       </TopBar>
-      <Results>No Results</Results>
+
+      {playlistState.loadState === "idle" &&
+      playlistState.searchResults !== null ? (
+        <Results>
+          {playlistState.searchResults.map((item) => {
+            return <p>{item.title}</p>;
+          })}
+        </Results>
+      ) : null}
     </SearchPlaylist>
   );
 };
@@ -79,17 +97,17 @@ const TopBar = styled.div`
 
 const Input = styled.input`
   width: 100%;
-  height: 75px;
+  height: 55px;
   color: black;
   border-radius: 40px;
   border: none;
   text-align: left;
-  font-size: 60px;
+  font-size: 40px;
   padding: 0 30px;
   margin-top: 10px;
 
   &::placeholder {
-    color: lightgray;
+    color: #eadaf0;
   }
 `;
 

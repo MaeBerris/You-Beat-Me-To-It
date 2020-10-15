@@ -41,7 +41,7 @@ const Shape2 = styled.div`
 `;
 
 const Shape3 = styled.div`
-  border-bottom: 400px solid #893dd4;
+  border-bottom: 400px solid ${COLORS.midnight};
   border-left: 55px solid transparent;
   border-right: 55px solid transparent;
   height: 0px;

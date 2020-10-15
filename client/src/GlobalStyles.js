@@ -6,7 +6,7 @@ const GlobalStyle = createGlobalStyle`
   box-sizing:border-box;
   font-family: "Roboto Condensed", sans-serif;
   /* font-family:'Echizen'; */
-  color: white;
+  color: black;
 }
 
 body{
