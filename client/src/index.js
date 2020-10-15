@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-
+import "./index.css";
 import FireBaseContextProvider from "./FirebaseContext";
 import CurrentUserContextProvider from "./CurrentUserContext";
 import LobbyContextProvider from "./LobbyContext";

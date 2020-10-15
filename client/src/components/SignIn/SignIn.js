@@ -4,6 +4,7 @@ import GenericLabel from "../Labels/GenericLabel";
 import Button from "../Button/Button";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useHistory } from "react-router-dom";
+import COLORS from "../../COLORS";
 
 const SignInHost = ({ buttonHandler, buttonMessage }) => {
   const [nickName, setNickName] = React.useState("");

@@ -8,20 +8,22 @@ const HostLobby = () => {
   return (
     <Wrapper>
       <Search />
-      <SelectedPlaylist>
+      {/* <SelectedPlaylist>
         <GenericLabel>Selected Playlist:</GenericLabel>
       </SelectedPlaylist>
       <Users>
         <GenericLabel>Users:</GenericLabel>
-      </Users>
+      </Users> */}
     </Wrapper>
   );
 };
 const Wrapper = styled.div`
-  margin-top: 150px;
+  margin-top: 100px;
   display: flex;
+  flex-direction: column;
   padding: 0 40px;
   justify-content: space-around;
+  align-items: center;
 `;
 
 const SelectedPlaylist = styled.div`
