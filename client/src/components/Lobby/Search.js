@@ -3,6 +3,7 @@ import styled from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 // import Button from "../Button/Button";
 import { LobbyContext } from "../../LobbyContext";
+import Results from "./Results";
 
 function searchToUrl(searchTerm) {
   const searchArray = searchTerm.split(" ");
@@ -12,13 +13,10 @@ function searchToUrl(searchTerm) {
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = React.useState("");
-  const {
-    playlistState,
-    startSearch,
-    receivePlaylists,
-    selectPlaylist,
-    deletePlaylist,
-  } = React.useContext(LobbyContext);
+  const [isOpen, setIsOpen] = React.useState("false");
+  const { playlistState, startSearch, receivePlaylists } = React.useContext(
+    LobbyContext
+  );
   return (
     <SearchPlaylist>
       <GenericLabel>Search for a playlist:</GenericLabel>
@@ -28,52 +26,36 @@ const Search = () => {
           placeholder="Ex: Best of the 80's"
           onChange={(ev) => setSearchTerm(ev.target.value)}
           onKeyDown={(ev) => {
-            console.log(ev.key);
             switch (ev.key) {
               case "Enter": {
-                startSearch();
-                let string = searchToUrl(searchTerm);
-                fetch(`/searchPlaylist?searchTerm=${string}`, {
-                  method: "GET",
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                  },
-                })
-                  .then((res) => res.json())
-                  .then((data) => {
-                    console.log(data);
-                    receivePlaylists(data.searchResults);
-                  });
+                if (searchTerm.length > 1) {
+                  startSearch();
+                  let string = searchToUrl(searchTerm);
+                  fetch(`/searchPlaylist?searchTerm=${string}`, {
+                    method: "GET",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                  })
+                    .then((res) => res.json())
+                    .then((data) => {
+                      console.log(data);
+                      receivePlaylists(data.searchResults);
+                      setIsOpen(true);
+                    });
+                }
+              }
+              default: {
               }
             }
           }}
         />
-        {/* <Button
-          handler={() => {
-            let string = searchToUrl(searchTerm);
-            fetch(`/searchPlaylist?searchTerm=${string}`, {
-              method: "GET",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-              },
-            })
-              .then((res) => res.json())
-              .then((data) => console.log(data));
-          }}
-        >
-          Search
-        </Button> */}
       </TopBar>
-
       {playlistState.loadState === "idle" &&
-      playlistState.searchResults !== null ? (
-        <Results>
-          {playlistState.searchResults.map((item) => {
-            return <p>{item.title}</p>;
-          })}
-        </Results>
+      playlistState.searchResults !== null &&
+      isOpen === true ? (
+        <Results setIsOpen={setIsOpen} />
       ) : null}
     </SearchPlaylist>
   );
@@ -109,16 +91,4 @@ const Input = styled.input`
   &::placeholder {
     color: #eadaf0;
   }
-`;
-
-const Results = styled.div`
-  width: 100%;
-  border-radius: 10px;
-  padding: 5px;
-  font-size: 30px;
-  color: black;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: white;
 `;

@@ -3,17 +3,15 @@ import styled from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 import Button from "../Button/Button";
 import Search from "./Search";
-
+import SelectedPlaylist from "./SelectedPlaylist";
 const HostLobby = () => {
   return (
     <Wrapper>
       <Search />
-      {/* <SelectedPlaylist>
-        <GenericLabel>Selected Playlist:</GenericLabel>
-      </SelectedPlaylist>
-      <Users>
-        <GenericLabel>Users:</GenericLabel>
-      </Users> */}
+      <BottomSection>
+        <SelectedPlaylist />
+        <div></div>
+      </BottomSection>
     </Wrapper>
   );
 };
@@ -22,24 +20,14 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 40px;
-  justify-content: space-around;
   align-items: center;
 `;
 
-const SelectedPlaylist = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-direction: column;
-  width: 30%;
-`;
-
-const Users = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex-direction: column;
-  width: 30%;
+const BottomSection = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 50% 50%;
 `;
 
 export default HostLobby;

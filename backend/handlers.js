@@ -75,6 +75,7 @@ const searchPlaylist = (req, res) => {
   })
     .then((res) => res.json())
     .then((response) => {
+      console.log(response);
       res.status(200).json({ searchResults: response.data });
     })
     .catch((err) => res.status(500).json({ message: `${err}` }));
