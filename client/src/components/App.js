@@ -24,15 +24,14 @@ const App = () => {
             />
           </Route>
           <Route path="/lobby/:roomId">
-            <HostLobby />
-            {/* {currentUser ? (
+            {currentUser ? (
               <HostLobby />
             ) : (
               <SignIn
                 buttonHandler={console.log("dog")}
                 buttonMessage="Join your friends game !"
               />
-            )} */}
+            )}
           </Route>
           <Route path="/gameroom/:roomId">gameroom</Route>
         </Switch>

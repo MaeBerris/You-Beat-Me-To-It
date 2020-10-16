@@ -4,13 +4,14 @@ import GenericLabel from "../Labels/GenericLabel";
 import Button from "../Button/Button";
 import Search from "./Search";
 import SelectedPlaylist from "./SelectedPlaylist";
+import Users from "./Users";
 const HostLobby = () => {
   return (
     <Wrapper>
       <Search />
       <BottomSection>
         <SelectedPlaylist />
-        <div></div>
+        <Users />
       </BottomSection>
     </Wrapper>
   );
