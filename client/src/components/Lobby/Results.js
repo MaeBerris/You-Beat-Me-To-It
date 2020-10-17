@@ -1,18 +1,29 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { LobbyContext } from "../../LobbyContext";
 
 const Results = ({ setIsOpen }) => {
   const { playlistState, selectPlaylist } = React.useContext(LobbyContext);
+  const [animation, setAnimation] = React.useState("open");
   return (
-    <Wrapper className="bob">
+    <Wrapper
+      className="bob"
+      animation={animation}
+      onAnimationEnd={() => {
+        console.log("in Animation function");
+        if (animation === "close") {
+          setIsOpen(false);
+        }
+      }}
+    >
       {playlistState.searchResults.map((item) => {
         return (
           <ResultWrapper
             key={item.id}
             onClick={() => {
               selectPlaylist(item);
-              setIsOpen(false);
+              // setIsOpen(false);
+              setAnimation("close");
             }}
           >
             <Image src={item.picture_medium} />
@@ -29,6 +40,22 @@ const Results = ({ setIsOpen }) => {
 
 export default Results;
 
+const Open = keyframes`
+from{
+  transform: scaleY(0)
+}to{
+  transform: scaleY(1)
+}
+`;
+
+const Close = keyframes`
+from{
+  transform: scaleY(1)
+}to{
+  transform: scaleY(0)
+}
+`;
+
 const Wrapper = styled.div`
   width: 100%;
   border-radius: 10px;
@@ -43,6 +70,10 @@ const Wrapper = styled.div`
   background: white;
   margin-bottom: 15px;
   overflow-x: hidden;
+  transform-origin: top;
+  animation: ${(props) => (props.animation === "open" ? Open : Close)} 220ms
+    ease-in-out;
+  animation-fill-mode: forwards;
 `;
 
 const ResultWrapper = styled.div`
