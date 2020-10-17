@@ -46,7 +46,7 @@ const createRoom = (req, res) => {
     roomLocation: "lobby",
     phase: "loading",
     players: { host: host },
-    selectedPlaylistId: false,
+    selectedPlaylist: false,
     playlist: false,
     currentTrack: {
       trackId: false,
@@ -97,10 +97,23 @@ const createUser = (req, res) => {
   });
 };
 
+const updatePlaylist = (req, res) => {
+  const { selectedPlaylist, roomId } = req.body;
+  let valueToSet = selectedPlaylist;
+  if (Object.keys(valueToSet).length === 0) {
+    valueToSet = false;
+  }
+  const playlistRef = db.ref(`Rooms/${roomId}/selectedPlaylist`);
+  playlistRef
+    .set(valueToSet)
+    .then(res.status(200).json({ selectedPlaylist: valueToSet, roomId }));
+};
+
 module.exports = {
   createRoom,
   searchPlaylist,
   createUser,
+  updatePlaylist,
 };
 
 // const queryDatabase = async (key) => {

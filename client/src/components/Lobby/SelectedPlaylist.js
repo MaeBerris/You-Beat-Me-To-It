@@ -1,10 +1,31 @@
 import React from "react";
 import styled from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
+import { useParams } from "react-router-dom";
 import { LobbyContext } from "../../LobbyContext";
 import { FiX } from "react-icons/fi";
 const SelectedPlaylist = () => {
   const { playlistState, deletePlaylist } = React.useContext(LobbyContext);
+  const { roomId } = useParams();
+
+  React.useEffect(() => {
+    fetch("/updatePlaylist", {
+      method: "PUT",
+      body: JSON.stringify({
+        selectedPlaylist: playlistState.selectedPlaylist,
+        roomId: roomId,
+      }),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
+  }, [playlistState.selectedPlaylist]);
 
   return (
     <Wrapper>
@@ -39,15 +60,18 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   font-size: 30px;
+  padding-right: 20px;
 `;
 
 const ResultWrapper = styled.div`
   background: white;
   border-radius: 15px;
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
   display: flex;
   padding: 10px;
   position: relative;
+  min-width: 50%;
 `;
 
 const Image = styled.img`

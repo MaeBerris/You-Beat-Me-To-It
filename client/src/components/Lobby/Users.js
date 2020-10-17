@@ -19,11 +19,11 @@ const Users = () => {
 
   return (
     <Wrapper>
-      <GenericLabel>Users:</GenericLabel>
+      <GenericLabel>Players:</GenericLabel>
       {usersList !== null ? (
         <List>
           {Object.values(usersList).map((user) => {
-            return <div>{user.nickName}</div>;
+            return <User>{user.nickName}</User>;
           })}
         </List>
       ) : null}
@@ -43,4 +43,19 @@ const Wrapper = styled.div`
 
 const List = styled.div`
   background: white;
+  border-radius: 15px;
+  padding: 10px;
+  width: fit-content;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+
+  & :last-child {
+    margin-bottom: 0px;
+  }
+`;
+
+const User = styled.div`
+  margin-bottom: 5px;
 `;

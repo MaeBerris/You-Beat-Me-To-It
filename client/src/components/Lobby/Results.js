@@ -5,9 +5,25 @@ import { LobbyContext } from "../../LobbyContext";
 const Results = ({ setIsOpen }) => {
   const { playlistState, selectPlaylist } = React.useContext(LobbyContext);
   const [animation, setAnimation] = React.useState("open");
+
+  if (playlistState.searchResults.length === 0) {
+    return (
+      <Wrapper
+        style={{ height: "50px", display: "flex", alignItems: "center" }}
+        animation={animation}
+        onAnimationEnd={() => {
+          console.log("in Animation function");
+          if (animation === "close") {
+            setIsOpen(false);
+          }
+        }}
+      >
+        No Results found
+      </Wrapper>
+    );
+  }
   return (
     <Wrapper
-      className="bob"
       animation={animation}
       onAnimationEnd={() => {
         console.log("in Animation function");

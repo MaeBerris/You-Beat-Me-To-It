@@ -4,6 +4,7 @@ import GenericLabel from "../Labels/GenericLabel";
 // import Button from "../Button/Button";
 import { LobbyContext } from "../../LobbyContext";
 import Results from "./Results";
+import Spinner from "../Spinner/Spinner";
 
 function searchToUrl(searchTerm) {
   const searchArray = searchTerm.split(" ");
@@ -51,6 +52,11 @@ const Search = () => {
             }
           }}
         />
+        {playlistState.loadState === "loading" && (
+          <SpinnerPosition>
+            <Spinner size={35} color={"grey"} />
+          </SpinnerPosition>
+        )}
       </TopBar>
       {playlistState.loadState === "idle" &&
       playlistState.searchResults !== null &&
@@ -75,6 +81,14 @@ const TopBar = styled.div`
   align-items: center;
   margin-bottom: 10px;
   width: 100%;
+  position: relative;
+`;
+
+const SpinnerPosition = styled.div`
+  width: fit-content;
+  position: absolute;
+  right: 20px;
+  top: 20px;
 `;
 
 const Input = styled.input`
