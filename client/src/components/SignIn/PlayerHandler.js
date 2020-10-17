@@ -1,8 +1,16 @@
-const PlayerHandler = (nickName, setNickName, setCurrentUser, history) => {
+const PlayerHandler = ({
+  nickName,
+  setNickName,
+  setCurrentUser,
+  history,
+  roomId,
+}) => {
+  console.log("in handler");
   fetch("/createUser", {
     method: "POST",
     body: JSON.stringify({
       nickName: nickName,
+      roomId: roomId,
     }),
     headers: {
       Accept: "application/json",

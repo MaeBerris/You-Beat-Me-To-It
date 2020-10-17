@@ -15,14 +15,14 @@ const Users = () => {
       const players = snapshot.val();
       setUsersList(players);
     });
-  }, [usersList, setUsersList, roomId]);
+  }, [setUsersList, roomId]);
 
   return (
     <Wrapper>
       <GenericLabel>Users:</GenericLabel>
       {usersList !== null ? (
         <List>
-          {usersList.map((user) => {
+          {Object.values(usersList).map((user) => {
             return <div>{user.nickName}</div>;
           })}
         </List>

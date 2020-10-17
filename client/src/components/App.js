@@ -6,6 +6,7 @@ import Background from "./Background/Background";
 import Header from "./Header/Header";
 import SignIn from "./SignIn/SignIn";
 import HostHandler from "./SignIn/HostHandler";
+import PlayerHandler from "./SignIn/PlayerHandler";
 import HostLobby from "./Lobby/HostLobby";
 import GlobalStyles from "../GlobalStyles";
 import { CurrentUserContext } from "../CurrentUserContext";
@@ -28,7 +29,7 @@ const App = () => {
               <HostLobby />
             ) : (
               <SignIn
-                buttonHandler={console.log("dog")}
+                buttonHandler={PlayerHandler}
                 buttonMessage="Join your friends game !"
               />
             )}

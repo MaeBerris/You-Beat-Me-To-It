@@ -1,4 +1,4 @@
-const hostHandler = (nickName, setNickName, setCurrentUser, history) => {
+const hostHandler = ({ nickName, setNickName, setCurrentUser, history }) => {
   fetch("/createRoom", {
     method: "POST",
     body: JSON.stringify({

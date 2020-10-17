@@ -45,7 +45,7 @@ const createRoom = (req, res) => {
     roomId: RoomId,
     roomLocation: "lobby",
     phase: "loading",
-    players: [host],
+    players: { host: host },
     selectedPlaylistId: false,
     playlist: false,
     currentTrack: {
@@ -81,9 +81,26 @@ const searchPlaylist = (req, res) => {
     .catch((err) => res.status(500).json({ message: `${err}` }));
 };
 
+const createUser = (req, res) => {
+  console.log("in createUser");
+  const { nickName, roomId } = req.body;
+  const player = {
+    playerId: shortUuidCreator(),
+    role: "player",
+    nickName: nickName,
+    points: 0,
+  };
+
+  const PlayersRef = db.ref(`Rooms/${roomId}/players`);
+  PlayersRef.push(player).then(() => {
+    res.status(201).json({ message: "success", userInfo: player });
+  });
+};
+
 module.exports = {
   createRoom,
   searchPlaylist,
+  createUser,
 };
 
 // const queryDatabase = async (key) => {

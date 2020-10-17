@@ -24,9 +24,7 @@ const Search = () => {
         <Input
           value={searchTerm}
           placeholder="Ex: Best of the 80's"
-          onChange={(ev) => {
-            setSearchTerm(ev.target.value);
-          }}
+          onChange={(ev) => setSearchTerm(ev.target.value)}
           onKeyDown={(ev) => {
             switch (ev.key) {
               case "Enter": {
