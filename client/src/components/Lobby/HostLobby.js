@@ -1,11 +1,25 @@
 import React from "react";
 import styled from "styled-components";
-import GenericLabel from "../Labels/GenericLabel";
 import Button from "../Button/Button";
 import Search from "./Search";
 import SelectedPlaylist from "./SelectedPlaylist";
 import Users from "./Users";
+import SelectedPlaylistPlayer from "./SelectedPlaylistPlayer";
+import { CurrentUserContext } from "../../CurrentUserContext";
+
 const HostLobby = () => {
+  const { currentUser } = React.useContext(CurrentUserContext);
+
+  if (currentUser.role === "player") {
+    return (
+      <Wrapper>
+        <BottomSection>
+          <SelectedPlaylistPlayer />
+          <Users />
+        </BottomSection>
+      </Wrapper>
+    );
+  }
   return (
     <Wrapper>
       <Search />

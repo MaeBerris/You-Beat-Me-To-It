@@ -30,7 +30,7 @@ function Reducer(state, action) {
 
 const LobbyContextProvider = ({ children }) => {
   const [playlistState, dispatch] = React.useReducer(Reducer, initialState);
-  console.log(playlistState);
+  console.log("playlistState", playlistState);
   const startSearch = () => {
     dispatch({ type: "start-search" });
   };

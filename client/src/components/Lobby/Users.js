@@ -10,8 +10,8 @@ const Users = () => {
   const { roomId } = useParams();
 
   React.useEffect(() => {
-    const roomPhaseRef = firebase.database().ref(`Rooms/${roomId}/players`);
-    roomPhaseRef.on("value", (snapshot) => {
+    const PlayersRef = firebase.database().ref(`Rooms/${roomId}/players`);
+    PlayersRef.on("value", (snapshot) => {
       const players = snapshot.val();
       setUsersList(players);
     });

@@ -3,49 +3,41 @@ import styled from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 import { useParams } from "react-router-dom";
 import { LobbyContext } from "../../LobbyContext";
-import { FiX } from "react-icons/fi";
+import * as firebase from "firebase";
 
-const SelectedPlaylist = () => {
-  const { playlistState, deletePlaylist } = React.useContext(LobbyContext);
+const SelectedPlaylistPlayer = () => {
+  const { playlistState, selectPlaylist, deletePlaylist } = React.useContext(
+    LobbyContext
+  );
   const { roomId } = useParams();
 
   React.useEffect(() => {
-    fetch("/updatePlaylist", {
-      method: "PUT",
-      body: JSON.stringify({
-        selectedPlaylist: playlistState.selectedPlaylist,
-        roomId: roomId,
-      }),
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-      })
-      .catch((err) => console.log(err));
-  }, [playlistState.selectedPlaylist]);
+    const selectedPlaylistRef = firebase
+      .database()
+      .ref(`Rooms/${roomId}/selectedPlaylist`);
+
+    selectedPlaylistRef.on("value", (snapshot) => {
+      const playlist = snapshot.val();
+      console.log("playlistFromFirebas", playlist);
+      if (playlist === false) {
+        deletePlaylist();
+      } else {
+        selectPlaylist(Object.values(playlist)[0]);
+      }
+    });
+  }, [roomId]);
 
   return (
     <Wrapper>
       <GenericLabel>Selected Playlist:</GenericLabel>
       {Object.values(playlistState.selectedPlaylist).map((item) => {
         return (
-          <ResultWrapper key={item.id} onClick={() => {}}>
+          <ResultWrapper key={item.id}>
             <Image src={item.picture_medium} />
             <ResultsInfo>
               <Title>{item.title}</Title>
               <Tracks>{item.nb_tracks} tracks</Tracks>
             </ResultsInfo>
-            <Icon
-              onClick={(ev) => {
-                deletePlaylist(item);
-              }}
-            >
-              <FiX size={35} color={"lightgray"} />
-            </Icon>
           </ResultWrapper>
         );
       })}
@@ -53,7 +45,7 @@ const SelectedPlaylist = () => {
   );
 };
 
-export default SelectedPlaylist;
+export default SelectedPlaylistPlayer;
 
 const Wrapper = styled.div`
   max-width: 100%;
