@@ -46,6 +46,7 @@ const Search = () => {
                       setIsOpen(true);
                     });
                 }
+                break;
               }
               default: {
               }

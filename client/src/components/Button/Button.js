@@ -7,6 +7,7 @@ const Button = ({ children, handler }) => {
 };
 
 export default Button;
+
 const StyledButton = styled.button`
   height: 50px;
   border-radius: 30px;

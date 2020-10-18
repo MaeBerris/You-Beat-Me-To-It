@@ -26,7 +26,7 @@ const SelectedPlaylist = () => {
         console.log(data);
       })
       .catch((err) => console.log(err));
-  }, [playlistState.selectedPlaylist]);
+  }, [playlistState.selectedPlaylist, roomId]);
 
   return (
     <Wrapper>

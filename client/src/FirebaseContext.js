@@ -16,7 +16,11 @@ var firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
 const FireBaseContextProvider = ({ children }) => {
-  return <FireBaseContext.Provider>{children}</FireBaseContext.Provider>;
+  return (
+    <FireBaseContext.Provider firebaseApp={firebaseApp}>
+      {children}
+    </FireBaseContext.Provider>
+  );
 };
 
 export default FireBaseContextProvider;

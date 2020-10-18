@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
+import Button from "../Button/Button";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useParams } from "react-router-dom";
 import * as firebase from "firebase";
@@ -22,9 +23,16 @@ const Users = () => {
       <GenericLabel>Players:</GenericLabel>
       {usersList !== null ? (
         <List>
-          {Object.values(usersList).map((user) => {
-            return <User>{user.nickName}</User>;
+          {Object.values(usersList).map((user, index) => {
+            return <User key={user.nickName + index}>{user.nickName}</User>;
           })}
+          <Button
+            handler={() => {
+              navigator.clipboard.writeText(window.location);
+            }}
+          >
+            Copy Invite Link
+          </Button>
         </List>
       ) : null}
     </Wrapper>
@@ -45,14 +53,14 @@ const List = styled.div`
   background: white;
   border-radius: 15px;
   padding: 10px;
-  width: fit-content;
+  width: 50%;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
 
   & :last-child {
-    margin-bottom: 0px;
+    margin: 10px;
   }
 `;
 

@@ -25,7 +25,7 @@ const SelectedPlaylistPlayer = () => {
         selectPlaylist(Object.values(playlist)[0]);
       }
     });
-  }, [roomId]);
+  }, [roomId, deletePlaylist, selectPlaylist]);
 
   return (
     <Wrapper>
@@ -88,14 +88,4 @@ const Tracks = styled.p`
   font-size: 70%;
   font-weight: 400;
   color: lightgrey;
-`;
-
-const Icon = styled.button`
-  color: red;
-  position: absolute;
-  border: none;
-  cursor: pointer;
-  top: 0;
-  right: 0;
-  background: none;
 `;
