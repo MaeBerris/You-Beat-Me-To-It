@@ -75,14 +75,12 @@ const searchPlaylist = (req, res) => {
   })
     .then((res) => res.json())
     .then((response) => {
-      console.log(response);
       res.status(200).json({ searchResults: response.data });
     })
     .catch((err) => res.status(500).json({ message: `${err}` }));
 };
 
 const createUser = (req, res) => {
-  console.log("in createUser");
   const { nickName, roomId } = req.body;
   const player = {
     playerId: shortUuidCreator(),
@@ -109,11 +107,17 @@ const updatePlaylist = (req, res) => {
     .then(res.status(200).json({ selectedPlaylist: valueToSet, roomId }));
 };
 
+const validatePlaylist = (req, res) => {
+  const { roomId, selectedPlaylist } = req.body;
+  res.status(200).json({ message: "this is a test", roomId, selectedPlaylist });
+};
+
 module.exports = {
   createRoom,
   searchPlaylist,
   createUser,
   updatePlaylist,
+  validatePlaylist,
 };
 
 // const queryDatabase = async (key) => {

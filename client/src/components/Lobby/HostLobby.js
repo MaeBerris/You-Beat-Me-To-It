@@ -6,9 +6,28 @@ import SelectedPlaylist from "./SelectedPlaylist";
 import Users from "./Users";
 import SelectedPlaylistPlayer from "./SelectedPlaylistPlayer";
 import { CurrentUserContext } from "../../CurrentUserContext";
+import { LobbyContext } from "../../LobbyContext";
+import { useParams } from "react-router-dom";
+
+const validatePlaylist = async (roomId, playlist) => {
+  const promise = await fetch("/validatePlaylist", {
+    method: "PUT",
+    body: JSON.stringify({ roomId, selectedPlaylist: playlist }),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((err) => console.log(err));
+  return promise;
+};
 
 const HostLobby = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
+  const { playlistState } = React.useContext(LobbyContext);
+  const { roomId } = useParams();
 
   if (currentUser.role === "player") {
     return (
@@ -29,9 +48,9 @@ const HostLobby = () => {
       </BottomSection>
       <ButtonWrapper>
         <BigButton
-          onClick={() => {
-            navigator.clipboard.writeText("this is a dog");
-          }}
+          onClick={() =>
+            validatePlaylist(roomId, playlistState.selectedPlaylist)
+          }
         >
           Start Game !
         </BigButton>
