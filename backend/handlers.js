@@ -107,9 +107,43 @@ const updatePlaylist = (req, res) => {
     .then(res.status(200).json({ selectedPlaylist: valueToSet, roomId }));
 };
 
-const validatePlaylist = (req, res) => {
+const validatePlaylist = async (req, res) => {
   const { roomId, selectedPlaylist } = req.body;
-  res.status(200).json({ message: "this is a test", roomId, selectedPlaylist });
+  const playlistRef = db.ref(`Rooms/${roomId}/selectedPlaylist`);
+  playlistRef.set(selectedPlaylist);
+
+  const playlistId = Object.values(selectedPlaylist)[0].id;
+
+  let tracksArray = false;
+
+  await fetch(`https://api.deezer.com/playlist/${playlistId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((response) => {
+      tracksArray = response.tracks.data;
+    })
+    .catch((err) => res.status(500).json({ message: `${err}` }));
+
+  const filteredArray = tracksArray.filter((item) => {
+    if (item.readable === true) {
+      return true;
+    }
+  });
+
+  const playlistArrayRef = db.ref(`Rooms/${roomId}/playlist`);
+  playlistArrayRef.set(filteredArray).then(
+    res.status(200).json({
+      message: "this is a test",
+      roomId,
+      selectedPlaylist,
+      filteredArray,
+    })
+  );
 };
 
 module.exports = {
