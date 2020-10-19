@@ -8,6 +8,8 @@ const {
   createUser,
   updatePlaylist,
   validatePlaylist,
+  changeRoomLocation,
+  unload,
 } = require("./handlers");
 
 require("dotenv").config();
@@ -36,6 +38,8 @@ express()
   .post("/createUser", createUser)
   .put("/updatePlaylist", updatePlaylist)
   .put("/validatePlaylist", validatePlaylist)
+  .get("/changeRoomLocation", changeRoomLocation)
+  .get("/unload", unload)
   // .get("/startLoop", startLoop)
 
   .listen(PORT, () => console.log(`Listening on port ${PORT}`));

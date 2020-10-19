@@ -12,6 +12,14 @@ import { CurrentUserContext } from "../CurrentUserContext";
 
 const App = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
+  const unloadFunction = (e) => {
+    e.preventDefault();
+  };
+
+  React.useEffect(() => {
+    window.addEventListener("beforeunload", unloadFunction);
+  }, []);
+
   return (
     <Router>
       <Background>

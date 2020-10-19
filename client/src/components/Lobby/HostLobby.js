@@ -7,12 +7,29 @@ import Users from "./Users";
 import SelectedPlaylistPlayer from "./SelectedPlaylistPlayer";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { LobbyContext } from "../../LobbyContext";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
+import * as firebase from "firebase";
 
 const validatePlaylist = async (roomId, playlist) => {
+  console.log("inside first promise");
   const promise = await fetch("/validatePlaylist", {
     method: "PUT",
     body: JSON.stringify({ roomId, selectedPlaylist: playlist }),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((err) => console.log(err));
+  return promise;
+};
+
+const changeRoomLocation = async (roomId) => {
+  console.log("insideSecondPromise");
+  const promise = await fetch(`/changeRoomLocation?roomId=${roomId}`, {
+    method: "GET",
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -28,6 +45,30 @@ const HostLobby = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
   const { playlistState } = React.useContext(LobbyContext);
   const { roomId } = useParams();
+  const history = useHistory();
+  const [location, setLocation] = React.useState("lobby");
+
+  // React.useEffect(() => {
+  //   const PlayersRef = firebase.database().ref(`Rooms/${roomId}/players`);
+  //   PlayersRef.on("value", (snapshot) => {
+  //     const players = snapshot.val();
+  //     setUsersList(players);
+  //   });
+  // }, [setUsersList, roomId]);
+  React.useEffect(() => {
+    const roomLocationRef = firebase
+      .database()
+      .ref(`Rooms/${roomId}/roomLocation`);
+
+    roomLocationRef.on("value", (snapshot) => {
+      const location = snapshot.val();
+      setLocation(location);
+    });
+
+    if (location === "gameRoom") {
+      history.push(`/gameroom/${roomId}`);
+    }
+  });
 
   if (currentUser.role === "player") {
     return (
@@ -49,7 +90,10 @@ const HostLobby = () => {
       <ButtonWrapper>
         <BigButton
           onClick={() =>
-            validatePlaylist(roomId, playlistState.selectedPlaylist)
+            Promise.all([
+              validatePlaylist(roomId, playlistState.selectedPlaylist),
+              changeRoomLocation(roomId),
+            ])
           }
         >
           Start Game !

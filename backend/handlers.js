@@ -138,12 +138,24 @@ const validatePlaylist = async (req, res) => {
   const playlistArrayRef = db.ref(`Rooms/${roomId}/playlist`);
   playlistArrayRef.set(filteredArray).then(
     res.status(200).json({
-      message: "this is a test",
       roomId,
       selectedPlaylist,
       filteredArray,
     })
   );
+};
+const changeRoomLocation = (req, res) => {
+  console.log("in changeRoomLocation");
+  const { roomId } = req.query;
+  const roomLocation = db.ref(`Rooms/${roomId}`);
+  roomLocation
+    .update({ roomLocation: "gameRoom" })
+    .then(res.status(200).json({ roomLocation: "gameRoom" }));
+};
+
+const unload = (req, res) => {
+  console.log("unload");
+  res.status(200).json({ message: "unload" });
 };
 
 module.exports = {
@@ -152,6 +164,8 @@ module.exports = {
   createUser,
   updatePlaylist,
   validatePlaylist,
+  changeRoomLocation,
+  unload,
 };
 
 // const queryDatabase = async (key) => {
