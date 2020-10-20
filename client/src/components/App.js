@@ -9,16 +9,28 @@ import PlayerHandler from "./SignIn/PlayerHandler";
 import HostLobby from "./Lobby/HostLobby";
 import GlobalStyles from "../GlobalStyles";
 import { CurrentUserContext } from "../CurrentUserContext";
+import { LobbyContext } from "../LobbyContext";
 
 const App = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
+  const { roomId } = React.useContext(LobbyContext);
+
   const unloadFunction = (e) => {
-    e.preventDefault();
+    if (currentUser !== null) {
+      navigator.sendBeacon(
+        "/unload",
+        JSON.stringify({ currentUser: currentUser, roomId: roomId })
+      );
+    }
   };
 
   React.useEffect(() => {
-    window.addEventListener("beforeunload", unloadFunction);
-  }, []);
+    window.addEventListener("beforeunload", unloadFunction, false);
+
+    return () => {
+      window.removeEventListener("beforeunload", unloadFunction);
+    };
+  }, [currentUser, roomId]);
 
   return (
     <Router>

@@ -31,6 +31,7 @@ express()
   .use(morgan("tiny"))
   .use(express.static("./client/build"))
   .use(bodyParser.json())
+  .use(bodyParser.text())
   .use(express.urlencoded({ extended: false }))
 
   .post("/createRoom", createRoom)
@@ -39,7 +40,7 @@ express()
   .put("/updatePlaylist", updatePlaylist)
   .put("/validatePlaylist", validatePlaylist)
   .get("/changeRoomLocation", changeRoomLocation)
-  .get("/unload", unload)
+  .post("/unload", unload)
   // .get("/startLoop", startLoop)
 
   .listen(PORT, () => console.log(`Listening on port ${PORT}`));

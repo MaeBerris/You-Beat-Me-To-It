@@ -152,10 +152,34 @@ const changeRoomLocation = (req, res) => {
     .update({ roomLocation: "gameRoom" })
     .then(res.status(200).json({ roomLocation: "gameRoom" }));
 };
+const findUser = async (playerId, roomId) => {
+  const playersRef = db.ref(`Rooms/${roomId}/players`);
+  let usersObject;
+  await playersRef.once(
+    "value",
+    (snapshot) => {
+      usersObject = snapshot.val();
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
 
-const unload = (req, res) => {
-  console.log("unload");
-  res.status(200).json({ message: "unload" });
+  let foundUserIndex;
+  const foundUser = Object.values(usersObject).find((item, index) => {
+    if (item.playerId === playerId) {
+      foundUserIndex = index;
+      return true;
+    }
+  });
+  return Object.keys(usersObject)[foundUserIndex];
+};
+const unload = async (req, res) => {
+  const parsedData = JSON.parse(req.body);
+  const { currentUser, roomId } = parsedData;
+  const index = await findUser(currentUser.playerId, roomId);
+  const userRef = db.ref(`/Rooms/${roomId}/players/${index}`);
+  userRef.remove().then(res.status(200).json({ message: "unload" }));
 };
 
 module.exports = {

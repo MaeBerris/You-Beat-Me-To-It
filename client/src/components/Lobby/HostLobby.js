@@ -43,18 +43,15 @@ const changeRoomLocation = async (roomId) => {
 
 const HostLobby = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
-  const { playlistState } = React.useContext(LobbyContext);
+  const { playlistState, setRoomId } = React.useContext(LobbyContext);
   const { roomId } = useParams();
   const history = useHistory();
   const [location, setLocation] = React.useState("lobby");
 
-  // React.useEffect(() => {
-  //   const PlayersRef = firebase.database().ref(`Rooms/${roomId}/players`);
-  //   PlayersRef.on("value", (snapshot) => {
-  //     const players = snapshot.val();
-  //     setUsersList(players);
-  //   });
-  // }, [setUsersList, roomId]);
+  React.useEffect(() => {
+    setRoomId(roomId);
+  }, []);
+
   React.useEffect(() => {
     const roomLocationRef = firebase
       .database()
@@ -68,7 +65,7 @@ const HostLobby = () => {
     if (location === "gameRoom") {
       history.push(`/gameroom/${roomId}`);
     }
-  });
+  }, [roomId]);
 
   if (currentUser.role === "player") {
     return (
