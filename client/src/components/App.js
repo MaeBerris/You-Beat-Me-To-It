@@ -53,7 +53,9 @@ const App = () => {
               />
             )}
           </Route>
-          <Route path="/gameroom/:roomId">gameroom</Route>
+          <Route path="/gameroom/:roomId">
+            {DZ.player.playTracks([3135556, 1152226])}
+          </Route>
         </Switch>
         <GlobalStyles />
       </Background>
