@@ -47,6 +47,7 @@ const HostLobby = () => {
   const { roomId } = useParams();
   const history = useHistory();
   const [location, setLocation] = React.useState("lobby");
+  console.log(location);
 
   React.useEffect(() => {
     setRoomId(roomId);
@@ -58,14 +59,16 @@ const HostLobby = () => {
       .ref(`Rooms/${roomId}/roomLocation`);
 
     roomLocationRef.on("value", (snapshot) => {
-      const location = snapshot.val();
-      setLocation(location);
+      let locationFromDatabase = snapshot.val();
+      console.log("locationFromDatabase", locationFromDatabase);
+      setLocation(locationFromDatabase);
     });
 
     if (location === "gameRoom") {
+      console.log("in if");
       history.push(`/gameroom/${roomId}`);
     }
-  }, [roomId]);
+  }, [roomId, location]);
 
   if (currentUser.role === "player") {
     return (
@@ -86,12 +89,13 @@ const HostLobby = () => {
       </BottomSection>
       <ButtonWrapper>
         <BigButton
-          onClick={() =>
-            Promise.all([
-              validatePlaylist(roomId, playlistState.selectedPlaylist),
-              changeRoomLocation(roomId),
-            ])
-          }
+          onClick={() => {
+            if (Object.keys(playlistState.selectedPlaylist).length > 0) {
+              validatePlaylist(roomId, playlistState.selectedPlaylist).then(
+                changeRoomLocation(roomId)
+              );
+            }
+          }}
         >
           Start Game !
         </BigButton>
