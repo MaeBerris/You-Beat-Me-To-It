@@ -25,7 +25,7 @@ const SelectedPlaylistPlayer = () => {
         selectPlaylist(Object.values(playlist)[0]);
       }
     });
-  }, [roomId, deletePlaylist, selectPlaylist]);
+  }, [roomId]);
 
   return (
     <Wrapper>
