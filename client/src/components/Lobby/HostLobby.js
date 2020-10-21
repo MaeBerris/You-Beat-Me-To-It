@@ -77,6 +77,9 @@ const HostLobby = () => {
           <SelectedPlaylistPlayer />
           <Users />
         </BottomSection>
+        <Text>
+          Please wait for the host to select a playlist and to start game ...
+        </Text>
       </Wrapper>
     );
   }
@@ -134,6 +137,15 @@ const BigButton = styled.button`
   color: white;
   border: none;
   background: linear-gradient(to right, #ff33be, ${COLORS.midnight});
+`;
+
+const Text = styled.div`
+  font-family: "Echizen";
+  font-size: 60px;
+  text-align: center;
+  color: white;
+  margin: 50px 0;
+  text-shadow: 2px 2px 2px ${COLORS.midnight};
 `;
 
 export default HostLobby;
