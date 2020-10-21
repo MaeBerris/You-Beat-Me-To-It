@@ -1,15 +1,19 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 import Button from "../Button/Button";
+import COLORS from "../../COLORS";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useParams } from "react-router-dom";
 import * as firebase from "firebase";
+import { AiFillCrown } from "react-icons/ai";
 
 const Users = () => {
-  const { usersList, setUsersList } = React.useContext(CurrentUserContext);
+  const { usersList, setUsersList, currentUser } = React.useContext(
+    CurrentUserContext
+  );
   const { roomId } = useParams();
-
+  const [isCopied, setIsCopied] = React.useState(false);
   React.useEffect(() => {
     const PlayersRef = firebase.database().ref(`Rooms/${roomId}/players`);
     PlayersRef.on("value", (snapshot) => {
@@ -24,15 +28,38 @@ const Users = () => {
       {usersList !== null ? (
         <List>
           {Object.values(usersList).map((user, index) => {
-            return <User key={user.nickName + index}>{user.nickName}</User>;
+            return (
+              <User
+                key={user.nickName + index}
+                style={{
+                  color: `${
+                    currentUser.playerId === user.playerId
+                      ? COLORS.midnight
+                      : "black"
+                  }`,
+                }}
+              >
+                {user.role === "host" ? (
+                  <Icon>
+                    <AiFillCrown />
+                  </Icon>
+                ) : null}
+                {user.nickName}
+              </User>
+            );
           })}
-          <Button
-            handler={() => {
+          <StyledButton
+            isCopied={isCopied}
+            onClick={() => {
+              setIsCopied(true);
               navigator.clipboard.writeText(window.location);
             }}
+            onAnimationEnd={() => {
+              setIsCopied(false);
+            }}
           >
-            Copy Invite Link
-          </Button>
+            {isCopied ? "Copied !" : "Copy Invite Link"}
+          </StyledButton>
         </List>
       ) : null}
     </Wrapper>
@@ -52,18 +79,64 @@ const Wrapper = styled.div`
 const List = styled.div`
   background: white;
   border-radius: 15px;
-  padding: 10px;
-  width: 50%;
+  padding: 10px 30px;
+  min-width: 50%;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
-
-  & :last-child {
-    margin: 10px;
-  }
 `;
 
 const User = styled.div`
   margin-bottom: 5px;
+  position: relative;
+`;
+
+const Icon = styled.div`
+  width: fit-content;
+  position: absolute;
+  left: 0;
+  transform: translateX(-100%);
+  margin: 0;
+`;
+
+const ColorsAnimation = keyframes`
+0%{
+  background-position: 0% 0%;
+  );
+}20%{
+  background-position: 100% 0%;
+} 80% {
+  background-position: 100% 0%;
+}
+100%{
+  background-position: 0% 0%;
+}`;
+
+const StyledButton = styled.button`
+  height: 50px;
+  border-radius: 30px;
+  font-weight: 700;
+  width: 80%;
+  padding: 5px 20px;
+  font-size: 20px;
+  cursor: pointer;
+  color: white;
+  border: none;
+  background: linear-gradient(
+    to right,
+    ${COLORS.tertiary},
+    ${COLORS.secondary},
+    #34eb98,
+    #34eb98,
+    #34eb98
+  );
+  background-size: 300% 100%;
+  overflow: hidden;
+  animation: ${(Props) => (Props.isCopied ? ColorsAnimation : null)} 2000ms
+    ease-in-out;
+
+  :focus {
+    outline: none;
+  }
 `;
