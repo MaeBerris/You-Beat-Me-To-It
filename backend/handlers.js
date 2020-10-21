@@ -38,8 +38,8 @@ const createRoom = (req, res) => {
     nickName: nickName,
     points: 0,
   };
-  // const RoomId = shortUuidCreator();
-  const RoomId = "room1";
+  const RoomId = shortUuidCreator();
+  // const RoomId = "room1";
 
   const roomInfo = {
     roomId: RoomId,
