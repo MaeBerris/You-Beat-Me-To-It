@@ -12,6 +12,7 @@ import * as firebase from "firebase";
 
 const validatePlaylist = async (roomId, playlist) => {
   console.log("inside first promise");
+
   const promise = await fetch("/validatePlaylist", {
     method: "PUT",
     body: JSON.stringify({ roomId, selectedPlaylist: playlist }),
@@ -48,6 +49,10 @@ const HostLobby = () => {
   const history = useHistory();
   const [location, setLocation] = React.useState("lobby");
   console.log(location);
+
+  React.useEffect(() => {
+    window.DZ.player.playTracks([116348610], false);
+  }, []);
 
   React.useEffect(() => {
     setRoomId(roomId);
@@ -90,6 +95,12 @@ const HostLobby = () => {
         <SelectedPlaylist />
         <Users />
       </BottomSection>
+      <button
+        onClick={() => {
+          window.DZ.player.play();
+          window.DZ.player.seek(50);
+        }}
+      ></button>
       <ButtonWrapper>
         <BigButton
           onClick={() => {

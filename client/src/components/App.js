@@ -15,6 +15,24 @@ const App = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
   const { roomId } = React.useContext(LobbyContext);
 
+  React.useEffect(() => {
+    console.log("in useEffect", window.DZ);
+
+    window.DZ.init({
+      appId: "440762",
+      channelUrl: "http://localhost:3000/channel.html",
+      player: {
+        onload: function () {},
+      },
+    });
+  }, []);
+
+  // try {
+  //   console.log(DZ);
+  // } catch (error) {
+  //   console.log(error);
+  // }
+
   const unloadFunction = (e) => {
     if (currentUser !== null) {
       navigator.sendBeacon(
@@ -53,9 +71,7 @@ const App = () => {
               />
             )}
           </Route>
-          <Route path="/gameroom/:roomId">
-            {DZ.player.playTracks([3135556, 1152226])}
-          </Route>
+          <Route path="/gameroom/:roomId"></Route>
         </Switch>
         <GlobalStyles />
       </Background>
