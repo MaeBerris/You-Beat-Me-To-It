@@ -38,8 +38,8 @@ const createRoom = (req, res) => {
     nickName: nickName,
     points: 0,
   };
-  const RoomId = shortUuidCreator();
-  // const RoomId = "room1";
+  // const RoomId = shortUuidCreator();
+  const RoomId = "room1";
 
   const roomInfo = {
     roomId: RoomId,
@@ -48,10 +48,9 @@ const createRoom = (req, res) => {
     players: { host: host },
     selectedPlaylist: false,
     playlist: false,
+    playedTracks: [false],
     currentTrack: {
-      trackId: false,
-      trackTitle: false,
-      artist: false,
+      trackInfo: false,
       correctGuesses: [false],
     },
   };
@@ -136,22 +135,18 @@ const validatePlaylist = async (req, res) => {
   });
 
   const playlistArrayRef = db.ref(`Rooms/${roomId}/playlist`);
-  playlistArrayRef.set(filteredArray).then(
+
+  await playlistArrayRef.set(filteredArray).then(
     res.status(200).json({
       roomId,
       selectedPlaylist,
       filteredArray,
     })
   );
-};
-const changeRoomLocation = (req, res) => {
-  console.log("in changeRoomLocation");
-  const { roomId } = req.query;
   const roomLocation = db.ref(`Rooms/${roomId}`);
-  roomLocation
-    .update({ roomLocation: "gameRoom" })
-    .then(res.status(200).json({ roomLocation: "gameRoom" }));
+  roomLocation.update({ roomLocation: "gameRoom" });
 };
+
 const findUser = async (playerId, roomId) => {
   const playersRef = db.ref(`Rooms/${roomId}/players`);
   let usersObject;
@@ -182,14 +177,88 @@ const unload = async (req, res) => {
   userRef.remove().then(res.status(200).json({ message: "unload" }));
 };
 
+const randomUnplayedTrackNumber = async (roomId, playlist) => {
+  const playedTracks = db.ref(`/Rooms/${roomId}/playedTracks`);
+  let tracksArray;
+  await playedTracks.once(
+    "value",
+    (snapshot) => {
+      tracksArray = Object.values(snapshot.val());
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+  let randomNumber = Math.floor(Math.random() * playlist.length);
+  console.log(randomNumber);
+
+  while (tracksArray.includes(randomNumber)) {
+    radomNumber = Math.floor(Math.random() * playlist.length);
+  }
+  console.log(randomNumber);
+  playedTracks.push(randomNumber);
+  console.log(randomNumber);
+  return randomNumber;
+};
+
+const getCurrentTrack = async (req, res) => {
+  const { roomId } = req.query;
+  const playlistRef = db.ref(`/Rooms/${roomId}/playlist`);
+
+  let playlist;
+  await playlistRef.once(
+    "value",
+    (snapshot) => {
+      playlist = snapshot.val();
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+  let songIndex = await randomUnplayedTrackNumber(roomId, playlist);
+  res.status(200).json({
+    message: "all clear",
+    roomId: roomId,
+    selectedSongUrl: playlist[songIndex].preview,
+    songIndex: songIndex,
+    dog: "dog",
+  });
+};
+
+const updatePhase = (req, res) => {
+  const { currentPhase, roomId } = req.body;
+  const RoomRef = db.ref(`Rooms/${roomId}`);
+  const PhaseRef = RoomRef.child("/phase");
+  let phase;
+  PhaseRef.once("value", (snapshot) => {
+    phase = snapshot.val();
+  });
+
+  if (phase !== currentPhase) {
+    res.status(201).json({ message: "nothing to update" });
+    return;
+  }
+  if (currentPhase === "loading") {
+    RoomRef.update({ phase: "playing" });
+    res.status(201).json({ phase: "playing" });
+    return;
+  }
+  if (currentPhase === "playing") {
+    RoomRef.update({ phase: "loading" });
+    res.status(201).json({ phase: "loading" });
+    return;
+  }
+};
+
 module.exports = {
   createRoom,
   searchPlaylist,
   createUser,
   updatePlaylist,
   validatePlaylist,
-  changeRoomLocation,
   unload,
+  getCurrentTrack,
+  updatePhase,
 };
 
 // const queryDatabase = async (key) => {

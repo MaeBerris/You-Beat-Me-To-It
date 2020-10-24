@@ -11,35 +11,42 @@ import { useParams, useHistory } from "react-router-dom";
 import * as firebase from "firebase";
 
 const validatePlaylist = async (roomId, playlist) => {
-  console.log("inside first promise");
-  const promise = await fetch("/validatePlaylist", {
-    method: "PUT",
-    body: JSON.stringify({ roomId, selectedPlaylist: playlist }),
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => console.log(data))
-    .catch((err) => console.log(err));
+  const promise = await new Promise((resolve, reject) => {
+    fetch("/validatePlaylist", {
+      method: "PUT",
+      body: JSON.stringify({ roomId, selectedPlaylist: playlist }),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        resolve(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        reject(err);
+      });
+  });
+
   return promise;
 };
 
-const changeRoomLocation = async (roomId) => {
-  console.log("insideSecondPromise");
-  const promise = await fetch(`/changeRoomLocation?roomId=${roomId}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => console.log(data))
-    .catch((err) => console.log(err));
-  return promise;
-};
+// const changeRoomLocation = async (roomId) => {
+//   const promise = await fetch(`/changeRoomLocation?roomId=${roomId}`, {
+//     method: "GET",
+//     headers: {
+//       Accept: "application/json",
+//       "Content-Type": "application/json",
+//     },
+//   })
+//     .then((res) => res.json())
+//     .then((data) => console.log(data))
+//     .catch((err) => console.log(err));
+//   return promise;
+// };
 
 const HostLobby = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
@@ -47,7 +54,6 @@ const HostLobby = () => {
   const { roomId } = useParams();
   const history = useHistory();
   const [location, setLocation] = React.useState("lobby");
-  console.log(location);
 
   React.useEffect(() => {
     setRoomId(roomId);
@@ -60,12 +66,11 @@ const HostLobby = () => {
 
     roomLocationRef.on("value", (snapshot) => {
       let locationFromDatabase = snapshot.val();
-      console.log("locationFromDatabase", locationFromDatabase);
+
       setLocation(locationFromDatabase);
     });
 
     if (location === "gameRoom") {
-      console.log("in if");
       history.push(`/gameroom/${roomId}`);
     }
   }, [roomId, location]);
@@ -92,11 +97,9 @@ const HostLobby = () => {
       </BottomSection>
       <ButtonWrapper>
         <BigButton
-          onClick={() => {
+          onClick={async () => {
             if (Object.keys(playlistState.selectedPlaylist).length > 0) {
-              validatePlaylist(roomId, playlistState.selectedPlaylist).then(
-                changeRoomLocation(roomId)
-              );
+              await validatePlaylist(roomId, playlistState.selectedPlaylist);
             }
           }}
         >

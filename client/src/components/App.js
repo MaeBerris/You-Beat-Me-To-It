@@ -7,6 +7,7 @@ import SignIn from "./SignIn/SignIn";
 import HostHandler from "./SignIn/HostHandler";
 import PlayerHandler from "./SignIn/PlayerHandler";
 import HostLobby from "./Lobby/HostLobby";
+import GameRoom from "./GameRoom/GameRoom";
 import GlobalStyles from "../GlobalStyles";
 import { CurrentUserContext } from "../CurrentUserContext";
 import { LobbyContext } from "../LobbyContext";
@@ -53,7 +54,9 @@ const App = () => {
               />
             )}
           </Route>
-          <Route path="/gameroom/:roomId">gameroom</Route>
+          <Route path="/gameroom/:roomId">
+            <GameRoom />
+          </Route>
         </Switch>
         <GlobalStyles />
       </Background>

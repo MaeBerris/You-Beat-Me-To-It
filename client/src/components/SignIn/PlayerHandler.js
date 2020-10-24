@@ -5,7 +5,6 @@ const PlayerHandler = ({
   history,
   roomId,
 }) => {
-  console.log("in handler");
   fetch("/createUser", {
     method: "POST",
     body: JSON.stringify({

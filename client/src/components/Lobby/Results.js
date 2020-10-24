@@ -12,7 +12,6 @@ const Results = ({ setIsOpen }) => {
         style={{ height: "50px", display: "flex", alignItems: "center" }}
         animation={animation}
         onAnimationEnd={() => {
-          console.log("in Animation function");
           if (animation === "close") {
             setIsOpen(false);
           }
@@ -26,7 +25,6 @@ const Results = ({ setIsOpen }) => {
     <Wrapper
       animation={animation}
       onAnimationEnd={() => {
-        console.log("in Animation function");
         if (animation === "close") {
           setIsOpen(false);
         }

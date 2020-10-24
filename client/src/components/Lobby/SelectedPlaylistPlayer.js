@@ -18,7 +18,7 @@ const SelectedPlaylistPlayer = () => {
 
     selectedPlaylistRef.on("value", (snapshot) => {
       const playlist = snapshot.val();
-      console.log("playlistFromFirebas", playlist);
+
       if (playlist === false) {
         deletePlaylist();
       } else {

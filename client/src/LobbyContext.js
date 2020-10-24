@@ -31,8 +31,7 @@ function Reducer(state, action) {
 const LobbyContextProvider = ({ children }) => {
   const [playlistState, dispatch] = React.useReducer(Reducer, initialState);
   const [roomId, setRoomId] = React.useState(null);
-  console.log(roomId);
-  console.log("playlistState", playlistState);
+
   const startSearch = () => {
     dispatch({ type: "start-search" });
   };

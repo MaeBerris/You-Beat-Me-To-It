@@ -13,7 +13,6 @@ const hostHandler = ({ nickName, setNickName, setCurrentUser, history }) => {
     .then((data) => {
       setNickName("");
       setCurrentUser(data.userInfo);
-      console.log("data", data);
       history.push(`/lobby/${data.roomInfo.roomId}`);
     })
     .catch((err) => console.log(err));
