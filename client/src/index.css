@@ -2,3 +2,8 @@
   font-family: "Echizen";
   src: url("./Fonts/Echizen.ttf") format("truetype");
 }
+
+@font-face {
+  font-family: "Digital";
+  src: url("./Fonts/digital-7.regular.ttf") format("truetype");
+}

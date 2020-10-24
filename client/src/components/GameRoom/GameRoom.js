@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
+import Cassette from "./Cassette";
 import * as firebase from "firebase";
 
 const GameRoom = () => {
@@ -107,11 +108,10 @@ const GameRoom = () => {
 
   return (
     <Wrapper>
-      gameRoom
       <Player src={trackUrl} ref={audioRef}>
         I'm sorry, your browser doesn't supper audio
       </Player>
-      <div>{time}</div>
+      <Cassette time={time}></Cassette>
     </Wrapper>
   );
 };
