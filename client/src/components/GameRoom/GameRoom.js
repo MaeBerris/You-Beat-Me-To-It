@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { GameRoomContext } from "../../GameRoomContext";
+import { CurrentUserContext } from "../../CurrentUserContext";
 import * as firebase from "firebase";
 
 const GameRoom = () => {
@@ -9,6 +10,7 @@ const GameRoom = () => {
   const { trackUrl, setTrackUrl, gamePhase, setGamePhase } = React.useContext(
     GameRoomContext
   );
+  const { currentUser } = React.useContext(CurrentUserContext);
   const [time, setTime] = React.useState(5);
   const audioRef = React.useRef(null);
 
@@ -16,7 +18,7 @@ const GameRoom = () => {
     let interval = setInterval(() => {
       setTime(time - 1);
     }, 1000);
-    if (time === 0 && gamePhase === "loading") {
+    if (time === 0 && gamePhase === "loading" && currentUser.role === "host") {
       fetch("/updatePhase", {
         method: "PUT",
         body: JSON.stringify({ currentPhase: "loading", roomId: roomId }),
@@ -28,10 +30,9 @@ const GameRoom = () => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          setTime(30);
         });
     }
-    if (time === 0 && gamePhase === "playing") {
+    if (time === 0 && gamePhase === "playing" && currentUser.role === "host") {
       audioRef.current.pause();
       fetch("/updatePhase", {
         method: "PUT",
@@ -44,7 +45,6 @@ const GameRoom = () => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          setTime(5);
         });
     }
     return () => {
@@ -56,12 +56,18 @@ const GameRoom = () => {
     const gamePhaseRef = firebase.database().ref(`Rooms/${roomId}/phase`);
     gamePhaseRef.on("value", (snapshot) => {
       let phase = snapshot.val();
+      if (phase === "playing") {
+        setTime(30);
+      }
+      if (phase === "loading") {
+        setTime(5);
+      }
       setGamePhase(phase);
     });
   }, [roomId]);
 
   React.useEffect(() => {
-    if (gamePhase === "loading") {
+    if (gamePhase === "loading" && currentUser.role === "host") {
       console.log("in fetch track");
       fetch(`/updateCurrentTrack`, {
         method: "PUT",
@@ -74,16 +80,30 @@ const GameRoom = () => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-          setTrackUrl(data.selectedSongUrl);
+          // setTrackUrl(data.selectedSongUrl);
         });
     }
   }, [gamePhase]);
 
   React.useEffect(() => {
     if (trackUrl !== null && gamePhase === "playing") {
+      setTime(30);
       audioRef.current.play();
     }
+    if (gamePhase === "loading") {
+      setTime(5);
+    }
   }, [trackUrl, gamePhase]);
+
+  React.useEffect(() => {
+    const currentTrackInfo = firebase
+      .database()
+      .ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
+    currentTrackInfo.on("value", (snapshot) => {
+      let currentTrackInfo = snapshot.val();
+      setTrackUrl(currentTrackInfo.preview);
+    });
+  }, [roomId]);
 
   return (
     <Wrapper>
