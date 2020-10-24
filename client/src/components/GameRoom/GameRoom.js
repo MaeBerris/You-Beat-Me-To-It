@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { GameRoomContext } from "../../GameRoomContext";
 import * as firebase from "firebase";
-import fetch from "node-fetch";
 
 const GameRoom = () => {
   const { roomId } = useParams();
@@ -18,32 +17,35 @@ const GameRoom = () => {
       setTime(time - 1);
     }, 1000);
     if (time === 0 && gamePhase === "loading") {
-      // fetch("/updatePhase", {
-      //   method: "PUT",
-      //   body: JSON.stringify({ currentPhase: "loading", roomId: roomId }),
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json",
-      //   },
-      // })
-      //   .then((res) => res.json())
-      //   .then((data) => {
-      //     console.log(data);
-      //   });
+      fetch("/updatePhase", {
+        method: "PUT",
+        body: JSON.stringify({ currentPhase: "loading", roomId: roomId }),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setTime(30);
+        });
     }
     if (time === 0 && gamePhase === "playing") {
-      // fetch("/updatePhase", {
-      //   method: "PUT",
-      //   body: JSON.stringify({ currentPhase: "playing", roomId: roomId }),
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json",
-      //   },
-      // })
-      //   .then((res) => res.json())
-      //   .then((data) => {
-      //     console.log(data);
-      //   });
+      audioRef.current.pause();
+      fetch("/updatePhase", {
+        method: "PUT",
+        body: JSON.stringify({ currentPhase: "playing", roomId: roomId }),
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setTime(5);
+        });
     }
     return () => {
       clearInterval(interval);
@@ -59,25 +61,23 @@ const GameRoom = () => {
   }, [roomId]);
 
   React.useEffect(() => {
-    // setTime(5);
-    fetch(`/getCurrentTrack?roomId=${roomId}`, {
-      method: "GET",
-      accept: "applicatition/json",
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setTrackUrl(data.selectedSongUrl);
-      });
-  }, []);
+    if (gamePhase === "loading") {
+      console.log("in fetch track");
+      fetch(`/getCurrentTrack?roomId=${roomId}`, {
+        method: "GET",
+        accept: "applicatition/json",
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setTrackUrl(data.selectedSongUrl);
+        });
+    }
+  }, [gamePhase]);
 
   React.useEffect(() => {
     if (trackUrl !== null && gamePhase === "playing") {
-      setTime(30);
       audioRef.current.play();
-    }
-    if (gamePhase === "loading") {
-      setTime(5);
     }
   }, [trackUrl, gamePhase]);
 

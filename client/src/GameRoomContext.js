@@ -5,6 +5,7 @@ export const GameRoomContext = React.createContext(null);
 const GameRoomContextProvider = ({ children }) => {
   const [trackUrl, setTrackUrl] = React.useState(null);
   const [gamePhase, setGamePhase] = React.useState(null);
+  console.log(gamePhase);
   return (
     <GameRoomContext.Provider
       value={{ trackUrl, setTrackUrl, gamePhase, setGamePhase }}

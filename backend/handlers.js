@@ -225,15 +225,17 @@ const getCurrentTrack = async (req, res) => {
   });
 };
 
-const updatePhase = (req, res) => {
+const updatePhase = async (req, res) => {
   const { currentPhase, roomId } = req.body;
   const RoomRef = db.ref(`Rooms/${roomId}`);
-  const PhaseRef = RoomRef.child("/phase");
+  const PhaseRef = db.ref(`Rooms/${roomId}/phase`);
   let phase;
-  PhaseRef.once("value", (snapshot) => {
+  await PhaseRef.once("value", (snapshot) => {
+    console.log(snapshot.val());
     phase = snapshot.val();
   });
-
+  console.log("phase", phase);
+  console.log("currentPhase", currentPhase);
   if (phase !== currentPhase) {
     res.status(201).json({ message: "nothing to update" });
     return;
