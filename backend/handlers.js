@@ -193,7 +193,7 @@ const randomUnplayedTrackNumber = async (roomId, playlist) => {
   console.log(randomNumber);
 
   while (tracksArray.includes(randomNumber)) {
-    radomNumber = Math.floor(Math.random() * playlist.length);
+    randomNumber = Math.floor(Math.random() * playlist.length);
   }
   console.log(randomNumber);
   playedTracks.push(randomNumber);
@@ -201,9 +201,12 @@ const randomUnplayedTrackNumber = async (roomId, playlist) => {
   return randomNumber;
 };
 
-const getCurrentTrack = async (req, res) => {
-  const { roomId } = req.query;
+const updateCurrentTrack = async (req, res) => {
+  const { roomId } = req.body;
+  console.log(req.body);
+  console.log("roomId", roomId);
   const playlistRef = db.ref(`/Rooms/${roomId}/playlist`);
+  const currentTrackInfoRef = db.ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
 
   let playlist;
   await playlistRef.once(
@@ -216,13 +219,15 @@ const getCurrentTrack = async (req, res) => {
     }
   );
   let songIndex = await randomUnplayedTrackNumber(roomId, playlist);
-  res.status(200).json({
-    message: "all clear",
-    roomId: roomId,
-    selectedSongUrl: playlist[songIndex].preview,
-    songIndex: songIndex,
-    dog: "dog",
-  });
+  currentTrackInfoRef.set(playlist[songIndex]).then(
+    res.status(200).json({
+      message: "all clear",
+      roomId: roomId,
+      selectedSongUrl: playlist[songIndex].preview,
+      songIndex: songIndex,
+      dog: "dog",
+    })
+  );
 };
 
 const updatePhase = async (req, res) => {
@@ -259,7 +264,7 @@ module.exports = {
   updatePlaylist,
   validatePlaylist,
   unload,
-  getCurrentTrack,
+  updateCurrentTrack,
   updatePhase,
 };
 

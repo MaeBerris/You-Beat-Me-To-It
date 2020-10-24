@@ -35,7 +35,7 @@ const GameRoom = () => {
       audioRef.current.pause();
       fetch("/updatePhase", {
         method: "PUT",
-        body: JSON.stringify({ currentPhase: "playing", roomId: roomId }),
+        body: JSON.stringify({ roomId, currentPhase: "playing" }),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -63,9 +63,13 @@ const GameRoom = () => {
   React.useEffect(() => {
     if (gamePhase === "loading") {
       console.log("in fetch track");
-      fetch(`/getCurrentTrack?roomId=${roomId}`, {
-        method: "GET",
-        accept: "applicatition/json",
+      fetch(`/updateCurrentTrack`, {
+        method: "PUT",
+        body: JSON.stringify({ roomId: roomId }),
+        headers: {
+          Accept: "applicatition/json",
+          "Content-Type": "application/json",
+        },
       })
         .then((res) => res.json())
         .then((data) => {

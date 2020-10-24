@@ -10,7 +10,7 @@ const {
   validatePlaylist,
   changeRoomLocation,
   unload,
-  getCurrentTrack,
+  updateCurrentTrack,
   updatePhase,
 } = require("./handlers");
 
@@ -43,7 +43,7 @@ express()
   .put("/validatePlaylist", validatePlaylist)
   // .get("/changeRoomLocation", changeRoomLocation)
   .post("/unload", unload)
-  .get("/getCurrentTrack", getCurrentTrack)
+  .put("/updateCurrentTrack", updateCurrentTrack)
   .put("/updatePhase", updatePhase)
   // .get("/startLoop", startLoop)
 
