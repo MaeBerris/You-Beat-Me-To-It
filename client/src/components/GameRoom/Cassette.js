@@ -23,7 +23,7 @@ const Wrapper = styled.div`
   justify-content: center;
   position: relative;
   margin-bottom: 50px;
-  margin-top: 50px;
+  /* margin-top: 50px; */
   transform: scale(0.8);
 `;
 

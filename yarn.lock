@@ -1080,6 +1080,11 @@ functional-red-black-tree@^1.0.1:
   resolved "https://registry.yarnpkg.com/functional-red-black-tree/-/functional-red-black-tree-1.0.1.tgz#1b0ab3bd553b2a0d6399d29c0e3ea0b252078327"
   integrity sha1-GwqzvVU7Kg1jmdKcDj6gslIHgyc=
 
+fuse.js@^6.4.2:
+  version "6.4.2"
+  resolved "https://registry.yarnpkg.com/fuse.js/-/fuse.js-6.4.2.tgz#bd1400164de6562c077baeaa54ed642b4c2fca62"
+  integrity sha512-jyy+zOtV96ylMqOGpVjAWQfvEkfTtuJRjsOC6pjReeju8SoDZ2vgFF6eur0a8fxsVwwcpdt3ieaQQeLdkqXH1Q==
+
 gaxios@^2.0.0, gaxios@^2.1.0:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/gaxios/-/gaxios-2.3.4.tgz#eea99353f341c270c5f3c29fc46b8ead56f0a173"
