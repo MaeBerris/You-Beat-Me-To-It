@@ -1,7 +1,7 @@
 const leven = require("leven");
 
-const calculateDistance = (searchTerm, artistName, value) => {
-  const artist = artistName.toLowerCase();
+const calculateDistance = (searchTerm, artistOrSongName, valueToSearch) => {
+  const artistOrSong = artistOrSongName.toLowerCase();
   const wordsArray = searchTerm.toLowerCase().split(" ");
   let allSubStrings = [...wordsArray];
 
@@ -20,14 +20,33 @@ const calculateDistance = (searchTerm, artistName, value) => {
   let ArtistResultMap = allSubStrings.map((item) => {
     return {
       searchTerm: item,
-      searchingFor: value,
-      distance: leven(item, `${artist}`),
+      searchingFor: valueToSearch,
+      distance: leven(item, `${artistOrSong}`),
     };
   });
   ArtistResultMap = ArtistResultMap.sort((a, b) => {
     return a.distance - b.distance;
   });
-  return ArtistResultMap;
+
+  if (ArtistResultMap[0].distance <= 4) {
+    return {
+      [`${valueToSearch}`]: true,
+      distance: ArtistResultMap[0].distance,
+    };
+  } else {
+    return {
+      [`${valueToSearch}`]: false,
+      distance: ArtistResultMap[0].distance,
+    };
+  }
 };
+
+const levenTestResult = calculateDistance(
+  "The Beach boys eight day a weak",
+  "Eight Days a week",
+  "songName"
+);
+
+console.log(levenTestResult);
 
 module.exports = { calculateDistance };
