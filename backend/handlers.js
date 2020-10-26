@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const fetch = require("node-fetch");
 
 const admin = require("firebase-admin");
+const caclculateDistance = require("./LevenTest");
 
 require("dotenv").config();
 
