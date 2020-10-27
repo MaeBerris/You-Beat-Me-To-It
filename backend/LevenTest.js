@@ -28,25 +28,32 @@ const calculateDistance = (searchTerm, artistOrSongName, valueToSearch) => {
     return a.distance - b.distance;
   });
 
-  if (ArtistResultMap[0].distance <= 4) {
+  let marginOfError = Math.floor((artistOrSong.length / 10) * 4);
+  if (marginOfError > 5) {
+    marginOfError = 5;
+  }
+
+  if (ArtistResultMap[0].distance < marginOfError) {
     return {
       [`${valueToSearch}`]: true,
       distance: ArtistResultMap[0].distance,
+      marginOfError: marginOfError,
     };
   } else {
     return {
       [`${valueToSearch}`]: false,
       distance: ArtistResultMap[0].distance,
+      marginOfError: marginOfError,
     };
   }
 };
 
-const levenTestResult = calculateDistance(
-  "The Beach boys eight day a weak",
-  "Eight Days a week",
-  "songName"
-);
+// const levenTestResult = calculateDistance(
+//   "the beatles",
+//   "the beach boys",
+//   "songName"
+// );
 
-console.log(levenTestResult);
+// console.log(levenTestResult);
 
 module.exports = { calculateDistance };

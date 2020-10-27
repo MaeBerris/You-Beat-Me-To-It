@@ -12,6 +12,7 @@ const {
   unload,
   updateCurrentTrack,
   updatePhase,
+  validateAnswer,
 } = require("./handlers");
 
 require("dotenv").config();
@@ -45,6 +46,7 @@ express()
   .post("/unload", unload)
   .put("/updateCurrentTrack", updateCurrentTrack)
   .put("/updatePhase", updatePhase)
+  .patch("/validateAnswer", validateAnswer)
   // .get("/startLoop", startLoop)
 
   .listen(PORT, () => console.log(`Listening on port ${PORT}`));

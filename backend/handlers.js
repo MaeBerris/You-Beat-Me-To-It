@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const fetch = require("node-fetch");
 
 const admin = require("firebase-admin");
-const caclculateDistance = require("./LevenTest");
+const { calculateDistance } = require("./LevenTest");
 
 require("dotenv").config();
 
@@ -37,6 +37,8 @@ const createRoom = (req, res) => {
     playerId: shortUuidCreator(),
     role: "host",
     nickName: nickName,
+    artist: false,
+    songName: false,
     points: 0,
   };
   // const RoomId = shortUuidCreator();
@@ -52,7 +54,7 @@ const createRoom = (req, res) => {
     playedTracks: [false],
     currentTrack: {
       trackInfo: false,
-      correctGuesses: [false],
+      correctGuesses: { userId: "guess" },
     },
   };
 
@@ -86,6 +88,8 @@ const createUser = (req, res) => {
     playerId: shortUuidCreator(),
     role: "player",
     nickName: nickName,
+    artist: false,
+    songName: false,
     points: 0,
   };
 
@@ -207,7 +211,10 @@ const updateCurrentTrack = async (req, res) => {
   console.log(req.body);
   console.log("roomId", roomId);
   const playlistRef = db.ref(`/Rooms/${roomId}/playlist`);
+  const currentTrackRef = db.ref(`/Rooms/${roomId}/currentTrack`);
   const currentTrackInfoRef = db.ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
+
+  currentTrackRef.update({ correctGuesses: { userId: "guess" } });
 
   let playlist;
   await playlistRef.once(
@@ -243,7 +250,7 @@ const updatePhase = async (req, res) => {
   console.log("phase", phase);
   console.log("currentPhase", currentPhase);
   if (phase !== currentPhase) {
-    res.status(201).json({ message: "nothing to update" });
+    res.status(200).json({ message: "nothing to update" });
     return;
   }
   if (currentPhase === "loading") {
@@ -258,6 +265,88 @@ const updatePhase = async (req, res) => {
   }
 };
 
+const validateAnswer = async (req, res) => {
+  const { currentUser, roomId, searchTerm } = req.body;
+
+  const CurrentTrackRef = db.ref(`Rooms/${roomId}/currentTrack`);
+  const CorrectGuessesRef = CurrentTrackRef.child("correctGuesses");
+  let currentTrackInfo;
+
+  await CurrentTrackRef.once("value", (snapshot) => {
+    currentTrackInfo = snapshot.val();
+  });
+  const isCurrentUserPresent =
+    currentTrackInfo.correctGuesses[`${currentUser.playerId}`];
+
+  console.log(isCurrentUserPresent);
+
+  const artist = currentTrackInfo.trackInfo.artist.name.toLowerCase();
+  const songName = currentTrackInfo.trackInfo.title_short.toLowerCase();
+
+  const artistResult = calculateDistance(searchTerm, artist, "artist");
+  const songNameResult = calculateDistance(searchTerm, songName, "songName");
+
+  if (artistResult.artist === false && songNameResult.songName === false) {
+    res.status(200).json({ artist: false, songName: false });
+    return;
+  }
+  if (artistResult.artist === true && songNameResult.songName === true) {
+    CorrectGuessesRef.update({
+      [`${currentUser.playerId}`]: {
+        ...currentUser,
+        artist: true,
+        songName: true,
+      },
+    });
+    res.status(201).json({ artist: true, songName: true });
+    return;
+  }
+  if (artistResult.artist === true) {
+    if (isCurrentUserPresent && isCurrentUserPresent.songName === true) {
+      CorrectGuessesRef.update({
+        [`${currentUser.playerId}`]: {
+          ...currentUser,
+          artist: true,
+          songName: true,
+        },
+      });
+      res.status(201).json({ artist: true, songName: true });
+      return;
+    }
+    CorrectGuessesRef.update({
+      [`${currentUser.playerId}`]: {
+        ...currentUser,
+        artist: true,
+        songName: false,
+      },
+    });
+    res.status(201).json({ artist: true, songName: false });
+    return;
+  }
+  if (songNameResult.songName === true) {
+    if (isCurrentUserPresent && isCurrentUserPresent.artist === true) {
+      CorrectGuessesRef.update({
+        [`${currentUser.playerId}`]: {
+          ...currentUser,
+          artist: true,
+          songName: true,
+        },
+      });
+      res.status(201).json({ artist: true, songName: true });
+      return;
+    }
+    CorrectGuessesRef.update({
+      [`${currentUser.playerId}`]: {
+        ...currentUser,
+        artist: false,
+        songName: true,
+      },
+    });
+    res.status(201).json({ artist: false, songName: true });
+    return;
+  }
+};
+
 module.exports = {
   createRoom,
   searchPlaylist,
@@ -267,6 +356,7 @@ module.exports = {
   unload,
   updateCurrentTrack,
   updatePhase,
+  validateAnswer,
 };
 
 // const queryDatabase = async (key) => {
