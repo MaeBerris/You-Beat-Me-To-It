@@ -5,6 +5,24 @@ import { useParams } from "react-router-dom";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import calculateDistance from "./LevenTest";
 
+function fetchHelper(roomId, currentUser, correctGuess) {
+  fetch("/validateAnswer", {
+    method: "PATCH",
+    body: JSON.stringify({
+      currentUser: currentUser,
+      roomId: roomId,
+      correctGuess,
+    }),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((err) => console.log(err));
+}
+
 const SearchBar = () => {
   const { roomId } = useParams();
   const { currentUser, correctGuess, setCorrectGuess } = React.useContext(
@@ -76,6 +94,8 @@ const SearchBar = () => {
               songName,
               "songName"
             );
+            const d = new Date();
+            const timeStamp = d.getTime();
 
             setSearchTerm("");
 
@@ -89,7 +109,15 @@ const SearchBar = () => {
 
             if (artistResult.artist && songNameResult.songName) {
               setResult("success");
-              setCorrectGuess({ artist: true, songName: true });
+              setCorrectGuess({
+                artist: true,
+                songName: true,
+              });
+              fetchHelper(roomId, currentUser, {
+                artist: true,
+                songName: true,
+                timeStamp: timeStamp,
+              });
               return;
             }
 
@@ -100,10 +128,20 @@ const SearchBar = () => {
               ) {
                 setResult("success");
                 setCorrectGuess({ artist: true, songName: true });
+                fetchHelper(roomId, currentUser, {
+                  artist: true,
+                  songName: true,
+                  timeStamp: timeStamp,
+                });
                 return;
               }
               setResult("artist");
               setCorrectGuess({ artist: true, songName: false });
+              fetchHelper(roomId, currentUser, {
+                artist: true,
+                songName: false,
+                timeStamp: null,
+              });
               return;
             }
 
@@ -114,46 +152,22 @@ const SearchBar = () => {
               ) {
                 setResult("success");
                 setCorrectGuess({ artist: true, songName: true });
+                fetchHelper(roomId, currentUser, {
+                  artist: true,
+                  songName: true,
+                  timeStamp: timeStamp,
+                });
                 return;
               }
               setResult("songName");
               setCorrectGuess({ artist: false, songName: true });
+              fetchHelper(roomId, currentUser, {
+                artist: false,
+                songName: true,
+                timeStamp: null,
+              });
               return;
             }
-
-            // fetch("/validateAnswer", {
-            //   method: "PATCH",
-            //   body: JSON.stringify({
-            //     currentUser: currentUser,
-            //     roomId: roomId,
-            //     searchTerm: searchTerm.trim(),
-            //   }),
-            //   headers: {
-            //     Accept: "application/json",
-            //     "Content-Type": "application/json",
-            //   },
-            // })
-            //   .then((res) => res.json())
-            //   .then((data) => {
-            //     console.log(data);
-            //     setSearchTerm("");
-            //     if (!data.artist && !data.songName) {
-            //       setResult("fail");
-            //       return;
-            //     }
-            //     if (data.artist && data.songName) {
-            //       setResult("success");
-            //       return;
-            //     }
-            //     if (data.artist) {
-            //       console.log("data artits", data.artist);
-            //       setResult("artist");
-            //       return;
-            //     }
-            //     if (data.songName) {
-            //       setResult("songName");
-            //       return;
-            //     }
           }
         }}
       />

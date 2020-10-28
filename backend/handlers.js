@@ -53,6 +53,7 @@ const createRoom = (req, res) => {
     playlist: false,
     playedTracks: [false],
     currentTrack: {
+      timeStamp: false,
       trackInfo: false,
       correctGuesses: { userId: "guess" },
     },
@@ -195,21 +196,17 @@ const randomUnplayedTrackNumber = async (roomId, playlist) => {
     }
   );
   let randomNumber = Math.floor(Math.random() * playlist.length);
-  console.log(randomNumber);
 
   while (tracksArray.includes(randomNumber)) {
     randomNumber = Math.floor(Math.random() * playlist.length);
   }
-  console.log(randomNumber);
+
   playedTracks.push(randomNumber);
-  console.log(randomNumber);
   return randomNumber;
 };
 
 const updateCurrentTrack = async (req, res) => {
   const { roomId } = req.body;
-  console.log(req.body);
-  console.log("roomId", roomId);
   const playlistRef = db.ref(`/Rooms/${roomId}/playlist`);
   const currentTrackRef = db.ref(`/Rooms/${roomId}/currentTrack`);
   const currentTrackInfoRef = db.ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
@@ -242,6 +239,8 @@ const updatePhase = async (req, res) => {
   const { currentPhase, roomId } = req.body;
   const RoomRef = db.ref(`Rooms/${roomId}`);
   const PhaseRef = db.ref(`Rooms/${roomId}/phase`);
+  const d = new Date();
+  const timeStamp = d.getTime();
   let phase;
   await PhaseRef.once("value", (snapshot) => {
     console.log(snapshot.val());
@@ -254,6 +253,7 @@ const updatePhase = async (req, res) => {
     return;
   }
   if (currentPhase === "loading") {
+    RoomRef.child("currentTrack").update({ timeStamp: timeStamp });
     RoomRef.update({ phase: "playing" });
     res.status(201).json({ phase: "playing" });
     return;
@@ -266,85 +266,37 @@ const updatePhase = async (req, res) => {
 };
 
 const validateAnswer = async (req, res) => {
-  const { currentUser, roomId, searchTerm } = req.body;
+  const { currentUser, roomId, correctGuess } = req.body;
 
-  const CurrentTrackRef = db.ref(`Rooms/${roomId}/currentTrack`);
-  const CorrectGuessesRef = CurrentTrackRef.child("correctGuesses");
-  let currentTrackInfo;
+  console.log("correctGuess", correctGuess);
+  res.status(201).json({ correctGuess: true });
 
-  await CurrentTrackRef.once("value", (snapshot) => {
-    currentTrackInfo = snapshot.val();
+  const timeStampRef = db.ref(`Rooms/${roomId}/currentTrack/timeStamp`);
+  let songStartTime;
+  await timeStampRef.once("value", (snapshot) => {
+    songStartTime = snapshot.val();
   });
-  const isCurrentUserPresent =
-    currentTrackInfo.correctGuesses[`${currentUser.playerId}`];
+  const correctGuessesRef = db.ref(
+    `Rooms/${roomId}/currentTrack/correctGuesses`
+  );
 
-  console.log(isCurrentUserPresent);
-
-  const artist = currentTrackInfo.trackInfo.artist.name.toLowerCase();
-  const songName = currentTrackInfo.trackInfo.title_short.toLowerCase();
-
-  const artistResult = calculateDistance(searchTerm, artist, "artist");
-  const songNameResult = calculateDistance(searchTerm, songName, "songName");
-
-  if (artistResult.artist === false && songNameResult.songName === false) {
-    res.status(200).json({ artist: false, songName: false });
-    return;
+  let correctGuessTime;
+  if (correctGuess.timeStamp) {
+    correctGuessTime = (correctGuess.timeStamp - songStartTime) / 1000;
+  } else {
+    correctGuessTime = false;
   }
-  if (artistResult.artist === true && songNameResult.songName === true) {
-    CorrectGuessesRef.update({
+
+  correctGuessesRef
+    .update({
       [`${currentUser.playerId}`]: {
         ...currentUser,
-        artist: true,
-        songName: true,
+        ...correctGuess,
+        // timeStamp: correctGuessTime,
+        time: correctGuessTime,
       },
-    });
-    res.status(201).json({ artist: true, songName: true });
-    return;
-  }
-  if (artistResult.artist === true) {
-    if (isCurrentUserPresent && isCurrentUserPresent.songName === true) {
-      CorrectGuessesRef.update({
-        [`${currentUser.playerId}`]: {
-          ...currentUser,
-          artist: true,
-          songName: true,
-        },
-      });
-      res.status(201).json({ artist: true, songName: true });
-      return;
-    }
-    CorrectGuessesRef.update({
-      [`${currentUser.playerId}`]: {
-        ...currentUser,
-        artist: true,
-        songName: false,
-      },
-    });
-    res.status(201).json({ artist: true, songName: false });
-    return;
-  }
-  if (songNameResult.songName === true) {
-    if (isCurrentUserPresent && isCurrentUserPresent.artist === true) {
-      CorrectGuessesRef.update({
-        [`${currentUser.playerId}`]: {
-          ...currentUser,
-          artist: true,
-          songName: true,
-        },
-      });
-      res.status(201).json({ artist: true, songName: true });
-      return;
-    }
-    CorrectGuessesRef.update({
-      [`${currentUser.playerId}`]: {
-        ...currentUser,
-        artist: false,
-        songName: true,
-      },
-    });
-    res.status(201).json({ artist: false, songName: true });
-    return;
-  }
+    })
+    .then(res.status(201).json({ message: "update users correct guesses" }));
 };
 
 module.exports = {
