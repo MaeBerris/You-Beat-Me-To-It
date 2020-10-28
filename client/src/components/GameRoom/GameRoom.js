@@ -9,9 +9,14 @@ import * as firebase from "firebase";
 
 const GameRoom = () => {
   const { roomId } = useParams();
-  const { trackUrl, setTrackUrl, gamePhase, setGamePhase } = React.useContext(
-    GameRoomContext
-  );
+  const {
+    trackUrl,
+    setTrackUrl,
+    gamePhase,
+    setGamePhase,
+    tracksInfoArray,
+    setTracksInfoArray,
+  } = React.useContext(GameRoomContext);
   const { currentUser } = React.useContext(CurrentUserContext);
   const [time, setTime] = React.useState(5);
   const audioRef = React.useRef(null);
@@ -68,6 +73,10 @@ const GameRoom = () => {
       }
       setGamePhase(phase);
     });
+    return () => {
+      const gamePhaseRef = firebase.database().ref(`Rooms/${roomId}/phase`);
+      gamePhaseRef.off();
+    };
   }, [roomId]);
 
   //This updates the current song during the loading stage
@@ -107,6 +116,7 @@ const GameRoom = () => {
       .ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
     currentTrackInfo.on("value", (snapshot) => {
       let currentTrackInfo = snapshot.val();
+      setTracksInfoArray([...tracksInfoArray, currentTrackInfo]);
       setTrackUrl(currentTrackInfo.preview);
     });
   }, [roomId]);
