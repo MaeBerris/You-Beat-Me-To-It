@@ -34,10 +34,20 @@ const Cassette = ({ time }) => {
       <Counter>{time}</Counter>
       <Label>
         <SongName>
-          {songName && (
-            <SongNameSpan songName={songName}>{songName} </SongNameSpan>
-          )}
-          {artist && <ArtistSpan artist={artist}>by {artist}</ArtistSpan>}
+          <PlaceHolder>
+            {songName && (
+              <SongNameSpan songName={songName}>
+                {songName && songName}
+              </SongNameSpan>
+            )}
+          </PlaceHolder>
+
+          <Separator>/</Separator>
+          <PlaceHolder>
+            {artist && (
+              <ArtistSpan artist={artist}>{artist && artist}</ArtistSpan>
+            )}
+          </PlaceHolder>
         </SongName>
       </Label>
     </Wrapper>
@@ -68,7 +78,7 @@ const SongNameSpan = styled.div`
   color: black;
   /* width: 250px; */
   text-align: center;
-  max-width: 250px;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -76,16 +86,15 @@ const SongNameSpan = styled.div`
   transform-origin: left;
   animation: ${(props) =>
       props.songName !== null || props.artist !== null ? Appear : null}
-    500ms ease-in-out;
+    500ms;
 `;
 
 const ArtistSpan = styled.div`
-  margin-left: 5px;
   font-family: "Echizen";
   color: black;
   /* width: 250px; */
   text-align: center;
-  max-width: 250px;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -95,7 +104,13 @@ const ArtistSpan = styled.div`
       props.songName !== null || props.artist !== null ? Appear : null}
     500ms ease-in-out;
 `;
+const PlaceHolder = styled.div`
+  width: 250px;
+`;
 
+const Separator = styled.div`
+  font-family: "Echizen";
+`;
 const Image = styled.img`
   filter: invert(21%) sepia(23%) saturate(7482%) hue-rotate(259deg)
     brightness(87%) contrast(91%);
@@ -127,7 +142,7 @@ const SongName = styled.div`
   height: 35px;
   font-family: "Echizen";
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   color: black;
   text-align: center;
   font-size: 40px;
