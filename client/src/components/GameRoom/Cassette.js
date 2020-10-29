@@ -5,9 +5,7 @@ import COLORS from "../../COLORS";
 import { GameRoomContext } from "../../GameRoomContext";
 
 const Cassette = ({ time }) => {
-  const { result, tracksInfoArray, gamePhase } = React.useContext(
-    GameRoomContext
-  );
+  const { result, trackInfo, gamePhase } = React.useContext(GameRoomContext);
   const [artist, setArtist] = React.useState(null);
   const [songName, setSongName] = React.useState(null);
 
@@ -17,14 +15,14 @@ const Cassette = ({ time }) => {
       setSongName(null);
     }
     if (result === "success") {
-      setArtist(tracksInfoArray[tracksInfoArray.length - 1].artist.name);
-      setSongName(tracksInfoArray[tracksInfoArray.length - 1].title_short);
+      setArtist(trackInfo.artist.name);
+      setSongName(trackInfo.title_short);
     }
     if (result === "artist") {
-      setArtist(tracksInfoArray[tracksInfoArray.length - 1].artist.name);
+      setArtist(trackInfo.artist.name);
     }
     if (result === "songName") {
-      setSongName(tracksInfoArray[tracksInfoArray.length - 1].title_short);
+      setSongName(trackInfo.title_short);
     }
   }, [result, gamePhase]);
 
@@ -60,7 +58,7 @@ const Wrapper = styled.div`
   display: flex;
   justify-content: center;
   position: relative;
-  margin-bottom: 50px;
+  margin-bottom: -50px;
   /* margin-top: 50px; */
   transform: scale(0.8);
 `;
@@ -77,7 +75,7 @@ const SongNameSpan = styled.div`
   font-family: "Echizen";
   color: black;
   /* width: 250px; */
-  text-align: center;
+
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
@@ -93,7 +91,6 @@ const ArtistSpan = styled.div`
   font-family: "Echizen";
   color: black;
   /* width: 250px; */
-  text-align: center;
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
@@ -105,7 +102,8 @@ const ArtistSpan = styled.div`
     500ms ease-in-out;
 `;
 const PlaceHolder = styled.div`
-  width: 250px;
+  width: 50%;
+  max-width: 50%;
 `;
 
 const Separator = styled.div`

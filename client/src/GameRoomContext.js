@@ -5,9 +5,18 @@ export const GameRoomContext = React.createContext(null);
 const GameRoomContextProvider = ({ children }) => {
   const [trackUrl, setTrackUrl] = React.useState(null);
   const [gamePhase, setGamePhase] = React.useState(null);
-  const [tracksInfoArray, setTracksInfoArray] = React.useState([]);
+  const [trackInfo, setTrackInfo] = React.useState(null);
+  const [historyArray, setHistoryArray] = React.useState([]);
   const [result, setResult] = React.useState(null);
   console.log("inContext", gamePhase);
+
+  React.useEffect(() => {
+    if (trackInfo) {
+      setHistoryArray([...historyArray, trackInfo]);
+    }
+  }, [trackInfo]);
+
+  console.log("hissstorrry", historyArray);
   return (
     <GameRoomContext.Provider
       value={{
@@ -15,10 +24,11 @@ const GameRoomContextProvider = ({ children }) => {
         setTrackUrl,
         gamePhase,
         setGamePhase,
-        tracksInfoArray,
-        setTracksInfoArray,
+        trackInfo,
+        setTrackInfo,
         result,
         setResult,
+        historyArray,
       }}
     >
       {children}

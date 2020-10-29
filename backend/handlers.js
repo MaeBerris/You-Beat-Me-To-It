@@ -48,6 +48,7 @@ const createRoom = (req, res) => {
     roomId: RoomId,
     roomLocation: "lobby",
     phase: "loading",
+    round: 0,
     players: { host: host },
     selectedPlaylist: false,
     playlist: false,
@@ -299,6 +300,21 @@ const validateAnswer = async (req, res) => {
     .then(res.status(201).json({ message: "update users correct guesses" }));
 };
 
+const updateRound = async (req, res) => {
+  const { roomId } = req.query;
+
+  const RoomRef = db.ref(`Rooms/${roomId}`);
+
+  let previousRound;
+  await RoomRef.child("round").once("value", (snapshot) => {
+    previousRound = snapshot.val();
+  });
+
+  RoomRef.update({ round: previousRound + 1 }).then(
+    res.status(201).json({ message: `updated round to ${previousRound + 1}` })
+  );
+};
+
 module.exports = {
   createRoom,
   searchPlaylist,
@@ -309,6 +325,7 @@ module.exports = {
   updateCurrentTrack,
   updatePhase,
   validateAnswer,
+  updateRound,
 };
 
 // const queryDatabase = async (key) => {

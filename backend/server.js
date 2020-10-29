@@ -13,6 +13,7 @@ const {
   updateCurrentTrack,
   updatePhase,
   validateAnswer,
+  updateRound,
 } = require("./handlers");
 
 require("dotenv").config();
@@ -47,6 +48,7 @@ express()
   .put("/updateCurrentTrack", updateCurrentTrack)
   .put("/updatePhase", updatePhase)
   .patch("/validateAnswer", validateAnswer)
+  .get("/updateRound", updateRound)
   // .get("/startLoop", startLoop)
 
   .listen(PORT, () => console.log(`Listening on port ${PORT}`));

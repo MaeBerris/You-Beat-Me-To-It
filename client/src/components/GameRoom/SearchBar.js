@@ -33,7 +33,7 @@ const SearchBar = () => {
     "Prepare for next song !"
   );
 
-  const { gamePhase, result, setResult, tracksInfoArray } = React.useContext(
+  const { gamePhase, result, setResult, trackInfo } = React.useContext(
     GameRoomContext
   );
 
@@ -75,14 +75,9 @@ const SearchBar = () => {
         }}
         onKeyDown={(ev) => {
           if (ev.key === "Enter" && gamePhase === "playing") {
-            console.log(tracksInfoArray[tracksInfoArray.length - 1]);
-            const artist = tracksInfoArray[
-              tracksInfoArray.length - 1
-            ].artist.name.toLowerCase();
+            const artist = trackInfo.artist.name.toLowerCase();
 
-            const songName = tracksInfoArray[
-              tracksInfoArray.length - 1
-            ].title_short.toLowerCase();
+            const songName = trackInfo.title_short.toLowerCase();
 
             const artistResult = calculateDistance(
               searchTerm,
