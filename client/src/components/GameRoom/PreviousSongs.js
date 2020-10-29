@@ -1,5 +1,5 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 import { GameRoomContext } from "../../GameRoomContext";
 import { useParams } from "react-router-dom";
@@ -29,7 +29,7 @@ const PreviousSong = () => {
           .map((song, index) => {
             if (index < round) {
               return (
-                <SongInfoWrapper>
+                <SongInfoWrapper key={song.title_short}>
                   <SongArt src={song.album.cover_medium} />
                   <InfoSection>
                     <Title>{song.title_short}</Title>
@@ -54,18 +54,32 @@ const Wrapper = styled.div`
   font-size: 30px;
   margin-bottom: 50px;
 `;
+const Appear = keyframes`
+0%{
+  opacity: 0;
+  transform: translateY(-100%)
+
+}100%{
+  opacity: 1;
+  transform: translateY(0)
+
+}`;
 
 const SongListWrapper = styled.div`
   border-radius: 10px;
   padding: 10px;
   font-size: 30px;
   width: 80%;
+  min-height: 100px;
   background: white;
+  transition: 500ms;
 `;
 
 const SongInfoWrapper = styled.div`
   display: flex;
   margin-bottom: 5px;
+  animation: ${Appear} 800ms ease-in-out;
+  transform-origin: left;
 `;
 
 const SongArt = styled.img`
