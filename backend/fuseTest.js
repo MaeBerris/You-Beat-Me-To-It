@@ -177,23 +177,31 @@ const Fuse = require("fuse.js");
 
 //SIMPLIFIED VERSION
 
-function search(searchTerm) {
-  const options = {
-    includeScore: true,
-    ignoreLocation: true,
-    keys: ["artist", "songName", "artistAndSong", "songAndArtist"],
-  };
-  const list = [
-    { artist: "The Beatles" },
-    { songName: "Can't buy me love" },
-    { artistAndSong: "The Beatles Can't Buy me Love" },
-    { songAndArtist: "Can't buy me Love The Beatles" },
-  ];
+// function search(searchTerm) {
+//   const options = {
+//     includeScore: true,
+//     ignoreLocation: true,
+//     keys: ["artist", "songName", "artistAndSong", "songAndArtist"],
+//   };
+//   const list = [
+//     { artist: "The Beatles" },
+//     { songName: "Can't buy me love" },
+//     { artistAndSong: "The Beatles Can't Buy me Love" },
+//     { songAndArtist: "Can't buy me Love The Beatles" },
+//   ];
 
-  const fuse = new Fuse(list, options);
-  return fuse.search(searchTerm);
-}
+//   const fuse = new Fuse(list, options);
+//   return fuse.search(searchTerm);
+// }
 
-let searchResult = search("the beatles eight days a week");
+// let searchResult = search("the beatles eight days a week");
 
-console.log(searchResult);
+// console.log(searchResult);
+
+let songName = "slime dogg";
+
+let shortenSongName = songName.split("(")[0];
+
+console.log(shortenSongName === "");
+
+console.log(shortenSongName);

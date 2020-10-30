@@ -7,6 +7,7 @@ import Cassette from "./Cassette";
 import SearchBar from "./SearchBar";
 import PreviousSong from "./PreviousSongs";
 import * as firebase from "firebase";
+import Ranking from "./Ranking";
 
 const GameRoom = () => {
   const { roomId } = useParams();
@@ -114,9 +115,11 @@ const GameRoom = () => {
   //This starts and stops the track
   React.useEffect(() => {
     if (trackUrl !== null && gamePhase === "playing") {
+      setTime(30);
       audioRef.current.play();
     }
     if (trackUrl !== null && gamePhase === "loading") {
+      setTime(5);
       audioRef.current.pause();
     }
   }, [trackUrl, gamePhase]);
@@ -143,7 +146,7 @@ const GameRoom = () => {
       <Cassette time={time}></Cassette>
       <BottomSection>
         <PreviousSong />
-        <div></div>
+        <Ranking />
       </BottomSection>
     </Wrapper>
   );

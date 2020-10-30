@@ -14,6 +14,7 @@ const Users = () => {
   );
   const { roomId } = useParams();
   const [isCopied, setIsCopied] = React.useState(false);
+
   React.useEffect(() => {
     const PlayersRef = firebase.database().ref(`Rooms/${roomId}/players`);
     PlayersRef.on("value", (snapshot) => {

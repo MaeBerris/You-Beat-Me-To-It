@@ -198,6 +198,11 @@ const randomUnplayedTrackNumber = async (roomId, playlist) => {
   );
   let randomNumber = Math.floor(Math.random() * playlist.length);
 
+  if (playlist.length === tracksArray.length) {
+    playedTracks.set([tracksArray[tracksArray.length - 1]]);
+    tracksArray = [tracksArray[tracksArray.length - 1]];
+  }
+
   while (tracksArray.includes(randomNumber)) {
     randomNumber = Math.floor(Math.random() * playlist.length);
   }
@@ -270,7 +275,6 @@ const validateAnswer = async (req, res) => {
   const { currentUser, roomId, correctGuess } = req.body;
 
   console.log("correctGuess", correctGuess);
-  res.status(201).json({ correctGuess: true });
 
   const timeStampRef = db.ref(`Rooms/${roomId}/currentTrack/timeStamp`);
   let songStartTime;
@@ -293,7 +297,6 @@ const validateAnswer = async (req, res) => {
       [`${currentUser.playerId}`]: {
         ...currentUser,
         ...correctGuess,
-        // timeStamp: correctGuessTime,
         time: correctGuessTime,
       },
     })

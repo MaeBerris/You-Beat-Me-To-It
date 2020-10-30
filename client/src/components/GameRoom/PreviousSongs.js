@@ -29,7 +29,7 @@ const PreviousSong = () => {
           .map((song, index) => {
             if (index < round) {
               return (
-                <SongInfoWrapper key={song.title_short}>
+                <SongInfoWrapper key={song.title_short + index}>
                   <SongArt src={song.album.cover_medium} />
                   <InfoSection>
                     <Title>{song.title_short}</Title>
@@ -53,6 +53,7 @@ const Wrapper = styled.div`
   align-items: flex-start;
   font-size: 30px;
   margin-bottom: 50px;
+  padding-right: 30px;
 `;
 const Appear = keyframes`
 0%{
@@ -69,7 +70,7 @@ const SongListWrapper = styled.div`
   border-radius: 10px;
   padding: 10px;
   font-size: 30px;
-  width: 80%;
+  width: 100%;
   min-height: 100px;
   background: white;
   transition: 500ms;

@@ -77,7 +77,7 @@ const SearchBar = () => {
           if (ev.key === "Enter" && gamePhase === "playing") {
             const artist = trackInfo.artist.name.toLowerCase();
 
-            const songName = trackInfo.title_short.toLowerCase();
+            const songName = trackInfo.title_short.split("(")[0].toLowerCase();
 
             const artistResult = calculateDistance(
               searchTerm,
