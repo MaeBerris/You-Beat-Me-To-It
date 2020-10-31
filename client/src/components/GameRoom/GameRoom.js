@@ -5,7 +5,9 @@ import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import Cassette from "./Cassette";
 import SearchBar from "./SearchBar";
+import PreviousSong from "./PreviousSongs";
 import * as firebase from "firebase";
+import Ranking from "./Ranking";
 
 const GameRoom = () => {
   const { roomId } = useParams();
@@ -14,8 +16,8 @@ const GameRoom = () => {
     setTrackUrl,
     gamePhase,
     setGamePhase,
-    tracksInfoArray,
-    setTracksInfoArray,
+    trackInfo,
+    setTrackInfo,
   } = React.useContext(GameRoomContext);
   const { currentUser } = React.useContext(CurrentUserContext);
   const [time, setTime] = React.useState(5);
@@ -24,7 +26,9 @@ const GameRoom = () => {
   //This sets the interval for the timer
   React.useEffect(() => {
     let interval = setInterval(() => {
-      setTime(time - 1);
+      if (time > 0) {
+        setTime(time - 1);
+      }
     }, 1000);
     //Host updates the phase when the host timer reaches 0
     if (time === 0 && gamePhase === "loading" && currentUser.role === "host") {
@@ -53,7 +57,16 @@ const GameRoom = () => {
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
-        });
+        })
+        .catch((err) => console.log(err));
+
+      fetch(`/updateRound?roomId=${roomId}`, {
+        method: "GET",
+        headers: { accept: "application/json" },
+      })
+        .then((res) => res.json())
+        .then((data) => console.log(data))
+        .catch((err) => console.log(err));
     }
     return () => {
       clearInterval(interval);
@@ -102,9 +115,11 @@ const GameRoom = () => {
   //This starts and stops the track
   React.useEffect(() => {
     if (trackUrl !== null && gamePhase === "playing") {
+      setTime(30);
       audioRef.current.play();
     }
     if (trackUrl !== null && gamePhase === "loading") {
+      setTime(5);
       audioRef.current.pause();
     }
   }, [trackUrl, gamePhase]);
@@ -116,7 +131,8 @@ const GameRoom = () => {
       .ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
     currentTrackInfo.on("value", (snapshot) => {
       let currentTrackInfo = snapshot.val();
-      setTracksInfoArray([...tracksInfoArray, currentTrackInfo]);
+
+      setTrackInfo(currentTrackInfo);
       setTrackUrl(currentTrackInfo.preview);
     });
   }, [roomId]);
@@ -128,6 +144,10 @@ const GameRoom = () => {
       </Player>
       <SearchBar />
       <Cassette time={time}></Cassette>
+      <BottomSection>
+        <PreviousSong />
+        <Ranking />
+      </BottomSection>
     </Wrapper>
   );
 };
@@ -140,5 +160,12 @@ const Wrapper = styled.div`
 `;
 
 const Player = styled.audio``;
+
+const BottomSection = styled.div`
+  margin-top: 20px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 50% 50%;
+`;
 
 export default GameRoom;

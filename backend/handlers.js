@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 
 const admin = require("firebase-admin");
 const { calculateDistance } = require("./LevenTest");
-
+const { scoreHelper } = require("./scoreHelper");
 require("dotenv").config();
 
 admin.initializeApp({
@@ -48,11 +48,13 @@ const createRoom = (req, res) => {
     roomId: RoomId,
     roomLocation: "lobby",
     phase: "loading",
-    players: { host: host },
+    round: 0,
+    players: { [`${host.playerId}`]: host },
     selectedPlaylist: false,
     playlist: false,
     playedTracks: [false],
     currentTrack: {
+      timeStamp: false,
       trackInfo: false,
       correctGuesses: { userId: "guess" },
     },
@@ -94,7 +96,7 @@ const createUser = (req, res) => {
   };
 
   const PlayersRef = db.ref(`Rooms/${roomId}/players`);
-  PlayersRef.push(player).then(() => {
+  PlayersRef.update({ [`${player.playerId}`]: player }).then(() => {
     res.status(201).json({ message: "success", userInfo: player });
   });
 };
@@ -195,21 +197,22 @@ const randomUnplayedTrackNumber = async (roomId, playlist) => {
     }
   );
   let randomNumber = Math.floor(Math.random() * playlist.length);
-  console.log(randomNumber);
+
+  if (playlist.length === tracksArray.length) {
+    playedTracks.set([tracksArray[tracksArray.length - 1]]);
+    tracksArray = [tracksArray[tracksArray.length - 1]];
+  }
 
   while (tracksArray.includes(randomNumber)) {
     randomNumber = Math.floor(Math.random() * playlist.length);
   }
-  console.log(randomNumber);
+
   playedTracks.push(randomNumber);
-  console.log(randomNumber);
   return randomNumber;
 };
 
 const updateCurrentTrack = async (req, res) => {
   const { roomId } = req.body;
-  console.log(req.body);
-  console.log("roomId", roomId);
   const playlistRef = db.ref(`/Rooms/${roomId}/playlist`);
   const currentTrackRef = db.ref(`/Rooms/${roomId}/currentTrack`);
   const currentTrackInfoRef = db.ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
@@ -242,6 +245,8 @@ const updatePhase = async (req, res) => {
   const { currentPhase, roomId } = req.body;
   const RoomRef = db.ref(`Rooms/${roomId}`);
   const PhaseRef = db.ref(`Rooms/${roomId}/phase`);
+  const d = new Date();
+  const timeStamp = d.getTime();
   let phase;
   await PhaseRef.once("value", (snapshot) => {
     console.log(snapshot.val());
@@ -254,6 +259,7 @@ const updatePhase = async (req, res) => {
     return;
   }
   if (currentPhase === "loading") {
+    RoomRef.child("currentTrack").update({ timeStamp: timeStamp });
     RoomRef.update({ phase: "playing" });
     res.status(201).json({ phase: "playing" });
     return;
@@ -266,85 +272,83 @@ const updatePhase = async (req, res) => {
 };
 
 const validateAnswer = async (req, res) => {
-  const { currentUser, roomId, searchTerm } = req.body;
+  const { currentUser, roomId, correctGuess } = req.body;
 
-  const CurrentTrackRef = db.ref(`Rooms/${roomId}/currentTrack`);
-  const CorrectGuessesRef = CurrentTrackRef.child("correctGuesses");
-  let currentTrackInfo;
+  const playerRef = db.ref(`Rooms/${roomId}/players/${currentUser.playerId}`);
 
-  await CurrentTrackRef.once("value", (snapshot) => {
-    currentTrackInfo = snapshot.val();
+  let playerScore;
+  await playerRef.once("value", (snapshot) => {
+    console.log("snapshot", snapshot.val().points);
+    playerScore = snapshot.val().points;
   });
-  const isCurrentUserPresent =
-    currentTrackInfo.correctGuesses[`${currentUser.playerId}`];
 
-  console.log(isCurrentUserPresent);
+  const timeStampRef = db.ref(`Rooms/${roomId}/currentTrack/timeStamp`);
 
-  const artist = currentTrackInfo.trackInfo.artist.name.toLowerCase();
-  const songName = currentTrackInfo.trackInfo.title_short.toLowerCase();
+  let songStartTime;
+  await timeStampRef.once("value", (snapshot) => {
+    songStartTime = snapshot.val();
+  });
 
-  const artistResult = calculateDistance(searchTerm, artist, "artist");
-  const songNameResult = calculateDistance(searchTerm, songName, "songName");
+  const correctGuessesRef = db.ref(
+    `Rooms/${roomId}/currentTrack/correctGuesses`
+  );
 
-  if (artistResult.artist === false && songNameResult.songName === false) {
-    res.status(200).json({ artist: false, songName: false });
-    return;
+  let correctGuessTime;
+  if (correctGuess.timeStamp) {
+    correctGuessTime = (correctGuess.timeStamp - songStartTime) / 1000;
+  } else {
+    correctGuessTime = false;
   }
-  if (artistResult.artist === true && songNameResult.songName === true) {
-    CorrectGuessesRef.update({
+
+  if (
+    correctGuess.artist &&
+    correctGuess.songName &&
+    !correctGuess.previousGuess.artist &&
+    !correctGuess.previousGuess.songName
+  ) {
+    await playerRef.update({
+      points: playerScore + 10 + scoreHelper(correctGuessTime),
+    });
+  } else if (correctGuess.artist && correctGuess.songName) {
+    await playerRef.update({
+      points: playerScore + 5 + scoreHelper(correctGuessTime),
+    });
+  } else if (
+    correctGuess.artist &&
+    correctGuess.previousGuess.artist === false
+  ) {
+    await playerRef.update({ points: playerScore + 5 });
+  } else if (
+    correctGuess.songName &&
+    correctGuess.previousGuess.songName === false
+  ) {
+    await playerRef.update({ points: playerScore + 5 });
+  }
+
+  correctGuessesRef
+    .update({
       [`${currentUser.playerId}`]: {
         ...currentUser,
-        artist: true,
-        songName: true,
+        ...correctGuess,
+        time: correctGuessTime,
       },
-    });
-    res.status(201).json({ artist: true, songName: true });
-    return;
-  }
-  if (artistResult.artist === true) {
-    if (isCurrentUserPresent && isCurrentUserPresent.songName === true) {
-      CorrectGuessesRef.update({
-        [`${currentUser.playerId}`]: {
-          ...currentUser,
-          artist: true,
-          songName: true,
-        },
-      });
-      res.status(201).json({ artist: true, songName: true });
-      return;
-    }
-    CorrectGuessesRef.update({
-      [`${currentUser.playerId}`]: {
-        ...currentUser,
-        artist: true,
-        songName: false,
-      },
-    });
-    res.status(201).json({ artist: true, songName: false });
-    return;
-  }
-  if (songNameResult.songName === true) {
-    if (isCurrentUserPresent && isCurrentUserPresent.artist === true) {
-      CorrectGuessesRef.update({
-        [`${currentUser.playerId}`]: {
-          ...currentUser,
-          artist: true,
-          songName: true,
-        },
-      });
-      res.status(201).json({ artist: true, songName: true });
-      return;
-    }
-    CorrectGuessesRef.update({
-      [`${currentUser.playerId}`]: {
-        ...currentUser,
-        artist: false,
-        songName: true,
-      },
-    });
-    res.status(201).json({ artist: false, songName: true });
-    return;
-  }
+    })
+    .then(res.status(201).json({ message: "update users correct guesses" }));
+};
+
+const updateRound = async (req, res) => {
+  const { roomId } = req.query;
+
+  const RoomRef = db.ref(`Rooms/${roomId}`);
+
+  let previousRound;
+  await RoomRef.child("round").once("value", (snapshot) => {
+    previousRound = snapshot.val();
+  });
+
+  RoomRef.update({ round: previousRound + 1 }).then(
+    res.status(201).json({ message: `updated round to ${previousRound + 1}` })
+  );
 };
 
 module.exports = {
@@ -357,6 +361,7 @@ module.exports = {
   updateCurrentTrack,
   updatePhase,
   validateAnswer,
+  updateRound,
 };
 
 // const queryDatabase = async (key) => {

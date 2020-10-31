@@ -1,4 +1,4 @@
-const leven = require("leven");
+import leven from "leven";
 
 const calculateDistance = (searchTerm, artistOrSongName, valueToSearch) => {
   const artistOrSong = artistOrSongName.toLowerCase();
@@ -7,7 +7,7 @@ const calculateDistance = (searchTerm, artistOrSongName, valueToSearch) => {
 
   wordsArray.forEach((word, index) => {
     let string = "";
-    for (i = 0; i <= index; i++) {
+    for (let i = 0; i <= index; i++) {
       string = string + " " + wordsArray[i];
     }
     allSubStrings.push(string.trim());
@@ -48,12 +48,12 @@ const calculateDistance = (searchTerm, artistOrSongName, valueToSearch) => {
   }
 };
 
-let songName = "Low (feat. T-Pain)".split("(")[0].toLowerCase().trim();
+// const levenTestResult = calculateDistance(
+//   "the beatles",
+//   "the beach boys",
+//   "songName"
+// );
 
-console.log(songName);
+// console.log(levenTestResult);
 
-const levenTestResult = calculateDistance("low", songName, "songName");
-
-console.log(levenTestResult);
-
-module.exports = { calculateDistance };
+export default calculateDistance;
