@@ -5,30 +5,26 @@ import Button from "../Button/Button";
 import COLORS from "../../COLORS";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useParams } from "react-router-dom";
-import * as firebase from "firebase";
 import { AiFillCrown } from "react-icons/ai";
 
 const Users = () => {
-  const { usersList, setUsersList, currentUser } = React.useContext(
+  const { usersList, currentUser, setCurrentRoomId } = React.useContext(
     CurrentUserContext
   );
+
   const { roomId } = useParams();
   const [isCopied, setIsCopied] = React.useState(false);
 
   React.useEffect(() => {
-    const PlayersRef = firebase.database().ref(`Rooms/${roomId}/players`);
-    PlayersRef.on("value", (snapshot) => {
-      const players = snapshot.val();
-      setUsersList(players);
-    });
-  }, [setUsersList, roomId]);
+    setCurrentRoomId(roomId);
+  }, [roomId]);
 
   return (
     <Wrapper>
       <GenericLabel>Players:</GenericLabel>
       {usersList !== null ? (
         <List>
-          {Object.values(usersList).map((user, index) => {
+          {usersList.map((user, index) => {
             return (
               <User
                 key={user.nickName + index}

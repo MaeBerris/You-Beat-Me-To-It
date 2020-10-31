@@ -77,7 +77,10 @@ const SearchBar = () => {
           if (ev.key === "Enter" && gamePhase === "playing") {
             const artist = trackInfo.artist.name.toLowerCase();
 
-            const songName = trackInfo.title_short.split("(")[0].toLowerCase();
+            const songName = trackInfo.title_short
+              .split("(")[0]
+              .toLowerCase()
+              .trim();
 
             const artistResult = calculateDistance(
               searchTerm,
@@ -112,6 +115,7 @@ const SearchBar = () => {
                 artist: true,
                 songName: true,
                 timeStamp: timeStamp,
+                previousGuess: correctGuess,
               });
               return;
             }
@@ -127,6 +131,7 @@ const SearchBar = () => {
                   artist: true,
                   songName: true,
                   timeStamp: timeStamp,
+                  previousGuess: correctGuess,
                 });
                 return;
               }
@@ -136,6 +141,7 @@ const SearchBar = () => {
                 artist: true,
                 songName: false,
                 timeStamp: null,
+                previousGuess: correctGuess,
               });
               return;
             }
@@ -151,6 +157,7 @@ const SearchBar = () => {
                   artist: true,
                   songName: true,
                   timeStamp: timeStamp,
+                  previousGuess: correctGuess,
                 });
                 return;
               }
@@ -160,6 +167,7 @@ const SearchBar = () => {
                 artist: false,
                 songName: true,
                 timeStamp: null,
+                previousGuess: correctGuess,
               });
               return;
             }

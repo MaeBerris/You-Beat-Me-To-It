@@ -4,7 +4,7 @@ const fetch = require("node-fetch");
 
 const admin = require("firebase-admin");
 const { calculateDistance } = require("./LevenTest");
-
+const { scoreHelper } = require("./scoreHelper");
 require("dotenv").config();
 
 admin.initializeApp({
@@ -49,7 +49,7 @@ const createRoom = (req, res) => {
     roomLocation: "lobby",
     phase: "loading",
     round: 0,
-    players: { host: host },
+    players: { [`${host.playerId}`]: host },
     selectedPlaylist: false,
     playlist: false,
     playedTracks: [false],
@@ -96,7 +96,7 @@ const createUser = (req, res) => {
   };
 
   const PlayersRef = db.ref(`Rooms/${roomId}/players`);
-  PlayersRef.push(player).then(() => {
+  PlayersRef.update({ [`${player.playerId}`]: player }).then(() => {
     res.status(201).json({ message: "success", userInfo: player });
   });
 };
@@ -274,13 +274,21 @@ const updatePhase = async (req, res) => {
 const validateAnswer = async (req, res) => {
   const { currentUser, roomId, correctGuess } = req.body;
 
-  console.log("correctGuess", correctGuess);
+  const playerRef = db.ref(`Rooms/${roomId}/players/${currentUser.playerId}`);
+
+  let playerScore;
+  await playerRef.once("value", (snapshot) => {
+    console.log("snapshot", snapshot.val().points);
+    playerScore = snapshot.val().points;
+  });
 
   const timeStampRef = db.ref(`Rooms/${roomId}/currentTrack/timeStamp`);
+
   let songStartTime;
   await timeStampRef.once("value", (snapshot) => {
     songStartTime = snapshot.val();
   });
+
   const correctGuessesRef = db.ref(
     `Rooms/${roomId}/currentTrack/correctGuesses`
   );
@@ -290,6 +298,31 @@ const validateAnswer = async (req, res) => {
     correctGuessTime = (correctGuess.timeStamp - songStartTime) / 1000;
   } else {
     correctGuessTime = false;
+  }
+
+  if (
+    correctGuess.artist &&
+    correctGuess.songName &&
+    !correctGuess.previousGuess.artist &&
+    !correctGuess.previousGuess.songName
+  ) {
+    await playerRef.update({
+      points: playerScore + 10 + scoreHelper(correctGuessTime),
+    });
+  } else if (correctGuess.artist && correctGuess.songName) {
+    await playerRef.update({
+      points: playerScore + 5 + scoreHelper(correctGuessTime),
+    });
+  } else if (
+    correctGuess.artist &&
+    correctGuess.previousGuess.artist === false
+  ) {
+    await playerRef.update({ points: playerScore + 5 });
+  } else if (
+    correctGuess.songName &&
+    correctGuess.previousGuess.songName === false
+  ) {
+    await playerRef.update({ points: playerScore + 5 });
   }
 
   correctGuessesRef
