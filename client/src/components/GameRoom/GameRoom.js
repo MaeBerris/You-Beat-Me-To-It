@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
+import ProgressBar from "./ProgressBar";
 import Cassette from "./Cassette";
 import SearchBar from "./SearchBar";
 import PreviousSong from "./PreviousSongs";
@@ -148,6 +149,7 @@ const GameRoom = () => {
         I'm sorry, your browser doesn't supper audio
       </Player>
       <SearchBar />
+      <ProgressBar />
       <Cassette time={time}></Cassette>
       <BottomSection>
         <PreviousSong />
