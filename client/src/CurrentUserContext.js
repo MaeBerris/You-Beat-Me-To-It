@@ -13,6 +13,7 @@ const CurrentUserContextProvider = ({ children }) => {
     songName: false,
     time: null,
   });
+  const [currentTrackGuesses, setCurrentTrackGuesses] = React.useState(null);
 
   React.useEffect(() => {
     if (currentRoomId) {
@@ -22,12 +23,22 @@ const CurrentUserContextProvider = ({ children }) => {
       PlayersRef.on("value", (snapshot) => {
         const players = snapshot.val();
         const SortedArray = Object.values(players).sort((a, b) => {
-          return a.points - b.points;
+          return b.points - a.points;
         });
         setUsersList(SortedArray);
       });
     }
   }, [setUsersList, currentRoomId]);
+
+  React.useEffect(() => {
+    const currentGuessesRef = firebase
+      .database()
+      .ref(`Rooms/${currentRoomId}/currentTrack/correctGuesses`);
+
+    currentGuessesRef.on("value", (snapshot) => {
+      setCurrentTrackGuesses(snapshot.val());
+    });
+  }, [currentRoomId]);
 
   return (
     <CurrentUserContext.Provider
@@ -39,6 +50,7 @@ const CurrentUserContextProvider = ({ children }) => {
         correctGuess,
         setCorrectGuess,
         setCurrentRoomId,
+        currentTrackGuesses,
       }}
     >
       {children}

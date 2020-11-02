@@ -8,7 +8,8 @@ const GameRoomContextProvider = ({ children }) => {
   const [trackInfo, setTrackInfo] = React.useState(null);
   const [historyArray, setHistoryArray] = React.useState([]);
   const [result, setResult] = React.useState(null);
-  console.log("inContext", gamePhase);
+
+  console.log("inContextPhase", gamePhase);
 
   React.useEffect(() => {
     if (trackInfo) {
@@ -16,7 +17,6 @@ const GameRoomContextProvider = ({ children }) => {
     }
   }, [trackInfo]);
 
-  console.log("hissstorrry", historyArray);
   return (
     <GameRoomContext.Provider
       value={{

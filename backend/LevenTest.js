@@ -48,12 +48,4 @@ const calculateDistance = (searchTerm, artistOrSongName, valueToSearch) => {
   }
 };
 
-let songName = "Low (feat. T-Pain)".split("(")[0].toLowerCase().trim();
-
-console.log(songName);
-
-const levenTestResult = calculateDistance("low", songName, "songName");
-
-console.log(levenTestResult);
-
 module.exports = { calculateDistance };

@@ -30,6 +30,7 @@ const GameRoom = () => {
         setTime(time - 1);
       }
     }, 1000);
+
     //Host updates the phase when the host timer reaches 0
     if (time === 0 && gamePhase === "loading" && currentUser.role === "host") {
       fetch("/updatePhase", {
@@ -80,9 +81,13 @@ const GameRoom = () => {
       let phase = snapshot.val();
       if (phase === "playing") {
         setTime(30);
+        audioRef.current.play();
+        console.log("playtrack");
       }
       if (phase === "loading") {
         setTime(5);
+        audioRef.current.pause();
+        console.log("stopTrack");
       }
       setGamePhase(phase);
     });
@@ -113,16 +118,16 @@ const GameRoom = () => {
   }, [gamePhase]);
 
   //This starts and stops the track
-  React.useEffect(() => {
-    if (trackUrl !== null && gamePhase === "playing") {
-      setTime(30);
-      audioRef.current.play();
-    }
-    if (trackUrl !== null && gamePhase === "loading") {
-      setTime(5);
-      audioRef.current.pause();
-    }
-  }, [trackUrl, gamePhase]);
+  // React.useEffect(() => {
+  //   if (trackUrl !== null && gamePhase === "playing") {
+  //     console.log("playTrack");
+  //     audioRef.current.play();
+  //   }
+  //   if (trackUrl !== null && gamePhase === "loading") {
+  //     console.log("stoptrack");
+  //     audioRef.current.pause();
+  //   }
+  // }, [trackUrl, gamePhase]);
 
   //this gets the current track info
   React.useEffect(() => {

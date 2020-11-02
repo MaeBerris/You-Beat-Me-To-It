@@ -6,10 +6,25 @@ import { CurrentUserContext } from "../../CurrentUserContext";
 import { AiFillCrown } from "react-icons/ai";
 import COLORS from "../../COLORS";
 
+const correctGuessOutput = (usersCorrectGuess) => {
+  console.log(usersCorrectGuess);
+  if (usersCorrectGuess.artist && usersCorrectGuess.songName)
+    return `in ${usersCorrectGuess.time.toFixed(2)} seconds`;
+  if (usersCorrectGuess.artist) {
+    return "The artist";
+  }
+  if (usersCorrectGuess.songName) {
+    return "The song's name ";
+  }
+};
+
 const Ranking = () => {
-  const { usersList, setCurrentRoomId, currentUser } = React.useContext(
-    CurrentUserContext
-  );
+  const {
+    usersList,
+    setCurrentRoomId,
+    currentUser,
+    currentTrackGuesses,
+  } = React.useContext(CurrentUserContext);
 
   const { roomId } = useParams();
 
@@ -24,24 +39,51 @@ const Ranking = () => {
         {usersList.map((user, index) => {
           return (
             <UserWrapper key={user.playerId}>
-              <Rank>{index + 1}.</Rank>
-              {user.role === "host" ? (
-                <Icon>
-                  <AiFillCrown />
-                </Icon>
-              ) : null}
-              <UserName
-                style={{
-                  color: `${
-                    currentUser.playerId === user.playerId
-                      ? COLORS.midnight
-                      : "black"
-                  }`,
-                }}
-              >
-                {user.nickName}
-              </UserName>
-              <Score>{user.points}pts.</Score>
+              <InfoWrapper>
+                <Rank>{index + 1}.</Rank>
+
+                <UserInfoWrapper>
+                  <NameWrapper>
+                    {user.role === "host" ? (
+                      <Icon
+                        style={{
+                          color: `${
+                            currentUser.playerId === user.playerId
+                              ? COLORS.midnight
+                              : "black"
+                          }`,
+                        }}
+                      >
+                        <AiFillCrown />
+                      </Icon>
+                    ) : null}
+                    <UserName
+                      style={{
+                        color: `${
+                          currentUser.playerId === user.playerId
+                            ? COLORS.midnight
+                            : "black"
+                        }`,
+                      }}
+                    >
+                      {user.nickName}
+                    </UserName>
+                  </NameWrapper>
+                  <CorrectGuessWrapper>
+                    Guessed:{" "}
+                    {currentTrackGuesses[`${user.playerId}`] && (
+                      <span>
+                        {correctGuessOutput(
+                          currentTrackGuesses[`${user.playerId}`]
+                        )}
+                      </span>
+                    )}
+                  </CorrectGuessWrapper>
+                </UserInfoWrapper>
+              </InfoWrapper>
+              <ScoreInfoWrapper>
+                <Score>{user.points}pts.</Score>
+              </ScoreInfoWrapper>
             </UserWrapper>
           );
         })}
@@ -63,27 +105,67 @@ const Wrapper = styled.div`
 
 const UsersListWrapper = styled.div`
   border-radius: 10px;
-  padding: 10 30px;
+  padding: 10px;
   font-size: 30px;
   width: 100%;
-  min-height: 100px;
   background: white;
   transition: 500ms;
 `;
 
 const UserWrapper = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px 0px;
 `;
+
+const InfoWrapper = styled.div`
+  display: flex;
+  max-width: 80%;
+`;
+
+const UserInfoWrapper = styled.div``;
 
 const Rank = styled.h1`
   font-size: 40px;
   font-weight: 800;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
 `;
 
 const Icon = styled.div`
   width: fit-content;
+  margin-top: 5px;
 `;
 
-const Score = styled.div``;
+const Score = styled.div`
+  display: flex;
+  align-items: center;
+`;
 
-const UserName = styled.div``;
+const UserName = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const Time = styled.div`
+  font-style: italic;
+  font-weight: 400;
+  font-size: 20px;
+  color: grey;
+  display: flex;
+  align-items: center;
+`;
+
+const ScoreInfoWrapper = styled.div`
+  display: flex;
+`;
+
+const CorrectGuessWrapper = styled.div`
+  font-size: 20px;
+`;
+
+const NameWrapper = styled.div`
+  display: flex;
+`;
