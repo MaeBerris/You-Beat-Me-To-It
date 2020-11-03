@@ -1,6 +1,5 @@
-import React, { useRef } from "react";
+import React from "react";
 import styled, { keyframes } from "styled-components";
-import COLORS from "../../COLORS";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
 
@@ -11,7 +10,6 @@ const ProgressBar = () => {
 
   const calculateGuessPosition = (time) => {
     if (barRef !== null) {
-      console.log("barWidth", barRef.current.clientWidth);
       let position = (time * barRef.current.clientWidth) / 30;
       position.toFixed(0);
       return position;
