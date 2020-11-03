@@ -8,13 +8,16 @@ import HostHandler from "./SignIn/HostHandler";
 import PlayerHandler from "./SignIn/PlayerHandler";
 import HostLobby from "./Lobby/HostLobby";
 import GameRoom from "./GameRoom/GameRoom";
+import GameOver from "./GameRoom/GameOver";
 import GlobalStyles from "../GlobalStyles";
 import { CurrentUserContext } from "../CurrentUserContext";
 import { LobbyContext } from "../LobbyContext";
+import { GameRoomContext } from "../GameRoomContext";
 
 const App = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
   const { roomId } = React.useContext(LobbyContext);
+  const { round } = React.useContext(GameRoomContext);
 
   const unloadFunction = (e) => {
     if (currentUser !== null) {
@@ -55,7 +58,7 @@ const App = () => {
             )}
           </Route>
           <Route path="/gameroom/:roomId">
-            <GameRoom />
+            {round >= 10 ? <GameOver /> : <GameRoom />}
           </Route>
         </Switch>
         <GlobalStyles />

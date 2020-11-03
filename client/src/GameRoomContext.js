@@ -8,6 +8,7 @@ const GameRoomContextProvider = ({ children }) => {
   const [trackInfo, setTrackInfo] = React.useState(null);
   const [historyArray, setHistoryArray] = React.useState([]);
   const [result, setResult] = React.useState(null);
+  const [round, setRound] = React.useState(0);
 
   console.log("inContextPhase", gamePhase);
 
@@ -29,6 +30,8 @@ const GameRoomContextProvider = ({ children }) => {
         result,
         setResult,
         historyArray,
+        round,
+        setRound,
       }}
     >
       {children}
