@@ -1,9 +1,8 @@
 import React from "react";
 import COLORS from "../../COLORS";
-import styled, { keyframes } from "styled-components";
-
+import styled from "styled-components";
+import Button from "../Button/Button";
 import { useParams } from "react-router-dom";
-
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { AiFillCrown } from "react-icons/ai";
 
@@ -64,6 +63,16 @@ const GameOverScreen = () => {
           );
         })}
       </UsersListWrapper>
+      <ButtonsWrapper>
+        <Button
+          handler={() => {
+            fetch(`/lobbyReset?roomId=${roomId}`, {});
+          }}
+        >
+          Return to Lobby
+        </Button>
+        <Button>Restart Game</Button>
+      </ButtonsWrapper>
     </Wrapper>
   );
 };
@@ -82,6 +91,7 @@ const Title = styled.h1`
   font-size: 60px;
   text-shadow: 2px 2px 2px ${COLORS.midnight};
   color: white;
+  margin: 20px 0px;
 `;
 
 const UsersListWrapper = styled.div`
@@ -139,4 +149,10 @@ const ScoreInfoWrapper = styled.div`
 
 const NameWrapper = styled.div`
   display: flex;
+`;
+
+const ButtonsWrapper = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  margin: 20px 0px;
 `;

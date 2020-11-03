@@ -17,7 +17,7 @@ import { GameRoomContext } from "../GameRoomContext";
 const App = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
   const { roomId } = React.useContext(LobbyContext);
-  const { round } = React.useContext(GameRoomContext);
+  const { round, gamePhase } = React.useContext(GameRoomContext);
 
   const unloadFunction = (e) => {
     if (currentUser !== null) {
@@ -58,7 +58,11 @@ const App = () => {
             )}
           </Route>
           <Route path="/gameroom/:roomId">
-            {round >= 10 ? <GameOver /> : <GameRoom />}
+            {round >= 10 && gamePhase !== "loading" ? (
+              <GameOver />
+            ) : (
+              <GameRoom />
+            )}
           </Route>
         </Switch>
         <GlobalStyles />

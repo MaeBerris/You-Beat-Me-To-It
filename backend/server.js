@@ -8,7 +8,6 @@ const {
   createUser,
   updatePlaylist,
   validatePlaylist,
-  changeRoomLocation,
   unload,
   updateCurrentTrack,
   updatePhase,
@@ -40,15 +39,13 @@ express()
 
   .post("/createRoom", createRoom)
   .get("/searchPlaylist", searchPlaylist)
-  .post("/createUser", createUser)
+  .post("/:roomId/createUser", createUser)
   .put("/updatePlaylist", updatePlaylist)
   .put("/validatePlaylist", validatePlaylist)
-  // .get("/changeRoomLocation", changeRoomLocation)
   .post("/unload", unload)
   .put("/updateCurrentTrack", updateCurrentTrack)
   .put("/updatePhase", updatePhase)
   .patch("/validateAnswer", validateAnswer)
   .get("/updateRound", updateRound)
-  // .get("/startLoop", startLoop)
 
   .listen(PORT, () => console.log(`Listening on port ${PORT}`));

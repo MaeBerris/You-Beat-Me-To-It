@@ -50,26 +50,15 @@ const validatePlaylist = async (roomId, playlist) => {
 
 const HostLobby = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
-  const { playlistState, setRoomId } = React.useContext(LobbyContext);
+  const { playlistState, setRoomId, location } = React.useContext(LobbyContext);
   const { roomId } = useParams();
   const history = useHistory();
-  const [location, setLocation] = React.useState("lobby");
 
   React.useEffect(() => {
     setRoomId(roomId);
   }, []);
 
   React.useEffect(() => {
-    const roomLocationRef = firebase
-      .database()
-      .ref(`Rooms/${roomId}/roomLocation`);
-
-    roomLocationRef.on("value", (snapshot) => {
-      let locationFromDatabase = snapshot.val();
-
-      setLocation(locationFromDatabase);
-    });
-
     if (location === "gameRoom") {
       history.push(`/gameroom/${roomId}`);
     }
