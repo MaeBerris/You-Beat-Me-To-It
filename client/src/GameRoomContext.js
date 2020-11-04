@@ -30,6 +30,7 @@ const GameRoomContextProvider = ({ children }) => {
         result,
         setResult,
         historyArray,
+        setHistoryArray,
         round,
         setRound,
       }}

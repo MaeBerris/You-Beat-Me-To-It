@@ -13,6 +13,8 @@ const {
   updatePhase,
   validateAnswer,
   updateRound,
+  lobbyReset,
+  gameReset,
 } = require("./handlers");
 
 require("dotenv").config();
@@ -47,5 +49,7 @@ express()
   .put("/updatePhase", updatePhase)
   .patch("/validateAnswer", validateAnswer)
   .get("/updateRound", updateRound)
+  .get("/:roomId/lobbyReset", lobbyReset)
+  .get("/:roomId/gameReset", gameReset)
 
   .listen(PORT, () => console.log(`Listening on port ${PORT}`));

@@ -2,16 +2,31 @@ import React from "react";
 import COLORS from "../../COLORS";
 import styled from "styled-components";
 import Button from "../Button/Button";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { CurrentUserContext } from "../../CurrentUserContext";
+import { GameRoomContext } from "../../GameRoomContext";
+import { LobbyContext } from "../../LobbyContext";
 import { AiFillCrown } from "react-icons/ai";
 
 const GameOverScreen = () => {
   const { usersList, setCurrentRoomId, currentUser } = React.useContext(
     CurrentUserContext
   );
-
+  const { setRound, setHistoryArray } = React.useContext(GameRoomContext);
   const { roomId } = useParams();
+  const { location, deletePlaylist } = React.useContext(LobbyContext);
+  const history = useHistory();
+
+  React.useEffect(() => {
+    if (location !== "gameRoom") {
+      history.push(`/lobby/${roomId}`);
+    }
+    return () => {
+      setRound(0);
+      deletePlaylist();
+      setHistoryArray([]);
+    };
+  }, [location, roomId]);
 
   React.useEffect(() => {
     setCurrentRoomId(roomId);
@@ -66,12 +81,36 @@ const GameOverScreen = () => {
       <ButtonsWrapper>
         <Button
           handler={() => {
-            fetch(`/lobbyReset?roomId=${roomId}`, {});
+            fetch(`/${roomId}/lobbyReset`, {
+              method: "GET",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => console.log(data))
+              .catch((err) => console.log(err));
           }}
         >
           Return to Lobby
         </Button>
-        <Button>Restart Game</Button>
+        <Button
+          handler={() => {
+            fetch(`/${roomId}/GameReset`, {
+              method: "GET",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            })
+              .then((res) => res.json())
+              .then((data) => console.log(data))
+              .catch((err) => console.log(err));
+          }}
+        >
+          Restart Game
+        </Button>
       </ButtonsWrapper>
     </Wrapper>
   );
@@ -154,5 +193,6 @@ const NameWrapper = styled.div`
 const ButtonsWrapper = styled.div`
   display: flex;
   justify-content: space-evenly;
+  width: 100%;
   margin: 20px 0px;
 `;

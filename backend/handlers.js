@@ -353,6 +353,69 @@ const updateRound = async (req, res) => {
   );
 };
 
+const lobbyReset = async (req, res) => {
+  const { roomId } = req.params;
+  const RoomRef = db.ref(`Rooms/${roomId}`);
+  const playersRef = db.ref(`Rooms/${roomId}/players`);
+  let playersObject;
+  await playersRef.once("value", (snapshot) => {
+    playersObject = snapshot.val();
+  });
+
+  await Object.keys(playersObject).forEach((key) => {
+    playersRef.update({
+      [`${key}`]: { ...playersObject[`${key}`], points: 0 },
+    });
+  });
+  const roomInfo = {
+    roomLocation: "lobby",
+    phase: "loading",
+    round: 0,
+    selectedPlaylist: false,
+    playlist: false,
+    playedTracks: [false],
+    currentTrack: {
+      timeStamp: false,
+      trackInfo: false,
+      correctGuesses: { userId: "guess" },
+    },
+  };
+
+  RoomRef.update(roomInfo).then(
+    res.status(200).json({ message: "reset room" })
+  );
+};
+
+const gameReset = async (req, res) => {
+  const { roomId } = req.params;
+  const RoomRef = db.ref(`Rooms/${roomId}`);
+  const playersRef = db.ref(`Rooms/${roomId}/players`);
+  let playersObject;
+  await playersRef.once("value", (snapshot) => {
+    playersObject = snapshot.val();
+  });
+
+  await Object.keys(playersObject).forEach((key) => {
+    playersRef.update({
+      [`${key}`]: { ...playersObject[`${key}`], points: 0 },
+    });
+  });
+  const roomInfo = {
+    phase: "loading",
+    round: 0,
+    playedTracks: [false],
+    currentTrack: {
+      timeStamp: false,
+      trackInfo: false,
+      correctGuesses: { userId: "guess" },
+    },
+  };
+
+  RoomRef.update(roomInfo).then(
+    res.status(200).json({ message: "reset room" })
+  );
+};
+
 module.exports = {
   createRoom,
   searchPlaylist,
@@ -364,4 +427,6 @@ module.exports = {
   updatePhase,
   validateAnswer,
   updateRound,
+  lobbyReset,
+  gameReset,
 };

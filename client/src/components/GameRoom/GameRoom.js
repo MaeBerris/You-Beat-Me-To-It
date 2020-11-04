@@ -17,7 +17,6 @@ const GameRoom = () => {
     setTrackUrl,
     gamePhase,
     setGamePhase,
-    trackInfo,
     setTrackInfo,
   } = React.useContext(GameRoomContext);
   const { currentUser } = React.useContext(CurrentUserContext);
@@ -141,6 +140,10 @@ const GameRoom = () => {
       setTrackInfo(currentTrackInfo);
       setTrackUrl(currentTrackInfo.preview);
     });
+
+    return () => {
+      currentTrackInfo.off();
+    };
   }, [roomId]);
 
   return (

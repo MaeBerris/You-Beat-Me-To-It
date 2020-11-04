@@ -1,6 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  useParams,
+} from "react-router-dom";
 import Background from "./Background/Background";
 import Header from "./Header/Header";
 import SignIn from "./SignIn/SignIn";
@@ -58,7 +62,7 @@ const App = () => {
             )}
           </Route>
           <Route path="/gameroom/:roomId">
-            {round >= 10 && gamePhase !== "loading" ? (
+            {round >= 2 && gamePhase === "playing" ? (
               <GameOver />
             ) : (
               <GameRoom />
