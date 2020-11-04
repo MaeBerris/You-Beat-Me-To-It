@@ -62,11 +62,7 @@ const App = () => {
             )}
           </Route>
           <Route path="/gameroom/:roomId">
-            {round >= 2 && gamePhase === "playing" ? (
-              <GameOver />
-            ) : (
-              <GameRoom />
-            )}
+            {round > 9 && gamePhase === "playing" ? <GameOver /> : <GameRoom />}
           </Route>
         </Switch>
         <GlobalStyles />

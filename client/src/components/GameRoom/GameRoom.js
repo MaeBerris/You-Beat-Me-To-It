@@ -18,6 +18,7 @@ const GameRoom = () => {
     gamePhase,
     setGamePhase,
     setTrackInfo,
+    round,
   } = React.useContext(GameRoomContext);
   const { currentUser } = React.useContext(CurrentUserContext);
   const [time, setTime] = React.useState(5);
@@ -80,6 +81,10 @@ const GameRoom = () => {
     gamePhaseRef.on("value", (snapshot) => {
       let phase = snapshot.val();
       if (phase === "playing") {
+        if (round > 9) {
+          setGamePhase(phase);
+          return;
+        }
         setTime(30);
         audioRef.current.play();
         console.log("playtrack");
@@ -95,7 +100,7 @@ const GameRoom = () => {
       const gamePhaseRef = firebase.database().ref(`Rooms/${roomId}/phase`);
       gamePhaseRef.off();
     };
-  }, [roomId]);
+  }, [roomId, round]);
 
   //This updates the current song during the loading stage
   React.useEffect(() => {

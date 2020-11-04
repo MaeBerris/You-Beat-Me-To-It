@@ -12,7 +12,7 @@ const CurrentUserContextProvider = ({ children }) => {
     songName: false,
     time: null,
   });
-  const [currentTrackGuesses, setCurrentTrackGuesses] = React.useState(null);
+  const [currentTrackGuesses, setCurrentTrackGuesses] = React.useState({});
 
   React.useEffect(() => {
     if (currentRoomId) {

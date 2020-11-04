@@ -4,13 +4,10 @@ import styled, { keyframes } from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 import { GameRoomContext } from "../../GameRoomContext";
 import { useParams } from "react-router-dom";
-import * as firebase from "firebase";
 
 const PreviousSong = () => {
   const { roomId } = useParams();
-  const { historyArray, round, setRound, setRoomId } = React.useContext(
-    GameRoomContext
-  );
+  const { historyArray, round, setRoomId } = React.useContext(GameRoomContext);
 
   React.useEffect(() => {
     setRoomId(roomId);
@@ -20,7 +17,7 @@ const PreviousSong = () => {
     <Wrapper>
       <GenericLabel>Previous Songs:</GenericLabel>
       <SongListWrapper>
-        <RoundCounter>Round: {round + 1}/10</RoundCounter>
+        <RoundCounter>Round: {round < 9 ? round + 1 : round}/10</RoundCounter>
         {historyArray
           .map((song, index) => {
             if (index < round) {
