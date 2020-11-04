@@ -8,17 +8,12 @@ import * as firebase from "firebase";
 
 const PreviousSong = () => {
   const { roomId } = useParams();
-  const { historyArray, round, setRound } = React.useContext(GameRoomContext);
+  const { historyArray, round, setRound, setRoomId } = React.useContext(
+    GameRoomContext
+  );
 
   React.useEffect(() => {
-    const roundRef = firebase.database().ref(`Rooms/${roomId}/round`);
-    roundRef.on("value", (snapshot) => {
-      setRound(snapshot.val());
-    });
-
-    return () => {
-      roundRef.off();
-    };
+    setRoomId(roomId);
   }, [roomId]);
 
   return (

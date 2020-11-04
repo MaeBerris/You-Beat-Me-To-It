@@ -32,40 +32,45 @@ const shortUuidCreator = () => {
 };
 
 const createRoom = (req, res) => {
-  const { nickName } = req.body;
-  const host = {
-    playerId: shortUuidCreator(),
-    role: "host",
-    nickName: nickName,
-    artist: false,
-    songName: false,
-    points: 0,
-  };
-  // const RoomId = shortUuidCreator();
-  const RoomId = "room1";
+  try {
+    const { nickName } = req.body;
+    const host = {
+      playerId: shortUuidCreator(),
+      role: "host",
+      nickName: nickName,
+      artist: false,
+      songName: false,
+      points: 0,
+    };
+    // const RoomId = shortUuidCreator();
+    const RoomId = "room1";
 
-  const roomInfo = {
-    roomId: RoomId,
-    roomLocation: "lobby",
-    phase: "loading",
-    round: 0,
-    players: { [`${host.playerId}`]: host },
-    selectedPlaylist: false,
-    playlist: false,
-    playedTracks: [false],
-    currentTrack: {
-      timeStamp: false,
-      trackInfo: false,
-      correctGuesses: { userId: "guess" },
-    },
-  };
+    const roomInfo = {
+      roomId: RoomId,
+      roomLocation: "lobby",
+      phase: "loading",
+      round: 0,
+      players: { [`${host.playerId}`]: host },
+      selectedPlaylist: false,
+      playlist: false,
+      playedTracks: [false],
+      currentTrack: {
+        timeStamp: false,
+        trackInfo: false,
+        correctGuesses: { userId: "guess" },
+      },
+    };
 
-  const RoomKey = db.ref(`Rooms/${RoomId}`);
-  RoomKey.set(roomInfo).then(() => {
-    res
-      .status(201)
-      .json({ message: "success", userInfo: host, roomInfo: roomInfo });
-  });
+    const RoomKey = db.ref(`Rooms/${RoomId}`);
+    RoomKey.set(roomInfo).then(() => {
+      res
+        .status(201)
+        .json({ message: "success", userInfo: host, roomInfo: roomInfo });
+    });
+  } catch (error) {
+    console.log("error:", error);
+    res.status(500).json({ message: "error", error: error });
+  }
 };
 
 const searchPlaylist = (req, res) => {

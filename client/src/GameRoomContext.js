@@ -1,4 +1,5 @@
 import React from "react";
+import * as firebase from "firebase";
 
 export const GameRoomContext = React.createContext(null);
 
@@ -9,8 +10,21 @@ const GameRoomContextProvider = ({ children }) => {
   const [historyArray, setHistoryArray] = React.useState([]);
   const [result, setResult] = React.useState(null);
   const [round, setRound] = React.useState(0);
+  const [roomId, setRoomId] = React.useState(null);
 
   console.log("inContextPhase", gamePhase);
+
+  React.useEffect(() => {
+    const roundRef = firebase.database().ref(`Rooms/${roomId}/round`);
+    roundRef.on("value", (snapshot) => {
+      setRound(snapshot.val());
+    });
+
+    return () => {
+      const roundRef = firebase.database().ref(`Rooms/${roomId}/round`);
+      roundRef.off();
+    };
+  }, [roomId]);
 
   React.useEffect(() => {
     if (trackInfo) {
@@ -33,6 +47,7 @@ const GameRoomContextProvider = ({ children }) => {
         setHistoryArray,
         round,
         setRound,
+        setRoomId,
       }}
     >
       {children}
