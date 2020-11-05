@@ -1,30 +1,23 @@
 import React from "react";
+import COLORS from "../../COLORS";
 import styled, { keyframes } from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 import { GameRoomContext } from "../../GameRoomContext";
 import { useParams } from "react-router-dom";
-import * as firebase from "firebase";
 
 const PreviousSong = () => {
   const { roomId } = useParams();
-  const { historyArray } = React.useContext(GameRoomContext);
-  const [round, setRound] = React.useState(0);
+  const { historyArray, round, setRoomId } = React.useContext(GameRoomContext);
 
   React.useEffect(() => {
-    const roundRef = firebase.database().ref(`Rooms/${roomId}/round`);
-    roundRef.on("value", (snapshot) => {
-      setRound(snapshot.val());
-    });
-
-    return () => {
-      roundRef.off();
-    };
+    setRoomId(roomId);
   }, [roomId]);
 
   return (
     <Wrapper>
       <GenericLabel>Previous Songs:</GenericLabel>
       <SongListWrapper>
+        <RoundCounter>Round: {round < 10 ? round + 1 : round}/10</RoundCounter>
         {historyArray
           .map((song, index) => {
             if (index < round) {
@@ -74,6 +67,13 @@ const SongListWrapper = styled.div`
   min-height: 100px;
   background: white;
   transition: 500ms;
+`;
+
+const RoundCounter = styled.div`
+  width: 100%;
+  border-bottom: 1px solid ${COLORS.midnight};
+  font-size: 20px;
+  margin-bottom: 5px;
 `;
 
 const SongInfoWrapper = styled.div`

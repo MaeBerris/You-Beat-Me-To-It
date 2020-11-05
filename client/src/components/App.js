@@ -1,13 +1,11 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
 import Background from "./Background/Background";
 import Header from "./Header/Header";
 import SignIn from "./SignIn/SignIn";
 import HostHandler from "./SignIn/HostHandler";
-import PlayerHandler from "./SignIn/PlayerHandler";
-import HostLobby from "./Lobby/HostLobby";
-import GameRoom from "./GameRoom/GameRoom";
+import LobbyWrapper from "./Lobby/LobbyWrapper";
+import GameRoomWrapper from "./GameRoom/GameRoomWrapper";
 import GlobalStyles from "../GlobalStyles";
 import { CurrentUserContext } from "../CurrentUserContext";
 import { LobbyContext } from "../LobbyContext";
@@ -45,17 +43,10 @@ const App = () => {
             />
           </Route>
           <Route path="/lobby/:roomId">
-            {currentUser ? (
-              <HostLobby />
-            ) : (
-              <SignIn
-                buttonHandler={PlayerHandler}
-                buttonMessage="Join your friends game !"
-              />
-            )}
+            <LobbyWrapper />
           </Route>
           <Route path="/gameroom/:roomId">
-            <GameRoom />
+            <GameRoomWrapper />
           </Route>
         </Switch>
         <GlobalStyles />

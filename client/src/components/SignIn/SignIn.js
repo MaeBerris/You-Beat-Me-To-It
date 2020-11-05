@@ -2,11 +2,13 @@ import React from "react";
 import styled from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 import Button from "../Button/Button";
+import Spinner from "../Spinner/Spinner";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useHistory, useParams } from "react-router-dom";
 
 const SignInHost = ({ buttonHandler, buttonMessage }) => {
   const [nickName, setNickName] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
   const { setCurrentUser } = React.useContext(CurrentUserContext);
   const history = useHistory();
   const { roomId } = useParams();
@@ -15,6 +17,18 @@ const SignInHost = ({ buttonHandler, buttonMessage }) => {
       <GenericLabel>Nickname:</GenericLabel>
       <Input
         value={nickName}
+        onKeyDown={(ev) => {
+          if (ev.key === "Enter" && nickName.length >= 1 && !loading) {
+            setLoading(true);
+            buttonHandler({
+              nickName,
+              setNickName,
+              setCurrentUser,
+              history,
+              roomId,
+            });
+          }
+        }}
         onChange={(ev) => {
           if (ev.target.value.length > 30) {
           } else {
@@ -23,17 +37,19 @@ const SignInHost = ({ buttonHandler, buttonMessage }) => {
         }}
       />
       <Button
-        handler={() =>
+        disabled={nickName.length < 1 || loading}
+        handler={() => {
+          setLoading(true);
           buttonHandler({
             nickName,
             setNickName,
             setCurrentUser,
             history,
             roomId,
-          })
-        }
+          });
+        }}
       >
-        {buttonMessage}
+        {loading ? <Spinner /> : buttonMessage}
       </Button>
     </Wrapper>
   );
@@ -56,6 +72,11 @@ const Input = styled.input`
   text-align: center;
   font-size: 40px;
   margin-bottom: 15px;
+
+  :focus {
+    outline: none;
+    box-shadow: 0 0 5px black;
+  }
 `;
 
 export default SignInHost;

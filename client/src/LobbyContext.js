@@ -1,5 +1,6 @@
 import React from "react";
-
+import { useParams, useHistory } from "react-router-dom";
+import * as firebase from "firebase";
 export const LobbyContext = React.createContext(null);
 
 const initialState = {
@@ -31,6 +32,22 @@ function Reducer(state, action) {
 const LobbyContextProvider = ({ children }) => {
   const [playlistState, dispatch] = React.useReducer(Reducer, initialState);
   const [roomId, setRoomId] = React.useState(null);
+  const [location, setLocation] = React.useState("lobby");
+
+  React.useEffect(() => {
+    const roomLocationRef = firebase
+      .database()
+      .ref(`Rooms/${roomId}/roomLocation`);
+
+    roomLocationRef.on("value", (snapshot) => {
+      let locationFromDatabase = snapshot.val();
+
+      setLocation(locationFromDatabase);
+    });
+    return () => {
+      roomLocationRef.off();
+    };
+  }, [roomId, location]);
 
   const startSearch = () => {
     dispatch({ type: "start-search" });
@@ -57,6 +74,7 @@ const LobbyContextProvider = ({ children }) => {
         deletePlaylist,
         roomId,
         setRoomId,
+        location,
       }}
     >
       {children}

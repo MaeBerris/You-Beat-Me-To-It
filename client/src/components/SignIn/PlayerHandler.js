@@ -5,11 +5,10 @@ const PlayerHandler = ({
   history,
   roomId,
 }) => {
-  fetch("/createUser", {
+  fetch(`/${roomId}/createUser`, {
     method: "POST",
     body: JSON.stringify({
       nickName: nickName,
-      roomId: roomId,
     }),
     headers: {
       Accept: "application/json",

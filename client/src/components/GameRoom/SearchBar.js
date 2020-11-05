@@ -30,10 +30,10 @@ const SearchBar = () => {
   );
   const [searchTerm, setSearchTerm] = React.useState("");
   const [placeHolderText, setPlaceHolderText] = React.useState(
-    "Prepare for next song !"
+    "Prepare for your first song !"
   );
 
-  const { gamePhase, result, setResult, trackInfo } = React.useContext(
+  const { gamePhase, result, setResult, trackInfo, round } = React.useContext(
     GameRoomContext
   );
 
@@ -42,12 +42,21 @@ const SearchBar = () => {
       setCorrectGuess({ artist: false, songName: false });
       setResult(null);
       setSearchTerm("");
+
+      if (round === 10) {
+        setPlaceHolderText("Prepare for final ranking !");
+        return;
+      }
+      if (round === 0) {
+        setPlaceHolderText("Prepare for your first song !");
+        return;
+      }
       setPlaceHolderText("Prepare for next song !");
     }
     if (gamePhase === "playing") {
       setPlaceHolderText("Guess the song and the artist !");
     }
-  }, [gamePhase]);
+  }, [gamePhase, round]);
 
   React.useEffect(() => {
     if (result === "success") {

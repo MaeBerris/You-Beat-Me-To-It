@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
+import ProgressBar from "./ProgressBar";
 import Cassette from "./Cassette";
 import SearchBar from "./SearchBar";
 import PreviousSong from "./PreviousSongs";
@@ -16,8 +17,8 @@ const GameRoom = () => {
     setTrackUrl,
     gamePhase,
     setGamePhase,
-    trackInfo,
     setTrackInfo,
+    round,
   } = React.useContext(GameRoomContext);
   const { currentUser } = React.useContext(CurrentUserContext);
   const [time, setTime] = React.useState(5);
@@ -30,6 +31,7 @@ const GameRoom = () => {
         setTime(time - 1);
       }
     }, 1000);
+
     //Host updates the phase when the host timer reaches 0
     if (time === 0 && gamePhase === "loading" && currentUser.role === "host") {
       fetch("/updatePhase", {
@@ -79,10 +81,18 @@ const GameRoom = () => {
     gamePhaseRef.on("value", (snapshot) => {
       let phase = snapshot.val();
       if (phase === "playing") {
+        if (round > 9) {
+          setGamePhase(phase);
+          return;
+        }
         setTime(30);
+        audioRef.current.play();
+        console.log("playtrack");
       }
       if (phase === "loading") {
         setTime(5);
+        audioRef.current.pause();
+        console.log("stopTrack");
       }
       setGamePhase(phase);
     });
@@ -90,7 +100,7 @@ const GameRoom = () => {
       const gamePhaseRef = firebase.database().ref(`Rooms/${roomId}/phase`);
       gamePhaseRef.off();
     };
-  }, [roomId]);
+  }, [roomId, round]);
 
   //This updates the current song during the loading stage
   React.useEffect(() => {
@@ -113,16 +123,16 @@ const GameRoom = () => {
   }, [gamePhase]);
 
   //This starts and stops the track
-  React.useEffect(() => {
-    if (trackUrl !== null && gamePhase === "playing") {
-      setTime(30);
-      audioRef.current.play();
-    }
-    if (trackUrl !== null && gamePhase === "loading") {
-      setTime(5);
-      audioRef.current.pause();
-    }
-  }, [trackUrl, gamePhase]);
+  // React.useEffect(() => {
+  //   if (trackUrl !== null && gamePhase === "playing") {
+  //     console.log("playTrack");
+  //     audioRef.current.play();
+  //   }
+  //   if (trackUrl !== null && gamePhase === "loading") {
+  //     console.log("stoptrack");
+  //     audioRef.current.pause();
+  //   }
+  // }, [trackUrl, gamePhase]);
 
   //this gets the current track info
   React.useEffect(() => {
@@ -135,6 +145,10 @@ const GameRoom = () => {
       setTrackInfo(currentTrackInfo);
       setTrackUrl(currentTrackInfo.preview);
     });
+
+    return () => {
+      currentTrackInfo.off();
+    };
   }, [roomId]);
 
   return (
@@ -143,6 +157,7 @@ const GameRoom = () => {
         I'm sorry, your browser doesn't supper audio
       </Player>
       <SearchBar />
+      <ProgressBar />
       <Cassette time={time}></Cassette>
       <BottomSection>
         <PreviousSong />

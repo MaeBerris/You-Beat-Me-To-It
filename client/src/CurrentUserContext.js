@@ -1,5 +1,4 @@
 import React from "react";
-import { useParams, useLocation } from "react-router-dom";
 import * as firebase from "firebase";
 
 export const CurrentUserContext = React.createContext(null);
@@ -13,6 +12,7 @@ const CurrentUserContextProvider = ({ children }) => {
     songName: false,
     time: null,
   });
+  const [currentTrackGuesses, setCurrentTrackGuesses] = React.useState({});
 
   React.useEffect(() => {
     if (currentRoomId) {
@@ -21,13 +21,25 @@ const CurrentUserContextProvider = ({ children }) => {
         .ref(`Rooms/${currentRoomId}/players`);
       PlayersRef.on("value", (snapshot) => {
         const players = snapshot.val();
-        const SortedArray = Object.values(players).sort((a, b) => {
-          return a.points - b.points;
-        });
-        setUsersList(SortedArray);
+        if (players) {
+          const SortedArray = Object.values(players).sort((a, b) => {
+            return b.points - a.points;
+          });
+          setUsersList(SortedArray);
+        }
       });
     }
   }, [setUsersList, currentRoomId]);
+
+  React.useEffect(() => {
+    const currentGuessesRef = firebase
+      .database()
+      .ref(`Rooms/${currentRoomId}/currentTrack/correctGuesses`);
+
+    currentGuessesRef.on("value", (snapshot) => {
+      setCurrentTrackGuesses(snapshot.val());
+    });
+  }, [currentRoomId]);
 
   return (
     <CurrentUserContext.Provider
@@ -39,6 +51,7 @@ const CurrentUserContextProvider = ({ children }) => {
         correctGuess,
         setCorrectGuess,
         setCurrentRoomId,
+        currentTrackGuesses,
       }}
     >
       {children}

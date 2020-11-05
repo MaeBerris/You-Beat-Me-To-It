@@ -1,4 +1,5 @@
 import React from "react";
+import * as firebase from "firebase";
 
 export const GameRoomContext = React.createContext(null);
 
@@ -8,7 +9,22 @@ const GameRoomContextProvider = ({ children }) => {
   const [trackInfo, setTrackInfo] = React.useState(null);
   const [historyArray, setHistoryArray] = React.useState([]);
   const [result, setResult] = React.useState(null);
-  console.log("inContext", gamePhase);
+  const [round, setRound] = React.useState(0);
+  const [roomId, setRoomId] = React.useState(null);
+
+  console.log("inContextPhase", gamePhase);
+
+  React.useEffect(() => {
+    const roundRef = firebase.database().ref(`Rooms/${roomId}/round`);
+    roundRef.on("value", (snapshot) => {
+      setRound(snapshot.val());
+    });
+
+    return () => {
+      const roundRef = firebase.database().ref(`Rooms/${roomId}/round`);
+      roundRef.off();
+    };
+  }, [roomId]);
 
   React.useEffect(() => {
     if (trackInfo) {
@@ -16,7 +32,6 @@ const GameRoomContextProvider = ({ children }) => {
     }
   }, [trackInfo]);
 
-  console.log("hissstorrry", historyArray);
   return (
     <GameRoomContext.Provider
       value={{
@@ -29,6 +44,10 @@ const GameRoomContextProvider = ({ children }) => {
         result,
         setResult,
         historyArray,
+        setHistoryArray,
+        round,
+        setRound,
+        setRoomId,
       }}
     >
       {children}

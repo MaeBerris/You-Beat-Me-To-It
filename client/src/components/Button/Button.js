@@ -2,8 +2,12 @@ import React from "react";
 import styled from "styled-components";
 import COLORS from "../../COLORS";
 
-const Button = ({ children, handler }) => {
-  return <StyledButton onClick={handler}>{children}</StyledButton>;
+const Button = ({ children, handler, disabled }) => {
+  return (
+    <StyledButton onClick={handler} disabled={disabled}>
+      {children}
+    </StyledButton>
+  );
 };
 
 export default Button;
@@ -22,4 +26,9 @@ const StyledButton = styled.button`
     ${COLORS.tertiary},
     ${COLORS.secondary}
   );
+  backdrop-filter: none;
+
+  :hover {
+    filter: saturate(150%);
+  }
 `;

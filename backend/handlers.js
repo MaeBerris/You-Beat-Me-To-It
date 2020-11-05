@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const fetch = require("node-fetch");
 
 const admin = require("firebase-admin");
-const { calculateDistance } = require("./LevenTest");
+
 const { scoreHelper } = require("./scoreHelper");
 require("dotenv").config();
 
@@ -32,40 +32,45 @@ const shortUuidCreator = () => {
 };
 
 const createRoom = (req, res) => {
-  const { nickName } = req.body;
-  const host = {
-    playerId: shortUuidCreator(),
-    role: "host",
-    nickName: nickName,
-    artist: false,
-    songName: false,
-    points: 0,
-  };
-  // const RoomId = shortUuidCreator();
-  const RoomId = "room1";
+  try {
+    const { nickName } = req.body;
+    const host = {
+      playerId: shortUuidCreator(),
+      role: "host",
+      nickName: nickName,
+      artist: false,
+      songName: false,
+      points: 0,
+    };
+    // const RoomId = shortUuidCreator();
+    const RoomId = "room1";
 
-  const roomInfo = {
-    roomId: RoomId,
-    roomLocation: "lobby",
-    phase: "loading",
-    round: 0,
-    players: { [`${host.playerId}`]: host },
-    selectedPlaylist: false,
-    playlist: false,
-    playedTracks: [false],
-    currentTrack: {
-      timeStamp: false,
-      trackInfo: false,
-      correctGuesses: { userId: "guess" },
-    },
-  };
+    const roomInfo = {
+      roomId: RoomId,
+      roomLocation: "lobby",
+      phase: "loading",
+      round: 0,
+      players: { [`${host.playerId}`]: host },
+      selectedPlaylist: false,
+      playlist: false,
+      playedTracks: [false],
+      currentTrack: {
+        timeStamp: false,
+        trackInfo: false,
+        correctGuesses: { userId: "guess" },
+      },
+    };
 
-  const RoomKey = db.ref(`Rooms/${RoomId}`);
-  RoomKey.set(roomInfo).then(() => {
-    res
-      .status(201)
-      .json({ message: "success", userInfo: host, roomInfo: roomInfo });
-  });
+    const RoomKey = db.ref(`Rooms/${RoomId}`);
+    RoomKey.set(roomInfo).then(() => {
+      res
+        .status(201)
+        .json({ message: "success", userInfo: host, roomInfo: roomInfo });
+    });
+  } catch (error) {
+    console.log("error:", error);
+    res.status(500).json({ message: "error", error: error });
+  }
 };
 
 const searchPlaylist = (req, res) => {
@@ -85,7 +90,9 @@ const searchPlaylist = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { nickName, roomId } = req.body;
+  const { nickName } = req.body;
+  const { roomId } = req.params;
+
   const player = {
     playerId: shortUuidCreator(),
     role: "player",
@@ -179,6 +186,14 @@ const findUser = async (playerId, roomId) => {
 const unload = async (req, res) => {
   const parsedData = JSON.parse(req.body);
   const { currentUser, roomId } = parsedData;
+  const index = await findUser(currentUser.playerId, roomId);
+  const userRef = db.ref(`/Rooms/${roomId}/players/${index}`);
+  userRef.remove().then(res.status(200).json({ message: "unload" }));
+};
+
+const deleteUser = async (req, res) => {
+  const { currentUser, roomId } = req.body;
+  console.log(currentUser);
   const index = await findUser(currentUser.playerId, roomId);
   const userRef = db.ref(`/Rooms/${roomId}/players/${index}`);
   userRef.remove().then(res.status(200).json({ message: "unload" }));
@@ -351,6 +366,69 @@ const updateRound = async (req, res) => {
   );
 };
 
+const lobbyReset = async (req, res) => {
+  const { roomId } = req.params;
+  const RoomRef = db.ref(`Rooms/${roomId}`);
+  const playersRef = db.ref(`Rooms/${roomId}/players`);
+  let playersObject;
+  await playersRef.once("value", (snapshot) => {
+    playersObject = snapshot.val();
+  });
+
+  await Object.keys(playersObject).forEach((key) => {
+    playersRef.update({
+      [`${key}`]: { ...playersObject[`${key}`], points: 0 },
+    });
+  });
+  const roomInfo = {
+    roomLocation: "lobby",
+    phase: "loading",
+    round: 0,
+    selectedPlaylist: false,
+    playlist: false,
+    playedTracks: [false],
+    currentTrack: {
+      timeStamp: false,
+      trackInfo: false,
+      correctGuesses: { userId: "guess" },
+    },
+  };
+
+  RoomRef.update(roomInfo).then(
+    res.status(200).json({ message: "reset room" })
+  );
+};
+
+const gameReset = async (req, res) => {
+  const { roomId } = req.params;
+  const RoomRef = db.ref(`Rooms/${roomId}`);
+  const playersRef = db.ref(`Rooms/${roomId}/players`);
+  let playersObject;
+  await playersRef.once("value", (snapshot) => {
+    playersObject = snapshot.val();
+  });
+
+  await Object.keys(playersObject).forEach((key) => {
+    playersRef.update({
+      [`${key}`]: { ...playersObject[`${key}`], points: 0 },
+    });
+  });
+  const roomInfo = {
+    phase: "loading",
+    round: 0,
+    playedTracks: [false],
+    currentTrack: {
+      timeStamp: false,
+      trackInfo: false,
+      correctGuesses: { userId: "guess" },
+    },
+  };
+
+  RoomRef.update(roomInfo).then(
+    res.status(200).json({ message: "reset room" })
+  );
+};
+
 module.exports = {
   createRoom,
   searchPlaylist,
@@ -362,149 +440,7 @@ module.exports = {
   updatePhase,
   validateAnswer,
   updateRound,
-};
-
-// const queryDatabase = async (key) => {
-//   const ref = db.ref(key);
-//   let data;
-//   await ref.once(
-//     "value",
-//     (snapshot) => {
-//       data = snapshot.val();
-//     },
-//     (err) => {
-//       console.log(err);
-//     }
-//   );
-
-//   return data;
-// };
-// const getUser = async (email) => {
-//   const data = (await queryDatabase("appUsers")) || {};
-//   console.log("data", data);
-
-//   const dataValue = Object.keys(data)
-//     .map((item) => data[item])
-//     .find((obj) => obj.email === email);
-
-//   return dataValue || false;
-// };
-
-// const startLoop = (req, res) => {
-//   const { roomId } = req.query;
-//   const RoomRef = db.ref(`Rooms/${roomId}`);
-//   let phase = "loading";
-//   let firstPass = true;
-//   let time = 0;
-//   let round = 1;
-//   setInterval(() => {
-//     // console.log(time);
-//     if (time % 1000 === 0) {
-//       console.log(time / 1000);
-//     }
-
-//     let isGameOver = round > 5;
-//     if (isGameOver) {
-//       RoomRef.update({ phase: "gameOver" });
-//       phase = "gameOver";
-//     }
-//     if (phase === "loading" && firstPass === true) {
-//       //at the end of the loading phase, start the playPhase
-//       console.log("loading");
-//       let gamePhaseTimeout = setTimeout(() => {
-//         RoomRef.update({ phase: "play" });
-//         phase = "play";
-//         firstPass = true;
-//       }, 5000);
-//       firstPass = false;
-//     }
-//     if (phase === "play" && firstPass === true) {
-//       //at the end of the play phase, start loading phase
-//       console.log("playing");
-//       let playTimeout = setTimeout(() => {
-//         RoomRef.update({ phase: "loading" });
-//         phase = "loading";
-//         firstPass = true;
-//         round = round + 1;
-//       }, 5000);
-//       firstPass = false;
-//     }
-//     if (phase === "gameOver" && firstPass === true) {
-//       console.log("gameOver");
-//       let gameOverTimeout = setTimeout(() => {
-//         RoomRef.update({ phase: "loading" });
-//         phase = "loading";
-//         round = 1;
-//         firstPass = true;
-//       }, 5000);
-//       firstPass = false;
-//     }
-//     time = time + 100;
-//   }, 100);
-
-//   res.status(200).json("gameLoop Started");
-// };
-
-// React.useEffect(() => {
-//   const gamePhaseRef = db.ref("Rooms/RoomId/phase");
-//   gamePhaseRef.on("value", (snapshot) => {
-//     const gamePhase = snapshot.val();
-//     setGamePhase(gamePhase);
-//   });
-
-//   if (gamePhase === "loading") {
-//     fetch(`/getCurrentSong/${gameRoomId}`).then(setCurrentSong(RESPONSE));
-//     setTimer(5000);
-//   }
-
-//   if (gamePhase === "play") {
-//     deezerPlayer.play(currentSong);
-//     setTimer(30000);
-//   }
-//   if (gamePhase === "gameOver") {
-//     setTimer(5000);
-//     setDisplayPodium(true);
-//   }
-// }, [setGamePhase, gamePhase]);
-
-const dataStructure = {
-  Rooms: {
-    //RoomUuid
-    "abcd-345": {
-      roomId: "abcd-345",
-      roomLocation: "gameRoom",
-      phase: "play",
-      players: [
-        {
-          playerId: "q234",
-          role: "host",
-          userName: "PetitePoire",
-          points: 300,
-        },
-        {
-          playerId: "23po",
-          role: "player",
-          userName: "LucyTheWinner",
-          points: 5500,
-        },
-      ],
-      selectedPlaylistId: "123456",
-      playlist: {
-        //...deezerData
-      },
-      currentTrack: {
-        trackId: "2045",
-        trackTitle: "She Loves You",
-        artist: "The Beatles",
-        correctGuesses: [
-          {
-            playerId: "q234",
-            userName: "PetitePoire",
-            pointsAwarded: 300,
-            time: 23.52,
-          },
-        ],
-      },
-    },
-  },
+  lobbyReset,
+  gameReset,
+  deleteUser,
 };
