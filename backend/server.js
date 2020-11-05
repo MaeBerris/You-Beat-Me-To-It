@@ -15,6 +15,7 @@ const {
   updateRound,
   lobbyReset,
   gameReset,
+  deleteUser,
 } = require("./handlers");
 
 require("dotenv").config();
@@ -44,7 +45,9 @@ express()
   .post("/:roomId/createUser", createUser)
   .put("/updatePlaylist", updatePlaylist)
   .put("/validatePlaylist", validatePlaylist)
+
   .post("/unload", unload)
+  .delete("/deleteUser", deleteUser)
   .put("/updateCurrentTrack", updateCurrentTrack)
   .put("/updatePhase", updatePhase)
   .patch("/validateAnswer", validateAnswer)

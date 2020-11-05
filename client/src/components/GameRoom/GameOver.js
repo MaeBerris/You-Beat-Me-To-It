@@ -78,40 +78,47 @@ const GameOverScreen = () => {
           );
         })}
       </UsersListWrapper>
-      <ButtonsWrapper>
-        <Button
-          handler={() => {
-            fetch(`/${roomId}/lobbyReset`, {
-              method: "GET",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-              },
-            })
-              .then((res) => res.json())
-              .then((data) => console.log(data))
-              .catch((err) => console.log(err));
-          }}
-        >
-          Return to Lobby
-        </Button>
-        <Button
-          handler={() => {
-            fetch(`/${roomId}/GameReset`, {
-              method: "GET",
-              headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-              },
-            })
-              .then((res) => res.json())
-              .then((data) => console.log(data))
-              .catch((err) => console.log(err));
-          }}
-        >
-          Restart Game
-        </Button>
-      </ButtonsWrapper>
+      {currentUser.role === "host" ? (
+        <ButtonsWrapper>
+          <Button
+            handler={() => {
+              fetch(`/${roomId}/lobbyReset`, {
+                method: "GET",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+              })
+                .then((res) => res.json())
+                .then((data) => console.log(data))
+                .catch((err) => console.log(err));
+            }}
+          >
+            Return to Lobby
+          </Button>
+          <Button
+            handler={() => {
+              fetch(`/${roomId}/GameReset`, {
+                method: "GET",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+              })
+                .then((res) => res.json())
+                .then((data) => console.log(data))
+                .catch((err) => console.log(err));
+            }}
+          >
+            Restart Game
+          </Button>
+        </ButtonsWrapper>
+      ) : (
+        <Title>
+          Plase wait for the host to choose to return to the lobby or to restart
+          game.
+        </Title>
+      )}
     </Wrapper>
   );
 };

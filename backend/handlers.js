@@ -191,6 +191,13 @@ const unload = async (req, res) => {
   userRef.remove().then(res.status(200).json({ message: "unload" }));
 };
 
+const deleteUser = async (req, res) => {
+  const { currentUser, roomId } = req.body;
+  const index = await findUser(currentUser.playerId, roomId);
+  const userRef = db.ref(`/Rooms/${roomId}/players/${index}`);
+  userRef.remove().then(res.status(200).json({ message: "unload" }));
+};
+
 const randomUnplayedTrackNumber = async (roomId, playlist) => {
   const playedTracks = db.ref(`/Rooms/${roomId}/playedTracks`);
   let tracksArray;
@@ -434,4 +441,5 @@ module.exports = {
   updateRound,
   lobbyReset,
   gameReset,
+  deleteUser,
 };

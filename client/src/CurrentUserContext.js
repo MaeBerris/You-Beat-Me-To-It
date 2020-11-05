@@ -21,10 +21,12 @@ const CurrentUserContextProvider = ({ children }) => {
         .ref(`Rooms/${currentRoomId}/players`);
       PlayersRef.on("value", (snapshot) => {
         const players = snapshot.val();
-        const SortedArray = Object.values(players).sort((a, b) => {
-          return b.points - a.points;
-        });
-        setUsersList(SortedArray);
+        if (players) {
+          const SortedArray = Object.values(players).sort((a, b) => {
+            return b.points - a.points;
+          });
+          setUsersList(SortedArray);
+        }
       });
     }
   }, [setUsersList, currentRoomId]);

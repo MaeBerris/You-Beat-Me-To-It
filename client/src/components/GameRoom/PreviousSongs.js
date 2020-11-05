@@ -17,7 +17,7 @@ const PreviousSong = () => {
     <Wrapper>
       <GenericLabel>Previous Songs:</GenericLabel>
       <SongListWrapper>
-        <RoundCounter>Round: {round < 9 ? round + 1 : round}/10</RoundCounter>
+        <RoundCounter>Round: {round < 10 ? round + 1 : round}/10</RoundCounter>
         {historyArray
           .map((song, index) => {
             if (index < round) {
