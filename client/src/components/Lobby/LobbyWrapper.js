@@ -5,12 +5,28 @@ import { LobbyContext } from "../../LobbyContext";
 import PlayerHandler from "../SignIn/PlayerHandler";
 import SignIn from "../SignIn/SignIn";
 import HostLobby from "../Lobby/HostLobby";
+import FourOFour from "../FourOFour/FourOFour";
+import * as firebase from "firebase";
 
 const LobbyWrapper = () => {
   const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
-  const { setRoomId } = React.useContext(LobbyContext);
+  const {
+    setRoomId,
+    roomExists,
+    roomIdState,
+    setRoomExists,
+  } = React.useContext(LobbyContext);
+
   const { roomId } = useParams();
   const history = useHistory();
+
+  React.useEffect(() => {
+    const roomRef = firebase.database().ref(`Rooms/${roomId}`);
+
+    roomRef.on("value", (snapshot) => {
+      setRoomExists(snapshot.exists());
+    });
+  }, [roomId]);
 
   React.useEffect(() => {
     setRoomId(roomId);
@@ -22,7 +38,10 @@ const LobbyWrapper = () => {
     return () => {
       console.log(history.action);
       if (history.action === "POP")
-        if (window.confirm("do you really want to leave ?")) {
+        if (
+          window.confirm("do you really want to leave ?") &&
+          currentUser !== null
+        ) {
           setCurrentUser(null);
           fetch("/deleteUser", {
             method: "DELETE",
@@ -40,7 +59,12 @@ const LobbyWrapper = () => {
         }
     };
   }, [history]);
-  if (!currentUser) {
+
+  if (roomExists === false) {
+    return <FourOFour />;
+  }
+
+  if (!currentUser && roomExists === true) {
     return (
       <SignIn
         buttonHandler={PlayerHandler}
@@ -48,11 +72,7 @@ const LobbyWrapper = () => {
       />
     );
   }
-  return (
-    <>
-      <HostLobby />
-    </>
-  );
+  return <>{roomExists === true && <HostLobby />}</>;
 };
 
 export default LobbyWrapper;

@@ -31,13 +31,23 @@ function Reducer(state, action) {
 
 const LobbyContextProvider = ({ children }) => {
   const [playlistState, dispatch] = React.useReducer(Reducer, initialState);
-  const [roomId, setRoomId] = React.useState(null);
+  const [roomIdState, setRoomId] = React.useState(null);
   const [location, setLocation] = React.useState("lobby");
+  const [roomExists, setRoomExists] = React.useState(null);
+  console.log("roomexists", roomExists);
+
+  // React.useEffect(() => {
+  //   const roomRef = firebase.database().ref(`Rooms/${roomIdState}`);
+
+  //   roomRef.once("value", (snapshot) => {
+  //     setRoomExists(snapshot.exists());
+  //   });
+  // }, [roomIdState]);
 
   React.useEffect(() => {
     const roomLocationRef = firebase
       .database()
-      .ref(`Rooms/${roomId}/roomLocation`);
+      .ref(`Rooms/${roomIdState}/roomLocation`);
 
     roomLocationRef.on("value", (snapshot) => {
       let locationFromDatabase = snapshot.val();
@@ -47,7 +57,7 @@ const LobbyContextProvider = ({ children }) => {
     return () => {
       roomLocationRef.off();
     };
-  }, [roomId, location]);
+  }, [roomIdState, location]);
 
   const startSearch = () => {
     dispatch({ type: "start-search" });
@@ -72,9 +82,11 @@ const LobbyContextProvider = ({ children }) => {
         receivePlaylists,
         selectPlaylist,
         deletePlaylist,
-        roomId,
+        roomIdState,
         setRoomId,
         location,
+        roomExists,
+        setRoomExists,
       }}
     >
       {children}

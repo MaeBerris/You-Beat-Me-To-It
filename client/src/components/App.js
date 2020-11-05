@@ -7,30 +7,8 @@ import HostHandler from "./SignIn/HostHandler";
 import LobbyWrapper from "./Lobby/LobbyWrapper";
 import GameRoomWrapper from "./GameRoom/GameRoomWrapper";
 import GlobalStyles from "../GlobalStyles";
-import { CurrentUserContext } from "../CurrentUserContext";
-import { LobbyContext } from "../LobbyContext";
 
 const App = () => {
-  const { currentUser } = React.useContext(CurrentUserContext);
-  const { roomId } = React.useContext(LobbyContext);
-
-  const unloadFunction = (e) => {
-    if (currentUser !== null) {
-      navigator.sendBeacon(
-        "/unload",
-        JSON.stringify({ currentUser: currentUser, roomId: roomId })
-      );
-    }
-  };
-
-  React.useEffect(() => {
-    window.addEventListener("beforeunload", unloadFunction, false);
-
-    return () => {
-      window.removeEventListener("beforeunload", unloadFunction);
-    };
-  }, [currentUser, roomId]);
-
   return (
     <Router>
       <Background>
