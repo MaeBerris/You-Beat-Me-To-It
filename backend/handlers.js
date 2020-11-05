@@ -193,6 +193,7 @@ const unload = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   const { currentUser, roomId } = req.body;
+  console.log(currentUser);
   const index = await findUser(currentUser.playerId, roomId);
   const userRef = db.ref(`/Rooms/${roomId}/players/${index}`);
   userRef.remove().then(res.status(200).json({ message: "unload" }));
