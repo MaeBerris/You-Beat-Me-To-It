@@ -10,21 +10,23 @@ const GameRoomContextProvider = ({ children }) => {
   const [historyArray, setHistoryArray] = React.useState([]);
   const [result, setResult] = React.useState(null);
   const [round, setRound] = React.useState(0);
-  const [roomId, setRoomId] = React.useState(null);
+  const [GameRoomId, setRoomId] = React.useState(null);
+  const [gameRoomExists, setGameRoomExists] = React.useState(undefined);
+  const [gameStarted, setGameStarted] = React.useState(false);
 
   console.log("inContextPhase", gamePhase);
 
   React.useEffect(() => {
-    const roundRef = firebase.database().ref(`Rooms/${roomId}/round`);
+    const roundRef = firebase.database().ref(`Rooms/${GameRoomId}/round`);
     roundRef.on("value", (snapshot) => {
       setRound(snapshot.val());
     });
 
     return () => {
-      const roundRef = firebase.database().ref(`Rooms/${roomId}/round`);
+      const roundRef = firebase.database().ref(`Rooms/${GameRoomId}/round`);
       roundRef.off();
     };
-  }, [roomId]);
+  }, [GameRoomId]);
 
   React.useEffect(() => {
     if (trackInfo) {
@@ -48,6 +50,10 @@ const GameRoomContextProvider = ({ children }) => {
         round,
         setRound,
         setRoomId,
+        gameRoomExists,
+        setGameRoomExists,
+        gameStarted,
+        setGameStarted,
       }}
     >
       {children}

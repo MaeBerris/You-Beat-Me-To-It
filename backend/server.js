@@ -8,7 +8,6 @@ const {
   createUser,
   updatePlaylist,
   validatePlaylist,
-  unload,
   updateCurrentTrack,
   updatePhase,
   validateAnswer,
@@ -45,8 +44,6 @@ express()
   .post("/:roomId/createUser", createUser)
   .put("/updatePlaylist", updatePlaylist)
   .put("/validatePlaylist", validatePlaylist)
-
-  .post("/unload", unload)
   .delete("/deleteUser", deleteUser)
   .put("/updateCurrentTrack", updateCurrentTrack)
   .put("/updatePhase", updatePhase)

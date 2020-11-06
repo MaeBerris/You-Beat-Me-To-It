@@ -10,12 +10,11 @@ import * as firebase from "firebase";
 
 const LobbyWrapper = () => {
   const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
-  const {
-    setRoomId,
-    roomExists,
-    roomIdState,
-    setRoomExists,
-  } = React.useContext(LobbyContext);
+  const { setRoomId, roomExists, setRoomExists, location } = React.useContext(
+    LobbyContext
+  );
+
+  console.log("currentUser", currentUser);
 
   const { roomId } = useParams();
   const history = useHistory();
@@ -37,7 +36,7 @@ const LobbyWrapper = () => {
 
     return () => {
       console.log(history.action);
-      if (history.action === "POP")
+      if (history.action === "POP" && location === "lobby")
         if (
           window.confirm("do you really want to leave ?") &&
           currentUser !== null
@@ -54,11 +53,12 @@ const LobbyWrapper = () => {
             .then((res) => res.json())
             .then((data) => console.log(data));
           return;
-        } else {
+        } else if (location === "lobby") {
+          console.log("history push from Lobby");
           history.push(`/lobby/${roomId}`);
         }
     };
-  }, [history]);
+  }, [history, location]);
 
   if (roomExists === false) {
     return <FourOFour />;

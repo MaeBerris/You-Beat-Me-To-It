@@ -7,6 +7,7 @@ import Users from "./Users";
 import SelectedPlaylistPlayer from "./SelectedPlaylistPlayer";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { LobbyContext } from "../../LobbyContext";
+import { GameRoomContext } from "../../GameRoomContext";
 import { useParams, useHistory } from "react-router-dom";
 import * as firebase from "firebase";
 
@@ -51,11 +52,12 @@ const validatePlaylist = async (roomId, playlist) => {
 const HostLobby = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
   const { playlistState, setRoomId, location } = React.useContext(LobbyContext);
+  const { gameStarted } = React.useContext(GameRoomContext);
   const { roomId } = useParams();
   const history = useHistory();
 
   React.useEffect(() => {
-    if (location === "gameRoom") {
+    if (location === "gameRoom" && gameStarted === false) {
       history.push(`/gameroom/${roomId}`);
     }
   }, [roomId, location]);
