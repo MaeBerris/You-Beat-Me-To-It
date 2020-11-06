@@ -18,16 +18,17 @@ const ProgressBar = () => {
   return (
     <Wrapper>
       <Bar gamePhase={gamePhase} ref={barRef}></Bar>
-      {Object.values(currentTrackGuesses).map((guess) => {
-        if (guess.artist && guess.songName) {
-          return (
-            <Guess position={calculateGuessPosition(guess.time)}>
-              {guess.nickName}
-              <Tip />
-            </Guess>
-          );
-        }
-      })}
+      {currentTrackGuesses &&
+        Object.values(currentTrackGuesses).map((guess) => {
+          if (guess.artist && guess.songName) {
+            return (
+              <Guess position={calculateGuessPosition(guess.time)}>
+                {guess.nickName}
+                <Tip />
+              </Guess>
+            );
+          }
+        })}
     </Wrapper>
   );
 };

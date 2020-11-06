@@ -141,9 +141,10 @@ const GameRoom = () => {
       .ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
     currentTrackInfo.on("value", (snapshot) => {
       let currentTrackInfo = snapshot.val();
-
-      setTrackInfo(currentTrackInfo);
-      setTrackUrl(currentTrackInfo.preview);
+      if (currentTrackInfo) {
+        setTrackInfo(currentTrackInfo);
+        setTrackUrl(currentTrackInfo.preview);
+      }
     });
 
     return () => {

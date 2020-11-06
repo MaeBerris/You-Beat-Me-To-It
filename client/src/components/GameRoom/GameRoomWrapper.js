@@ -18,6 +18,7 @@ const GameRoomWrapper = () => {
   const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
   const history = useHistory();
   const { roomId } = useParams();
+  console.log(gameRoomExists);
 
   React.useEffect(() => {
     const roomRef = firebase.database().ref(`Rooms/${roomId}`);
@@ -64,6 +65,10 @@ const GameRoomWrapper = () => {
 
   if (gameRoomExists === false) {
     return <FourOFour />;
+  }
+
+  if (!currentUser && gameRoomExists) {
+    return <div>game in progrss</div>;
   }
 
   if (round > 1 && gamePhase === "playing" && gameRoomExists === true) {
