@@ -7,6 +7,7 @@ import { CurrentUserContext } from "../../CurrentUserContext";
 import { useHistory, useParams } from "react-router-dom";
 
 const SignInHost = ({ buttonHandler, buttonMessage }) => {
+  console.log("inSignIn");
   const [nickName, setNickName] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const { setCurrentUser } = React.useContext(CurrentUserContext);

@@ -5,12 +5,27 @@ import { LobbyContext } from "../../LobbyContext";
 import PlayerHandler from "../SignIn/PlayerHandler";
 import SignIn from "../SignIn/SignIn";
 import HostLobby from "../Lobby/HostLobby";
+import FourOFour from "../FourOFour/FourOFour";
+import * as firebase from "firebase";
 
 const LobbyWrapper = () => {
   const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
-  const { setRoomId } = React.useContext(LobbyContext);
+  const { setRoomId, roomExists, setRoomExists, location } = React.useContext(
+    LobbyContext
+  );
+
+  console.log("currentUser", currentUser);
+
   const { roomId } = useParams();
   const history = useHistory();
+
+  React.useEffect(() => {
+    const roomRef = firebase.database().ref(`Rooms/${roomId}`);
+
+    roomRef.on("value", (snapshot) => {
+      setRoomExists(snapshot.exists());
+    });
+  }, [roomId]);
 
   React.useEffect(() => {
     setRoomId(roomId);
@@ -21,8 +36,11 @@ const LobbyWrapper = () => {
 
     return () => {
       console.log(history.action);
-      if (history.action === "POP")
-        if (window.confirm("do you really want to leave ?")) {
+      if (history.action === "POP" && location === "lobby")
+        if (
+          window.confirm("do you really want to leave ?") &&
+          currentUser !== null
+        ) {
           setCurrentUser(null);
           fetch("/deleteUser", {
             method: "DELETE",
@@ -35,12 +53,18 @@ const LobbyWrapper = () => {
             .then((res) => res.json())
             .then((data) => console.log(data));
           return;
-        } else {
+        } else if (location === "lobby") {
+          console.log("history push from Lobby");
           history.push(`/lobby/${roomId}`);
         }
     };
-  }, [history]);
-  if (!currentUser) {
+  }, [history, location]);
+
+  if (roomExists === false) {
+    return <FourOFour />;
+  }
+
+  if (!currentUser && roomExists === true) {
     return (
       <SignIn
         buttonHandler={PlayerHandler}
@@ -48,11 +72,7 @@ const LobbyWrapper = () => {
       />
     );
   }
-  return (
-    <>
-      <HostLobby />
-    </>
-  );
+  return <>{roomExists === true && <HostLobby />}</>;
 };
 
 export default LobbyWrapper;

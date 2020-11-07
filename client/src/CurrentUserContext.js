@@ -15,6 +15,16 @@ const CurrentUserContextProvider = ({ children }) => {
   const [currentTrackGuesses, setCurrentTrackGuesses] = React.useState({});
 
   React.useEffect(() => {
+    if (currentUser) {
+      const playerRef = firebase
+        .database()
+        .ref(`Rooms/${currentRoomId}/players/${currentUser.playerId}`);
+
+      playerRef.onDisconnect().remove();
+    }
+  }, [currentUser, currentRoomId]);
+
+  React.useEffect(() => {
     if (currentRoomId) {
       const PlayersRef = firebase
         .database()

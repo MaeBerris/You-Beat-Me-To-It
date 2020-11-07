@@ -161,41 +161,10 @@ const validatePlaylist = async (req, res) => {
   roomLocation.update({ roomLocation: "gameRoom" });
 };
 
-const findUser = async (playerId, roomId) => {
-  const playersRef = db.ref(`Rooms/${roomId}/players`);
-  let usersObject;
-  await playersRef.once(
-    "value",
-    (snapshot) => {
-      usersObject = snapshot.val();
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
-
-  let foundUserIndex;
-  const foundUser = Object.values(usersObject).find((item, index) => {
-    if (item.playerId === playerId) {
-      foundUserIndex = index;
-      return true;
-    }
-  });
-  return Object.keys(usersObject)[foundUserIndex];
-};
-const unload = async (req, res) => {
-  const parsedData = JSON.parse(req.body);
-  const { currentUser, roomId } = parsedData;
-  const index = await findUser(currentUser.playerId, roomId);
-  const userRef = db.ref(`/Rooms/${roomId}/players/${index}`);
-  userRef.remove().then(res.status(200).json({ message: "unload" }));
-};
-
 const deleteUser = async (req, res) => {
   const { currentUser, roomId } = req.body;
   console.log(currentUser);
-  const index = await findUser(currentUser.playerId, roomId);
-  const userRef = db.ref(`/Rooms/${roomId}/players/${index}`);
+  const userRef = db.ref(`/Rooms/${roomId}/players/${currentUser.playerId}`);
   userRef.remove().then(res.status(200).json({ message: "unload" }));
 };
 
@@ -435,7 +404,6 @@ module.exports = {
   createUser,
   updatePlaylist,
   validatePlaylist,
-  unload,
   updateCurrentTrack,
   updatePhase,
   validateAnswer,

@@ -71,13 +71,14 @@ const Ranking = () => {
                   </NameWrapper>
                   <CorrectGuessWrapper>
                     Guessed:{" "}
-                    {currentTrackGuesses[`${user.playerId}`] && (
-                      <span>
-                        {correctGuessOutput(
-                          currentTrackGuesses[`${user.playerId}`]
-                        )}
-                      </span>
-                    )}
+                    {currentTrackGuesses &&
+                      currentTrackGuesses[`${user.playerId}`] && (
+                        <span>
+                          {correctGuessOutput(
+                            currentTrackGuesses[`${user.playerId}`]
+                          )}
+                        </span>
+                      )}
                   </CorrectGuessWrapper>
                 </UserInfoWrapper>
               </InfoWrapper>
