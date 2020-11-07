@@ -12,13 +12,21 @@ import { FiVolume, FiVolumeX, FiVolume1, FiVolume2 } from "react-icons/fi";
 import Modal from "../Modal/Modal";
 
 const GameRoom = () => {
-  const { trackUrl, modal, time, audioRef } = React.useContext(GameRoomContext);
+  const { trackUrl, modal, time, audioRef, gamePhase } = React.useContext(
+    GameRoomContext
+  );
 
   const [volume, setVolume] = React.useState(0.5);
 
   React.useEffect(() => {
     audioRef.current.volume = volume;
   }, [audioRef, volume]);
+
+  React.useEffect(() => {
+    if (gamePhase === "playing") {
+      audioRef.current.play();
+    }
+  }, [gamePhase, audioRef]);
 
   console.log("modal", modal);
 
@@ -54,9 +62,6 @@ const GameRoom = () => {
         />
       </SlidderWrapper>
 
-      <Player src={trackUrl} ref={audioRef}>
-        I'm sorry, your browser doesn't support audio
-      </Player>
       <SearchBar />
       <ProgressBar />
       <Cassette time={time}></Cassette>
@@ -74,8 +79,6 @@ const Wrapper = styled.div`
   flex-direction: column;
   padding: 0 40px;
 `;
-
-const Player = styled.audio``;
 
 const BottomSection = styled.div`
   margin-top: 20px;
