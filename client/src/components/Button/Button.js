@@ -27,6 +27,7 @@ const StyledButton = styled.button`
     ${COLORS.secondary}
   );
   backdrop-filter: none;
+  transition: filter 0.3s;
 
   :hover {
     filter: saturate(150%);
