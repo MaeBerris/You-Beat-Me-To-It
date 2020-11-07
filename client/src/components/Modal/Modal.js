@@ -8,7 +8,7 @@ import { GameRoomContext } from "../../GameRoomContext";
 const Modal = () => {
   const history = useHistory();
   const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
-  const { setModal } = React.useContext(GameRoomContext);
+  const { setModal, audioRef } = React.useContext(GameRoomContext);
   const { roomId } = useParams();
   return (
     <Wrapper>
@@ -28,6 +28,7 @@ const Modal = () => {
               })
                 .then((res) => res.json())
                 .then((data) => {
+                  audioRef.current.pause();
                   history.push("/");
                   setCurrentUser(null);
                   console.log(data);

@@ -9,7 +9,7 @@ const ProgressBar = () => {
   const barRef = React.useRef(null);
 
   const calculateGuessPosition = (time) => {
-    if (barRef !== null) {
+    if (barRef !== null && barRef.current) {
       let position = (time * barRef.current.clientWidth) / 30;
       position.toFixed(0);
       return position;
@@ -19,10 +19,13 @@ const ProgressBar = () => {
     <Wrapper>
       <Bar gamePhase={gamePhase} ref={barRef}></Bar>
       {currentTrackGuesses &&
-        Object.values(currentTrackGuesses).map((guess) => {
+        Object.values(currentTrackGuesses).map((guess, index) => {
           if (guess.artist && guess.songName) {
             return (
-              <Guess position={calculateGuessPosition(guess.time)}>
+              <Guess
+                key={guess.nickName + index}
+                position={calculateGuessPosition(guess.time)}
+              >
                 {guess.nickName}
                 <Tip />
               </Guess>

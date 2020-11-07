@@ -22,12 +22,6 @@ const GameRoom = () => {
     audioRef.current.volume = volume;
   }, [audioRef, volume]);
 
-  React.useEffect(() => {
-    if (gamePhase === "playing") {
-      audioRef.current.play();
-    }
-  }, [gamePhase, audioRef]);
-
   console.log("modal", modal);
 
   return (
