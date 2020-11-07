@@ -14,11 +14,11 @@ const GameRoomWrapper = () => {
     gameRoomExists,
     setGameRoomExists,
     setGameStarted,
+    setModal,
   } = React.useContext(GameRoomContext);
   const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
   const history = useHistory();
   const { roomId } = useParams();
-  console.log(gameRoomExists);
 
   React.useEffect(() => {
     const roomRef = firebase.database().ref(`Rooms/${roomId}`);
@@ -32,30 +32,12 @@ const GameRoomWrapper = () => {
     console.log(history.action);
 
     return () => {
-      if (history.action === "POP")
-        if (
-          window.confirm("do you really want to leave ?") &&
-          currentUser !== null
-        ) {
-          setCurrentUser(null);
-
-          fetch("/deleteUser", {
-            method: "DELETE",
-            body: JSON.stringify({ currentUser, roomId }),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-            });
-          return;
-        } else {
-          console.log("cancel");
-          history.push(`/gameroom/${roomId}`);
-        }
+      if (history.action === "POP") {
+        console.log("return");
+        setModal(true);
+        console.log("cancel");
+        history.push(`/gameroom/${roomId}`);
+      }
     };
   }, [history]);
 

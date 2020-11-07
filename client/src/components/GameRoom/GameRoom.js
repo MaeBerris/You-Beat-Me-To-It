@@ -1,153 +1,30 @@
 import React from "react";
 import styled from "styled-components";
-import { useParams } from "react-router-dom";
 import { GameRoomContext } from "../../GameRoomContext";
-import { CurrentUserContext } from "../../CurrentUserContext";
+
 import ProgressBar from "./ProgressBar";
 import Cassette from "./Cassette";
 import SearchBar from "./SearchBar";
 import PreviousSong from "./PreviousSongs";
-import * as firebase from "firebase";
+
 import Ranking from "./Ranking";
 import { FiVolume, FiVolumeX, FiVolume1, FiVolume2 } from "react-icons/fi";
+import Modal from "../Modal/Modal";
 
 const GameRoom = () => {
-  const { roomId } = useParams();
-  const {
-    trackUrl,
-    setTrackUrl,
-    gamePhase,
-    setGamePhase,
-    setTrackInfo,
-    round,
-  } = React.useContext(GameRoomContext);
-  const { currentUser } = React.useContext(CurrentUserContext);
-  const [time, setTime] = React.useState(5);
-  const [volume, setVolume] = React.useState(0.5);
+  const { trackUrl, modal, time, audioRef } = React.useContext(GameRoomContext);
 
-  const audioRef = React.useRef(null);
+  const [volume, setVolume] = React.useState(0.5);
 
   React.useEffect(() => {
     audioRef.current.volume = volume;
   }, [audioRef, volume]);
 
-  //This sets the interval for the timer
-  React.useEffect(() => {
-    let interval = setInterval(() => {
-      if (time > 0) {
-        setTime(time - 1);
-      }
-    }, 1000);
-
-    //Host updates the phase when the host timer reaches 0
-    if (time === 0 && gamePhase === "loading" && currentUser.role === "host") {
-      fetch("/updatePhase", {
-        method: "PUT",
-        body: JSON.stringify({ currentPhase: "loading", roomId: roomId }),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-        });
-    }
-    if (time === 0 && gamePhase === "playing" && currentUser.role === "host") {
-      fetch("/updatePhase", {
-        method: "PUT",
-        body: JSON.stringify({ roomId, currentPhase: "playing" }),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((err) => console.log(err));
-
-      fetch(`/updateRound?roomId=${roomId}`, {
-        method: "GET",
-        headers: { accept: "application/json" },
-      })
-        .then((res) => res.json())
-        .then((data) => console.log(data))
-        .catch((err) => console.log(err));
-    }
-    return () => {
-      clearInterval(interval);
-    };
-  }, [time, gamePhase]);
-
-  //This checks for gamePhase change and sets the timer to the appropriate phase
-  React.useEffect(() => {
-    const gamePhaseRef = firebase.database().ref(`Rooms/${roomId}/phase`);
-    gamePhaseRef.on("value", (snapshot) => {
-      let phase = snapshot.val();
-      if (phase === "playing") {
-        if (round > 9) {
-          setGamePhase(phase);
-          return;
-        }
-        setTime(30);
-        audioRef.current.play();
-        console.log("playtrack");
-      }
-      if (phase === "loading") {
-        setTime(5);
-        audioRef.current.pause();
-        console.log("stopTrack");
-      }
-      setGamePhase(phase);
-    });
-    return () => {
-      const gamePhaseRef = firebase.database().ref(`Rooms/${roomId}/phase`);
-      gamePhaseRef.off();
-    };
-  }, [roomId, round]);
-
-  //This updates the current song during the loading stage
-  React.useEffect(() => {
-    if (gamePhase === "loading" && currentUser.role === "host") {
-      console.log("in fetch track");
-      fetch(`/updateCurrentTrack`, {
-        method: "PUT",
-        body: JSON.stringify({ roomId: roomId }),
-        headers: {
-          Accept: "applicatition/json",
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          // setTrackUrl(data.selectedSongUrl);
-        });
-    }
-  }, [gamePhase]);
-
-  React.useEffect(() => {
-    const currentTrackInfo = firebase
-      .database()
-      .ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
-    currentTrackInfo.on("value", (snapshot) => {
-      let currentTrackInfo = snapshot.val();
-      if (currentTrackInfo) {
-        setTrackInfo(currentTrackInfo);
-        setTrackUrl(currentTrackInfo.preview);
-      }
-    });
-
-    return () => {
-      currentTrackInfo.off();
-    };
-  }, [roomId]);
+  console.log("modal", modal);
 
   return (
     <Wrapper>
+      {modal && <Modal />}
       <SlidderWrapper>
         <Button
           onClick={() => {

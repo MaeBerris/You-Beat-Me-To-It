@@ -163,8 +163,9 @@ const validatePlaylist = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   const { currentUser, roomId } = req.body;
+  console.log(roomId);
   console.log(currentUser);
-  const userRef = db.ref(`/Rooms/${roomId}/players/${currentUser.playerId}`);
+  const userRef = db.ref(`Rooms/${roomId}/players/${currentUser.playerId}`);
   userRef.remove().then(res.status(200).json({ message: "unload" }));
 };
 
