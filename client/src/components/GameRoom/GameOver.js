@@ -2,25 +2,35 @@ import React from "react";
 import COLORS from "../../COLORS";
 import styled from "styled-components";
 import Button from "../Button/Button";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { GameRoomContext } from "../../GameRoomContext";
-import { LobbyContext } from "../../LobbyContext";
+
 import { AiFillCrown } from "react-icons/ai";
 
 const GameOverScreen = () => {
+  const [reset, setReset] = React.useState(false);
   const { usersList, setCurrentRoomId, currentUser } = React.useContext(
     CurrentUserContext
   );
-  const { setRound, setHistoryArray, setIsGameOver } = React.useContext(
-    GameRoomContext
-  );
+  const {
+    setIsGameOver,
+    setRound,
+    setTrackUrl,
+    setTrackInfo,
+    setHistoryArray,
+  } = React.useContext(GameRoomContext);
   const { roomId } = useParams();
-  const { location, deletePlaylist } = React.useContext(LobbyContext);
-  const history = useHistory();
 
   React.useEffect(() => {
     setIsGameOver(true);
+    return () => {
+      setIsGameOver(false);
+      setTrackUrl(null);
+      setTrackInfo(null);
+      setRound(0);
+      setHistoryArray([]);
+    };
   }, []);
 
   React.useEffect(() => {
@@ -85,8 +95,13 @@ const GameOverScreen = () => {
                 },
               })
                 .then((res) => res.json())
-                .then((data) => console.log(data))
-                .catch((err) => console.log(err));
+                .then((data) => {
+                  setReset(true);
+                  console.log(data);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
             }}
           >
             Return to Lobby
@@ -101,7 +116,9 @@ const GameOverScreen = () => {
                 },
               })
                 .then((res) => res.json())
-                .then((data) => console.log(data))
+                .then((data) => {
+                  console.log(data);
+                })
                 .catch((err) => console.log(err));
             }}
           >

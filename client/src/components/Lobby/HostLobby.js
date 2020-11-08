@@ -52,13 +52,19 @@ const validatePlaylist = async (roomId, playlist) => {
 const HostLobby = () => {
   const { currentUser } = React.useContext(CurrentUserContext);
   const { playlistState, setRoomId, location } = React.useContext(LobbyContext);
-  const { gameStarted } = React.useContext(GameRoomContext);
+  const { gameStarted, setIsGameOver } = React.useContext(GameRoomContext);
   const { roomId } = useParams();
   const history = useHistory();
 
   React.useEffect(() => {
-    if (location === "gameRoom" && gameStarted === false) {
-      history.push(`/gameroom/${roomId}`);
+    setIsGameOver(false);
+  }, []);
+
+  React.useEffect(() => {
+    if (location === "gameRoom") {
+      if (gameStarted === false) {
+        history.push(`/gameroom/${roomId}`);
+      }
     }
   }, [roomId, location]);
 

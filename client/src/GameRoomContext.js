@@ -22,7 +22,7 @@ const GameRoomContextProvider = ({ children }) => {
   const { currentUser } = React.useContext(CurrentUserContext);
   const { location } = React.useContext(LobbyContext);
   console.log(time);
-
+  console.log(location, isGameOver);
   React.useEffect(() => {
     const roundRef = firebase.database().ref(`Rooms/${GameRoomId}/round`);
     roundRef.on("value", (snapshot) => {
@@ -43,6 +43,7 @@ const GameRoomContextProvider = ({ children }) => {
 
   //This sets the interval for the timer
   React.useEffect(() => {
+    console.log("insideInterval", location, isGameOver);
     let interval;
     if (location === "gameRoom" && isGameOver === false) {
       interval = setInterval(() => {
@@ -93,7 +94,7 @@ const GameRoomContextProvider = ({ children }) => {
     return () => {
       clearInterval(interval);
     };
-  }, [time, gamePhase]);
+  }, [time, gamePhase, isGameOver, location]);
 
   //This checks for gamePhase change and sets the timer to the appropriate phase
   React.useEffect(() => {
@@ -127,7 +128,8 @@ const GameRoomContextProvider = ({ children }) => {
     if (
       gamePhase === "loading" &&
       currentUser.role === "host" &&
-      location === "gameRoom"
+      location === "gameRoom" &&
+      isGameOver === false
     ) {
       console.log("in fetch track");
       fetch(`/updateCurrentTrack`, {
@@ -144,7 +146,7 @@ const GameRoomContextProvider = ({ children }) => {
           // setTrackUrl(data.selectedSongUrl);
         });
     }
-  }, [gamePhase, location]);
+  }, [gamePhase, location, isGameOver]);
 
   React.useEffect(() => {
     const currentTrackInfo = firebase
