@@ -12,9 +12,7 @@ import { FiVolume, FiVolumeX, FiVolume1, FiVolume2 } from "react-icons/fi";
 import Modal from "../Modal/Modal";
 
 const GameRoom = () => {
-  const { trackUrl, modal, time, audioRef, gamePhase } = React.useContext(
-    GameRoomContext
-  );
+  const { modal, time, audioRef } = React.useContext(GameRoomContext);
 
   const [volume, setVolume] = React.useState(0.5);
 

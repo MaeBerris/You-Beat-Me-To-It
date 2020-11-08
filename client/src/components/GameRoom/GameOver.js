@@ -12,23 +12,16 @@ const GameOverScreen = () => {
   const { usersList, setCurrentRoomId, currentUser } = React.useContext(
     CurrentUserContext
   );
-  const { setRound, setHistoryArray } = React.useContext(GameRoomContext);
+  const { setRound, setHistoryArray, setIsGameOver } = React.useContext(
+    GameRoomContext
+  );
   const { roomId } = useParams();
   const { location, deletePlaylist } = React.useContext(LobbyContext);
   const history = useHistory();
 
   React.useEffect(() => {
-    console.log("location", location);
-    if (location !== "gameRoom") {
-      console.log("inside Push");
-      history.push(`/lobby/${roomId}`);
-    }
-    return () => {
-      setRound(0);
-      deletePlaylist();
-      setHistoryArray([]);
-    };
-  }, [location, roomId]);
+    setIsGameOver(true);
+  }, []);
 
   React.useEffect(() => {
     setCurrentRoomId(roomId);

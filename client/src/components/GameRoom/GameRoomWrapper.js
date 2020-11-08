@@ -4,21 +4,38 @@ import GameOver from "./GameOver";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useHistory, useParams } from "react-router-dom";
+import { LobbyContext } from "../../LobbyContext";
 import FourOFour from "../ErrorScreens/FourOFour";
 import * as firebase from "firebase";
 
 const GameRoomWrapper = () => {
   const {
     round,
+    setRound,
+    setHistoryArray,
     gamePhase,
     gameRoomExists,
     setGameRoomExists,
     setGameStarted,
     setModal,
+    isGameOver,
   } = React.useContext(GameRoomContext);
   const { currentUser } = React.useContext(CurrentUserContext);
   const history = useHistory();
   const { roomId } = useParams();
+  const { location, deletePlaylist } = React.useContext(LobbyContext);
+
+  React.useEffect(() => {
+    console.log("location", location);
+    if (location !== "gameRoom") {
+      history.push(`/lobby/${roomId}`);
+    }
+    return () => {
+      setRound(0);
+      deletePlaylist();
+      setHistoryArray([]);
+    };
+  }, [location, roomId]);
 
   React.useEffect(() => {
     const roomRef = firebase.database().ref(`Rooms/${roomId}`);
@@ -57,7 +74,7 @@ const GameRoomWrapper = () => {
     return <GameOver />;
   }
 
-  return <>{gameRoomExists === true && <GameRoom />}</>;
+  return <>{gameRoomExists === true && isGameOver === false && <GameRoom />}</>;
 };
 
 export default GameRoomWrapper;

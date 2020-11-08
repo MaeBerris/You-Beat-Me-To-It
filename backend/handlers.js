@@ -398,7 +398,6 @@ const gameReset = async (req, res) => {
   const roomInfo = {
     phase: "loading",
     round: 0,
-    playedTracks: [false],
     currentTrack: {
       timeStamp: false,
       trackInfo: false,

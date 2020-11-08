@@ -17,6 +17,7 @@ const GameRoomContextProvider = ({ children }) => {
   const [gameStarted, setGameStarted] = React.useState(false);
   const [time, setTime] = React.useState(5);
   const [modal, setModal] = React.useState(false);
+  const [isGameOver, setIsGameOver] = React.useState(false);
   const audioRef = React.useRef(null);
   const { currentUser } = React.useContext(CurrentUserContext);
   const { location } = React.useContext(LobbyContext);
@@ -43,7 +44,7 @@ const GameRoomContextProvider = ({ children }) => {
   //This sets the interval for the timer
   React.useEffect(() => {
     let interval;
-    if (location === "gameRoom") {
+    if (location === "gameRoom" && isGameOver === false) {
       interval = setInterval(() => {
         if (time > 0) {
           setTime(time - 1);
@@ -186,6 +187,8 @@ const GameRoomContextProvider = ({ children }) => {
         audioRef,
         modal,
         setModal,
+        isGameOver,
+        setIsGameOver,
       }}
     >
       {children}
