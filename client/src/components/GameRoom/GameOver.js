@@ -12,7 +12,9 @@ const GameOverScreen = () => {
   const { usersList, setCurrentRoomId, currentUser } = React.useContext(
     CurrentUserContext
   );
-  const { setRound, setHistoryArray } = React.useContext(GameRoomContext);
+  const { setRound, setHistoryArray, setGameStarted } = React.useContext(
+    GameRoomContext
+  );
   const { roomId } = useParams();
   const { location, deletePlaylist } = React.useContext(LobbyContext);
   const history = useHistory();
@@ -25,6 +27,7 @@ const GameOverScreen = () => {
       setRound(0);
       deletePlaylist();
       setHistoryArray([]);
+      setGameStarted(false);
     };
   }, [location, roomId]);
 

@@ -32,30 +32,24 @@ const GameRoomWrapper = () => {
     console.log(history.action);
 
     return () => {
-      if (history.action === "POP")
-        if (
-          window.confirm("do you really want to leave ?") &&
-          currentUser !== null
-        ) {
-          setCurrentUser(null);
+      if (history.action === "POP") {
+        history.push("/");
+        setCurrentUser(null);
 
-          fetch("/deleteUser", {
-            method: "DELETE",
-            body: JSON.stringify({ currentUser, roomId }),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-            });
-          return;
-        } else {
-          console.log("cancel");
-          history.push(`/gameroom/${roomId}`);
-        }
+        fetch("/deleteUser", {
+          method: "DELETE",
+          body: JSON.stringify({ currentUser, roomId }),
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+          });
+        return;
+      }
     };
   }, [history]);
 
@@ -71,7 +65,7 @@ const GameRoomWrapper = () => {
     return <div>game in progrss</div>;
   }
 
-  if (round > 9 && gamePhase === "playing" && gameRoomExists === true) {
+  if (round > 1 && gamePhase === "playing" && gameRoomExists === true) {
     return <GameOver />;
   }
 
