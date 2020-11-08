@@ -20,6 +20,7 @@ const GameRoomContextProvider = ({ children }) => {
   const audioRef = React.useRef(null);
   const { currentUser } = React.useContext(CurrentUserContext);
   const { location } = React.useContext(LobbyContext);
+  console.log(time);
 
   React.useEffect(() => {
     const roundRef = firebase.database().ref(`Rooms/${GameRoomId}/round`);

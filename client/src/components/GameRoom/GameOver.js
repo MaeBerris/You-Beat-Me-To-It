@@ -18,7 +18,9 @@ const GameOverScreen = () => {
   const history = useHistory();
 
   React.useEffect(() => {
+    console.log("location", location);
     if (location !== "gameRoom") {
+      console.log("inside Push");
       history.push(`/lobby/${roomId}`);
     }
     return () => {

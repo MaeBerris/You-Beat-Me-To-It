@@ -4,7 +4,7 @@ import GameOver from "./GameOver";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useHistory, useParams } from "react-router-dom";
-import FourOFour from "../FourOFour/FourOFour";
+import FourOFour from "../ErrorScreens/FourOFour";
 import * as firebase from "firebase";
 
 const GameRoomWrapper = () => {
@@ -16,7 +16,7 @@ const GameRoomWrapper = () => {
     setGameStarted,
     setModal,
   } = React.useContext(GameRoomContext);
-  const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
+  const { currentUser } = React.useContext(CurrentUserContext);
   const history = useHistory();
   const { roomId } = useParams();
 
@@ -53,7 +53,7 @@ const GameRoomWrapper = () => {
     return <div>game in progrss</div>;
   }
 
-  if (round > 9 && gamePhase === "playing" && gameRoomExists === true) {
+  if (round > 1 && gamePhase === "playing" && gameRoomExists === true) {
     return <GameOver />;
   }
 

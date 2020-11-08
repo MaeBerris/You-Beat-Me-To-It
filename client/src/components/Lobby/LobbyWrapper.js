@@ -5,7 +5,7 @@ import { LobbyContext } from "../../LobbyContext";
 import PlayerHandler from "../SignIn/PlayerHandler";
 import SignIn from "../SignIn/SignIn";
 import HostLobby from "../Lobby/HostLobby";
-import FourOFour from "../FourOFour/FourOFour";
+import FourOFour from "../ErrorScreens/FourOFour";
 import * as firebase from "firebase";
 
 const LobbyWrapper = () => {
