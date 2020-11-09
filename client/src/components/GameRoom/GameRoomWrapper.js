@@ -1,6 +1,7 @@
 import React from "react";
 import GameRoom from "./GameRoom";
 import GameOver from "./GameOver";
+import Spinner from "../Spinner/Spinner";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useHistory, useParams } from "react-router-dom";
@@ -15,7 +16,9 @@ const GameRoomWrapper = () => {
     setGameRoomExists,
     setGameStarted,
   } = React.useContext(GameRoomContext);
-  const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
+  const { currentUser, setCurrentUser, isHostPresent } = React.useContext(
+    CurrentUserContext
+  );
   const history = useHistory();
   const { roomId } = useParams();
   console.log(gameRoomExists);
@@ -67,16 +70,32 @@ const GameRoomWrapper = () => {
       />
     );
   }
+  if (isHostPresent === false) {
+    return (
+      <ErrorScreen
+        title="The host has left"
+        message="We're sorry, the host has left and the game has ended. Return to the homepage to start a new game."
+      />
+    );
+  }
 
   if (!currentUser && gameRoomExists) {
-    return <div>game in progrss</div>;
+    return <>{history.push(`/lobby/${roomId}`)}</>;
   }
 
   if (round > 1 && gamePhase === "playing" && gameRoomExists === true) {
     return <GameOver />;
   }
 
-  return <>{gameRoomExists === true && <GameRoom />}</>;
+  return (
+    <>
+      {gameRoomExists === true && isHostPresent === true && currentUser ? (
+        <GameRoom />
+      ) : (
+        <Spinner size={50} color={"lightgrey"} />
+      )}
+    </>
+  );
 };
 
 export default GameRoomWrapper;
