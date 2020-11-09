@@ -102,6 +102,11 @@ const Input = styled.input`
   padding: 0 30px;
   margin-top: 10px;
 
+  :focus {
+    outline: none;
+    border: 1px solid red;
+  }
+
   &::placeholder {
     color: #eadaf0;
   }

@@ -9,10 +9,16 @@ import FourOFour from "../FourOFour/FourOFour";
 import * as firebase from "firebase";
 
 const LobbyWrapper = () => {
-  const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
+  const {
+    currentUser,
+    setCurrentUser,
+    isHostPresent,
+    setCurrentRoomId,
+  } = React.useContext(CurrentUserContext);
   const { setRoomId, roomExists, setRoomExists, location } = React.useContext(
     LobbyContext
   );
+  console.log("isHostPresent", isHostPresent);
 
   console.log("currentUser", currentUser);
 
@@ -29,42 +35,49 @@ const LobbyWrapper = () => {
 
   React.useEffect(() => {
     setRoomId(roomId);
+    setCurrentRoomId(roomId);
   }, [roomId]);
 
   React.useEffect(() => {
-    console.log(history.action);
+    console.log("isHostPresent in useEffect", isHostPresent);
+  }, [isHostPresent]);
 
-    return () => {
-      console.log(history.action);
-      if (history.action === "POP" && location === "lobby")
-        if (
-          window.confirm("do you really want to leave ?") &&
-          currentUser !== null
-        ) {
-          setCurrentUser(null);
-          fetch("/deleteUser", {
-            method: "DELETE",
-            body: JSON.stringify({ currentUser, roomId }),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => console.log(data));
-          return;
-        } else if (location === "lobby") {
-          console.log("history push from Lobby");
-          history.push(`/lobby/${roomId}`);
-        }
-    };
-  }, [history, location]);
+  // React.useEffect(() => {
+  //   console.log(history.action);
+
+  //   return () => {
+  //     console.log(history.action);
+  //     if (history.action === "POP" && location === "lobby")
+  //       if (
+  //         window.confirm("do you really want to leave ?") &&
+  //         currentUser !== null
+  //       ) {
+  //         setCurrentUser(null);
+  //         fetch("/deleteUser", {
+  //           method: "DELETE",
+  //           body: JSON.stringify({ currentUser, roomId }),
+  //           headers: {
+  //             Accept: "application/json",
+  //             "Content-Type": "application/json",
+  //           },
+  //         })
+  //           .then((res) => res.json())
+  //           .then((data) => console.log(data));
+  //         return;
+  //       } else if (location === "lobby") {
+  //         console.log("history push from Lobby");
+  //         history.push(`/lobby/${roomId}`);
+  //       }
+  //   };
+  // }, [history, location]);
 
   if (roomExists === false) {
     return <FourOFour />;
   }
-
-  if (!currentUser && roomExists === true) {
+  if (isHostPresent === false) {
+    return <div>host is not present</div>;
+  }
+  if (!currentUser && roomExists === true && isHostPresent === true) {
     return (
       <SignIn
         buttonHandler={PlayerHandler}
@@ -72,7 +85,16 @@ const LobbyWrapper = () => {
       />
     );
   }
-  return <>{roomExists === true && <HostLobby />}</>;
+
+  return (
+    <>
+      {roomExists === true && isHostPresent === true && currentUser ? (
+        <HostLobby />
+      ) : (
+        <div>loading</div>
+      )}
+    </>
+  );
 };
 
 export default LobbyWrapper;

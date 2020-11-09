@@ -13,7 +13,8 @@ const CurrentUserContextProvider = ({ children }) => {
     time: null,
   });
   const [currentTrackGuesses, setCurrentTrackGuesses] = React.useState({});
-
+  const [isHostPresent, setIsHostPresent] = React.useState(undefined);
+  console.log("isHostPresentContext", isHostPresent);
   React.useEffect(() => {
     if (currentUser) {
       const playerRef = firebase
@@ -31,10 +32,25 @@ const CurrentUserContextProvider = ({ children }) => {
         .ref(`Rooms/${currentRoomId}/players`);
       PlayersRef.on("value", (snapshot) => {
         const players = snapshot.val();
+        console.log("players", players);
+        if (players === null) {
+          setIsHostPresent(false);
+        }
         if (players) {
           const SortedArray = Object.values(players).sort((a, b) => {
             return b.points - a.points;
           });
+          let host = SortedArray.find((user) => {
+            if (user.role === "host") {
+              return true;
+            }
+          });
+          console.log("host", host);
+          if (host) {
+            setIsHostPresent(true);
+          } else {
+            setIsHostPresent(false);
+          }
           setUsersList(SortedArray);
         }
       });
@@ -62,6 +78,7 @@ const CurrentUserContextProvider = ({ children }) => {
         setCorrectGuess,
         setCurrentRoomId,
         currentTrackGuesses,
+        isHostPresent,
       }}
     >
       {children}

@@ -65,7 +65,7 @@ const GameRoomWrapper = () => {
     return <div>game in progrss</div>;
   }
 
-  if (round > 1 && gamePhase === "playing" && gameRoomExists === true) {
+  if (round > 9 && gamePhase === "playing" && gameRoomExists === true) {
     return <GameOver />;
   }
 
