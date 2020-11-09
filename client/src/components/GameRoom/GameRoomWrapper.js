@@ -4,7 +4,7 @@ import GameOver from "./GameOver";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useHistory, useParams } from "react-router-dom";
-import FourOFour from "../FourOFour/FourOFour";
+import ErrorScreen from "../ErrorScreen/ErrorScreen";
 import * as firebase from "firebase";
 
 const GameRoomWrapper = () => {
@@ -58,14 +58,21 @@ const GameRoomWrapper = () => {
   }, []);
 
   if (gameRoomExists === false) {
-    return <FourOFour />;
+    return (
+      <ErrorScreen
+        title="404 - Room not found"
+        message={
+          "We're sorry, we couldn't find the room you are trying to join"
+        }
+      />
+    );
   }
 
   if (!currentUser && gameRoomExists) {
     return <div>game in progrss</div>;
   }
 
-  if (round > 9 && gamePhase === "playing" && gameRoomExists === true) {
+  if (round > 1 && gamePhase === "playing" && gameRoomExists === true) {
     return <GameOver />;
   }
 

@@ -13,7 +13,9 @@ const Spinner = ({ size, color }) => {
 export default Spinner;
 
 const Wrapper = styled.div`
-  width: fit-content;
+  display: flex;
+  justify-content: center;
+  width: 100%;
   color: ${(props) => props.color};
 `;
 

@@ -2,10 +2,12 @@ import React from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { LobbyContext } from "../../LobbyContext";
+import Spinner from "../Spinner/Spinner";
 import PlayerHandler from "../SignIn/PlayerHandler";
 import SignIn from "../SignIn/SignIn";
 import HostLobby from "../Lobby/HostLobby";
-import FourOFour from "../FourOFour/FourOFour";
+import ErrorScreen from "../ErrorScreen/ErrorScreen";
+import GameInProgress from "../ErrorScreen/GameInProgress";
 import * as firebase from "firebase";
 
 const LobbyWrapper = () => {
@@ -18,9 +20,6 @@ const LobbyWrapper = () => {
   const { setRoomId, roomExists, setRoomExists, location } = React.useContext(
     LobbyContext
   );
-  console.log("isHostPresent", isHostPresent);
-
-  console.log("currentUser", currentUser);
 
   const { roomId } = useParams();
   const history = useHistory();
@@ -31,16 +30,16 @@ const LobbyWrapper = () => {
     roomRef.on("value", (snapshot) => {
       setRoomExists(snapshot.exists());
     });
+
+    return () => {
+      roomRef.off();
+    };
   }, [roomId]);
 
   React.useEffect(() => {
     setRoomId(roomId);
     setCurrentRoomId(roomId);
   }, [roomId]);
-
-  React.useEffect(() => {
-    console.log("isHostPresent in useEffect", isHostPresent);
-  }, [isHostPresent]);
 
   // React.useEffect(() => {
   //   console.log(history.action);
@@ -72,12 +71,35 @@ const LobbyWrapper = () => {
   // }, [history, location]);
 
   if (roomExists === false) {
-    return <FourOFour />;
+    return (
+      <ErrorScreen
+        title="404 - Room not found"
+        message="We're sorry, we couldn't find the room you are trying to join"
+      />
+    );
   }
   if (isHostPresent === false) {
-    return <div>host is not present</div>;
+    return (
+      <ErrorScreen
+        title="The host has left"
+        message="We're sorry, the host has left and the game has ended. Return to the homepage to start a new game."
+      />
+    );
   }
-  if (!currentUser && roomExists === true && isHostPresent === true) {
+  if (
+    !currentUser &&
+    roomExists === true &&
+    isHostPresent === true &&
+    location === "gameRoom"
+  ) {
+    return <GameInProgress />;
+  }
+  if (
+    !currentUser &&
+    roomExists === true &&
+    isHostPresent === true &&
+    location === "lobby"
+  ) {
     return (
       <SignIn
         buttonHandler={PlayerHandler}
@@ -91,7 +113,7 @@ const LobbyWrapper = () => {
       {roomExists === true && isHostPresent === true && currentUser ? (
         <HostLobby />
       ) : (
-        <div>loading</div>
+        <Spinner size={50} color={"lightgrey"} />
       )}
     </>
   );
