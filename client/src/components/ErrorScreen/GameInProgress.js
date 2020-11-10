@@ -17,7 +17,7 @@ const GameInProgress = ({}) => {
       <Label>The Game is in Progress</Label>
       <Message>
         Please be patient while the game is in progress. You will be able to
-        join when the game ends and the hosts returns to lobby
+        join when the game ends and the host returns to the lobby.
       </Message>
       <RoundCounter>
         The game you are trying to join is on round :{" "}
@@ -52,7 +52,7 @@ const Message = styled.div`
 `;
 
 const RoundCounter = styled.div`
-  margin-top: 5px;
+  margin-top: 10px;
   font-family: "Echizen";
   text-shadow: 2px 2px ${COLORS.midnight};
   color: white;

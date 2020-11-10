@@ -41,34 +41,34 @@ const LobbyWrapper = () => {
     setCurrentRoomId(roomId);
   }, [roomId]);
 
-  // React.useEffect(() => {
-  //   console.log(history.action);
+  React.useEffect(() => {
+    console.log(history.action);
 
-  //   return () => {
-  //     console.log(history.action);
-  //     if (history.action === "POP" && location === "lobby")
-  //       if (
-  //         window.confirm("do you really want to leave ?") &&
-  //         currentUser !== null
-  //       ) {
-  //         setCurrentUser(null);
-  //         fetch("/deleteUser", {
-  //           method: "DELETE",
-  //           body: JSON.stringify({ currentUser, roomId }),
-  //           headers: {
-  //             Accept: "application/json",
-  //             "Content-Type": "application/json",
-  //           },
-  //         })
-  //           .then((res) => res.json())
-  //           .then((data) => console.log(data));
-  //         return;
-  //       } else if (location === "lobby") {
-  //         console.log("history push from Lobby");
-  //         history.push(`/lobby/${roomId}`);
-  //       }
-  //   };
-  // }, [history, location]);
+    return () => {
+      console.log(history.action);
+      if (history.action === "POP" && location === "lobby" && currentUser)
+        if (
+          window.confirm("do you really want to leave ?") &&
+          currentUser !== null
+        ) {
+          setCurrentUser(null);
+          fetch("/deleteUser", {
+            method: "DELETE",
+            body: JSON.stringify({ currentUser, roomId }),
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => console.log(data));
+          return;
+        } else if (location === "lobby") {
+          console.log("history push from Lobby");
+          history.push(`/lobby/${roomId}`);
+        }
+    };
+  }, [history, location]);
 
   if (roomExists === false) {
     return (
