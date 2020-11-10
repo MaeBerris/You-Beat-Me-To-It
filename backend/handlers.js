@@ -73,110 +73,130 @@ const createRoom = (req, res) => {
 };
 
 const searchPlaylist = (req, res) => {
-  const { searchTerm } = req.query;
-  fetch(`https://api.deezer.com/search/playlist?q=${searchTerm}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => res.json())
-    .then((response) => {
-      res.status(200).json({ searchResults: response.data });
+  try {
+    const { searchTerm } = req.query;
+    fetch(`https://api.deezer.com/search/playlist?q=${searchTerm}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
     })
-    .catch((err) => res.status(500).json({ message: `${err}` }));
+      .then((res) => res.json())
+      .then((response) => {
+        res.status(200).json({ searchResults: response.data });
+      })
+      .catch((err) => res.status(500).json({ message: `${err}` }));
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
 };
 
 const createUser = (req, res) => {
-  const { nickName } = req.body;
-  const { roomId } = req.params;
+  try {
+    const { nickName } = req.body;
+    const { roomId } = req.params;
 
-  const player = {
-    playerId: shortUuidCreator(),
-    role: "player",
-    nickName: nickName,
-    artist: false,
-    songName: false,
-    points: 0,
-  };
+    const player = {
+      playerId: shortUuidCreator(),
+      role: "player",
+      nickName: nickName,
+      artist: false,
+      songName: false,
+      points: 0,
+    };
 
-  const PlayersRef = db.ref(`Rooms/${roomId}/players`);
-  PlayersRef.update({ [`${player.playerId}`]: player }).then(() => {
-    res.status(201).json({ message: "success", userInfo: player });
-  });
+    const PlayersRef = db.ref(`Rooms/${roomId}/players`);
+    PlayersRef.update({ [`${player.playerId}`]: player }).then(() => {
+      res.status(201).json({ message: "success", userInfo: player });
+    });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
 };
 
 const updatePlaylist = (req, res) => {
-  const { selectedPlaylist, roomId } = req.body;
-  let valueToSet = selectedPlaylist;
-  if (Object.keys(valueToSet).length === 0) {
-    valueToSet = false;
+  try {
+    const { selectedPlaylist, roomId } = req.body;
+    let valueToSet = selectedPlaylist;
+    if (Object.keys(valueToSet).length === 0) {
+      valueToSet = false;
+    }
+    const playlistRef = db.ref(`Rooms/${roomId}/selectedPlaylist`);
+    playlistRef
+      .set(valueToSet)
+      .then(res.status(200).json({ selectedPlaylist: valueToSet, roomId }));
+  } catch (error) {
+    res.status(500).json({ message: error });
   }
-  const playlistRef = db.ref(`Rooms/${roomId}/selectedPlaylist`);
-  playlistRef
-    .set(valueToSet)
-    .then(res.status(200).json({ selectedPlaylist: valueToSet, roomId }));
 };
 
 const validatePlaylist = async (req, res) => {
-  const { roomId, selectedPlaylist } = req.body;
-  const playlistRef = db.ref(`Rooms/${roomId}/selectedPlaylist`);
-  playlistRef.set(selectedPlaylist);
+  try {
+    const { roomId, selectedPlaylist } = req.body;
+    const playlistRef = db.ref(`Rooms/${roomId}/selectedPlaylist`);
+    playlistRef.set(selectedPlaylist);
 
-  const playlistId = Object.values(selectedPlaylist)[0].id;
+    const playlistId = Object.values(selectedPlaylist)[0].id;
 
-  let tracksArray = false;
+    let tracksArray = false;
 
-  await fetch(`https://api.deezer.com/playlist/${playlistId}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-  })
-    .then((res) => res.json())
-    .then((response) => {
-      tracksArray = response.tracks.data;
+    await fetch(`https://api.deezer.com/playlist/${playlistId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
     })
-    .catch((err) => res.status(500).json({ message: `${err}` }));
+      .then((res) => res.json())
+      .then((response) => {
+        tracksArray = response.tracks.data;
+      })
+      .catch((err) => res.status(500).json({ message: `${err}` }));
 
-  const filteredArray = tracksArray.filter((item) => {
-    if (item.readable === true) {
-      return true;
-    }
-  });
+    const filteredArray = tracksArray.filter((item) => {
+      if (item.readable === true) {
+        return true;
+      }
+    });
 
-  const playlistArrayRef = db.ref(`Rooms/${roomId}/playlist`);
+    const playlistArrayRef = db.ref(`Rooms/${roomId}/playlist`);
 
-  await playlistArrayRef.set(filteredArray).then(
-    res.status(200).json({
-      roomId,
-      selectedPlaylist,
-      filteredArray,
-    })
-  );
-  const roomLocation = db.ref(`Rooms/${roomId}`);
-  roomLocation.update({ roomLocation: "gameRoom" });
+    await playlistArrayRef.set(filteredArray);
+    const roomLocation = db.ref(`Rooms/${roomId}`);
+    roomLocation.update({ roomLocation: "gameRoom" }).then(
+      res.status(200).json({
+        roomId,
+        selectedPlaylist,
+        filteredArray,
+      })
+    );
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
 };
 
 const deleteUser = async (req, res) => {
-  const { currentUser, roomId } = req.body;
-  console.log(currentUser);
-  const userRef = db.ref(`Rooms/${roomId}/players/${currentUser.playerId}`);
-  const playersRef = db.ref(`Rooms/${roomId}/players`);
-  const roomRef = db.ref(`Rooms/${roomId}`);
-  let playersArray;
-  await playersRef.once("value", (snapshot) => {
-    playersArray = Object.values(snapshot.val());
-  });
-  if (playersArray.length === 1) {
-    roomRef
-      .remove()
-      .then(res.status(200).json({ message: "deleted room and user" }));
-    return;
+  try {
+    const { currentUser, roomId } = req.body;
+    console.log(currentUser);
+    const userRef = db.ref(`Rooms/${roomId}/players/${currentUser.playerId}`);
+    const playersRef = db.ref(`Rooms/${roomId}/players`);
+    const roomRef = db.ref(`Rooms/${roomId}`);
+    let playersArray;
+    await playersRef.once("value", (snapshot) => {
+      playersArray = Object.values(snapshot.val());
+    });
+    if (playersArray.length === 1) {
+      roomRef
+        .remove()
+        .then(res.status(200).json({ message: "deleted room and user" }));
+      return;
+    }
+    userRef.remove().then(res.status(200).json({ message: "deleted user" }));
+  } catch (error) {
+    res.status(500).json({ message: error });
   }
-  userRef.remove().then(res.status(200).json({ message: "deleted user" }));
 };
 
 const randomUnplayedTrackNumber = async (roomId, playlist) => {
@@ -207,206 +227,232 @@ const randomUnplayedTrackNumber = async (roomId, playlist) => {
 };
 
 const updateCurrentTrack = async (req, res) => {
-  const { roomId } = req.body;
-  const playlistRef = db.ref(`/Rooms/${roomId}/playlist`);
-  const currentTrackRef = db.ref(`/Rooms/${roomId}/currentTrack`);
-  const currentTrackInfoRef = db.ref(`/Rooms/${roomId}/currentTrack/trackInfo`);
+  try {
+    const { roomId } = req.body;
+    const playlistRef = db.ref(`/Rooms/${roomId}/playlist`);
+    const currentTrackRef = db.ref(`/Rooms/${roomId}/currentTrack`);
+    const currentTrackInfoRef = db.ref(
+      `/Rooms/${roomId}/currentTrack/trackInfo`
+    );
 
-  currentTrackRef.update({ correctGuesses: { userId: "guess" } });
+    currentTrackRef.update({ correctGuesses: { userId: "guess" } });
 
-  let playlist;
-  await playlistRef.once(
-    "value",
-    (snapshot) => {
-      playlist = snapshot.val();
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
-  let songIndex = await randomUnplayedTrackNumber(roomId, playlist);
-  currentTrackInfoRef.set(playlist[songIndex]).then(
-    res.status(200).json({
-      message: "all clear",
-      roomId: roomId,
-      selectedSongUrl: playlist[songIndex].preview,
-      songIndex: songIndex,
-      dog: "dog",
-    })
-  );
+    let playlist;
+    await playlistRef.once(
+      "value",
+      (snapshot) => {
+        playlist = snapshot.val();
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    let songIndex = await randomUnplayedTrackNumber(roomId, playlist);
+    currentTrackInfoRef.set(playlist[songIndex]).then(
+      res.status(200).json({
+        message: "all clear",
+        roomId: roomId,
+        selectedSongUrl: playlist[songIndex].preview,
+        songIndex: songIndex,
+        dog: "dog",
+      })
+    );
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
 };
 
 const updatePhase = async (req, res) => {
-  const { currentPhase, roomId } = req.body;
-  const RoomRef = db.ref(`Rooms/${roomId}`);
-  const PhaseRef = db.ref(`Rooms/${roomId}/phase`);
-  const d = new Date();
-  const timeStamp = d.getTime();
-  let phase;
-  await PhaseRef.once("value", (snapshot) => {
-    console.log(snapshot.val());
-    phase = snapshot.val();
-  });
-  console.log("phase", phase);
-  console.log("currentPhase", currentPhase);
-  if (phase !== currentPhase) {
-    res.status(200).json({ message: "nothing to update" });
-    return;
-  }
-  if (currentPhase === "loading") {
-    RoomRef.child("currentTrack").update({ timeStamp: timeStamp });
-    RoomRef.update({ phase: "playing" });
-    res.status(201).json({ phase: "playing" });
-    return;
-  }
-  if (currentPhase === "playing") {
-    RoomRef.update({ phase: "loading" });
-    res.status(201).json({ phase: "loading" });
-    return;
+  try {
+    const { currentPhase, roomId } = req.body;
+    const RoomRef = db.ref(`Rooms/${roomId}`);
+    const PhaseRef = db.ref(`Rooms/${roomId}/phase`);
+    const d = new Date();
+    const timeStamp = d.getTime();
+    let phase;
+    await PhaseRef.once("value", (snapshot) => {
+      console.log(snapshot.val());
+      phase = snapshot.val();
+    });
+    console.log("phase", phase);
+    console.log("currentPhase", currentPhase);
+    if (phase !== currentPhase) {
+      res.status(200).json({ message: "nothing to update" });
+      return;
+    }
+    if (currentPhase === "loading") {
+      RoomRef.child("currentTrack").update({ timeStamp: timeStamp });
+      RoomRef.update({ phase: "playing" });
+      res.status(201).json({ phase: "playing" });
+      return;
+    }
+    if (currentPhase === "playing") {
+      RoomRef.update({ phase: "loading" });
+      res.status(201).json({ phase: "loading" });
+      return;
+    }
+  } catch (error) {
+    res.status(500).json({ message: error });
   }
 };
 
 const validateAnswer = async (req, res) => {
-  const { currentUser, roomId, correctGuess } = req.body;
+  try {
+    const { currentUser, roomId, correctGuess } = req.body;
 
-  const playerRef = db.ref(`Rooms/${roomId}/players/${currentUser.playerId}`);
+    const playerRef = db.ref(`Rooms/${roomId}/players/${currentUser.playerId}`);
 
-  let playerScore;
-  await playerRef.once("value", (snapshot) => {
-    console.log("snapshot", snapshot.val().points);
-    playerScore = snapshot.val().points;
-  });
-
-  const timeStampRef = db.ref(`Rooms/${roomId}/currentTrack/timeStamp`);
-
-  let songStartTime;
-  await timeStampRef.once("value", (snapshot) => {
-    songStartTime = snapshot.val();
-  });
-
-  const correctGuessesRef = db.ref(
-    `Rooms/${roomId}/currentTrack/correctGuesses`
-  );
-
-  let correctGuessTime;
-  if (correctGuess.timeStamp) {
-    correctGuessTime = (correctGuess.timeStamp - songStartTime) / 1000;
-  } else {
-    correctGuessTime = false;
-  }
-
-  if (
-    correctGuess.artist &&
-    correctGuess.songName &&
-    !correctGuess.previousGuess.artist &&
-    !correctGuess.previousGuess.songName
-  ) {
-    await playerRef.update({
-      points: playerScore + 10 + scoreHelper(correctGuessTime),
+    let playerScore;
+    await playerRef.once("value", (snapshot) => {
+      console.log("snapshot", snapshot.val().points);
+      playerScore = snapshot.val().points;
     });
-  } else if (correctGuess.artist && correctGuess.songName) {
-    await playerRef.update({
-      points: playerScore + 5 + scoreHelper(correctGuessTime),
-    });
-  } else if (
-    correctGuess.artist &&
-    correctGuess.previousGuess.artist === false
-  ) {
-    await playerRef.update({ points: playerScore + 5 });
-  } else if (
-    correctGuess.songName &&
-    correctGuess.previousGuess.songName === false
-  ) {
-    await playerRef.update({ points: playerScore + 5 });
-  }
 
-  correctGuessesRef
-    .update({
-      [`${currentUser.playerId}`]: {
-        ...currentUser,
-        ...correctGuess,
-        time: correctGuessTime,
-      },
-    })
-    .then(res.status(201).json({ message: "update users correct guesses" }));
+    const timeStampRef = db.ref(`Rooms/${roomId}/currentTrack/timeStamp`);
+
+    let songStartTime;
+    await timeStampRef.once("value", (snapshot) => {
+      songStartTime = snapshot.val();
+    });
+
+    const correctGuessesRef = db.ref(
+      `Rooms/${roomId}/currentTrack/correctGuesses`
+    );
+
+    let correctGuessTime;
+    if (correctGuess.timeStamp) {
+      correctGuessTime = (correctGuess.timeStamp - songStartTime) / 1000;
+    } else {
+      correctGuessTime = false;
+    }
+
+    if (
+      correctGuess.artist &&
+      correctGuess.songName &&
+      !correctGuess.previousGuess.artist &&
+      !correctGuess.previousGuess.songName
+    ) {
+      await playerRef.update({
+        points: playerScore + 10 + scoreHelper(correctGuessTime),
+      });
+    } else if (correctGuess.artist && correctGuess.songName) {
+      await playerRef.update({
+        points: playerScore + 5 + scoreHelper(correctGuessTime),
+      });
+    } else if (
+      correctGuess.artist &&
+      correctGuess.previousGuess.artist === false
+    ) {
+      await playerRef.update({ points: playerScore + 5 });
+    } else if (
+      correctGuess.songName &&
+      correctGuess.previousGuess.songName === false
+    ) {
+      await playerRef.update({ points: playerScore + 5 });
+    }
+
+    correctGuessesRef
+      .update({
+        [`${currentUser.playerId}`]: {
+          ...currentUser,
+          ...correctGuess,
+          time: correctGuessTime,
+        },
+      })
+      .then(res.status(201).json({ message: "update users correct guesses" }));
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
 };
 
 const updateRound = async (req, res) => {
-  const { roomId } = req.query;
+  try {
+    const { roomId } = req.query;
 
-  const RoomRef = db.ref(`Rooms/${roomId}`);
+    const RoomRef = db.ref(`Rooms/${roomId}`);
 
-  let previousRound;
-  await RoomRef.child("round").once("value", (snapshot) => {
-    previousRound = snapshot.val();
-  });
+    let previousRound;
+    await RoomRef.child("round").once("value", (snapshot) => {
+      previousRound = snapshot.val();
+    });
 
-  RoomRef.update({ round: previousRound + 1 }).then(
-    res.status(201).json({ message: `updated round to ${previousRound + 1}` })
-  );
+    RoomRef.update({ round: previousRound + 1 }).then(
+      res.status(201).json({ message: `updated round to ${previousRound + 1}` })
+    );
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
 };
 
 const lobbyReset = async (req, res) => {
-  const { roomId } = req.params;
-  const RoomRef = db.ref(`Rooms/${roomId}`);
-  const playersRef = db.ref(`Rooms/${roomId}/players`);
-  let playersObject;
-  await playersRef.once("value", (snapshot) => {
-    playersObject = snapshot.val();
-  });
-
-  await Object.keys(playersObject).forEach((key) => {
-    playersRef.update({
-      [`${key}`]: { ...playersObject[`${key}`], points: 0 },
+  try {
+    const { roomId } = req.params;
+    const RoomRef = db.ref(`Rooms/${roomId}`);
+    const playersRef = db.ref(`Rooms/${roomId}/players`);
+    let playersObject;
+    await playersRef.once("value", (snapshot) => {
+      playersObject = snapshot.val();
     });
-  });
-  const roomInfo = {
-    roomLocation: "lobby",
-    phase: "loading",
-    round: 0,
-    selectedPlaylist: false,
-    playlist: false,
-    playedTracks: [false],
-    currentTrack: {
-      timeStamp: false,
-      trackInfo: false,
-      correctGuesses: { userId: "guess" },
-    },
-  };
 
-  RoomRef.update(roomInfo).then(
-    res.status(200).json({ message: "reset room" })
-  );
+    await Object.keys(playersObject).forEach((key) => {
+      playersRef.update({
+        [`${key}`]: { ...playersObject[`${key}`], points: 0 },
+      });
+    });
+    const roomInfo = {
+      roomLocation: "lobby",
+      phase: "loading",
+      round: 0,
+      selectedPlaylist: false,
+      playlist: false,
+      playedTracks: [false],
+      currentTrack: {
+        timeStamp: false,
+        trackInfo: false,
+        correctGuesses: { userId: "guess" },
+      },
+    };
+
+    RoomRef.update(roomInfo).then(
+      res.status(200).json({ message: "reset room" })
+    );
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
 };
 
 const gameReset = async (req, res) => {
-  const { roomId } = req.params;
-  const RoomRef = db.ref(`Rooms/${roomId}`);
-  const playersRef = db.ref(`Rooms/${roomId}/players`);
-  let playersObject;
-  await playersRef.once("value", (snapshot) => {
-    playersObject = snapshot.val();
-  });
-
-  await Object.keys(playersObject).forEach((key) => {
-    playersRef.update({
-      [`${key}`]: { ...playersObject[`${key}`], points: 0 },
+  try {
+    const { roomId } = req.params;
+    const RoomRef = db.ref(`Rooms/${roomId}`);
+    const playersRef = db.ref(`Rooms/${roomId}/players`);
+    let playersObject;
+    await playersRef.once("value", (snapshot) => {
+      playersObject = snapshot.val();
     });
-  });
-  const roomInfo = {
-    phase: "loading",
-    round: 0,
-    playedTracks: [false],
-    currentTrack: {
-      timeStamp: false,
-      trackInfo: false,
-      correctGuesses: { userId: "guess" },
-    },
-  };
 
-  RoomRef.update(roomInfo).then(
-    res.status(200).json({ message: "reset room" })
-  );
+    await Object.keys(playersObject).forEach((key) => {
+      playersRef.update({
+        [`${key}`]: { ...playersObject[`${key}`], points: 0 },
+      });
+    });
+    const roomInfo = {
+      phase: "loading",
+      round: 0,
+      playedTracks: [false],
+      currentTrack: {
+        timeStamp: false,
+        trackInfo: false,
+        correctGuesses: { userId: "guess" },
+      },
+    };
+
+    RoomRef.update(roomInfo).then(
+      res.status(200).json({ message: "reset room" })
+    );
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
 };
 
 module.exports = {

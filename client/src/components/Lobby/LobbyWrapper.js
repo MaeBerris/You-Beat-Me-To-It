@@ -62,6 +62,7 @@ const LobbyWrapper = () => {
           })
             .then((res) => res.json())
             .then((data) => console.log(data));
+          history.push("/");
           return;
         } else if (location === "lobby") {
           console.log("history push from Lobby");
