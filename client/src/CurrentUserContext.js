@@ -15,15 +15,21 @@ const CurrentUserContextProvider = ({ children }) => {
   const [currentTrackGuesses, setCurrentTrackGuesses] = React.useState({});
   const [isHostPresent, setIsHostPresent] = React.useState(undefined);
   console.log("isHostPresentContext", isHostPresent);
+
   React.useEffect(() => {
-    if (currentUser) {
+    if (currentUser && usersList) {
       const playerRef = firebase
         .database()
         .ref(`Rooms/${currentRoomId}/players/${currentUser.playerId}`);
 
       playerRef.onDisconnect().remove();
+
+      const RoomRef = firebase.database().ref(`Rooms/${currentRoomId}`);
+      if (usersList.length === 1) {
+        RoomRef.onDisconnect().remove();
+      }
     }
-  }, [currentUser, currentRoomId]);
+  }, [currentUser, currentRoomId, usersList]);
 
   React.useEffect(() => {
     if (currentRoomId) {

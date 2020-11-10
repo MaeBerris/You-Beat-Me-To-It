@@ -42,8 +42,7 @@ const createRoom = (req, res) => {
       songName: false,
       points: 0,
     };
-    // const RoomId = shortUuidCreator();
-    const RoomId = "room1";
+    const RoomId = shortUuidCreator();
 
     const roomInfo = {
       roomId: RoomId,
@@ -164,8 +163,20 @@ const validatePlaylist = async (req, res) => {
 const deleteUser = async (req, res) => {
   const { currentUser, roomId } = req.body;
   console.log(currentUser);
-  const userRef = db.ref(`/Rooms/${roomId}/players/${currentUser.playerId}`);
-  userRef.remove().then(res.status(200).json({ message: "unload" }));
+  const userRef = db.ref(`Rooms/${roomId}/players/${currentUser.playerId}`);
+  const playersRef = db.ref(`Rooms/${roomId}/players`);
+  const roomRef = db.ref(`Rooms/${roomId}`);
+  let playersArray;
+  await playersRef.once("value", (snapshot) => {
+    playersArray = Object.values(snapshot.val());
+  });
+  if (playersArray.length === 1) {
+    roomRef
+      .remove()
+      .then(res.status(200).json({ message: "deleted room and user" }));
+    return;
+  }
+  userRef.remove().then(res.status(200).json({ message: "deleted user" }));
 };
 
 const randomUnplayedTrackNumber = async (roomId, playlist) => {
