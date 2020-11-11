@@ -18,16 +18,17 @@ const CurrentUserContextProvider = ({ children }) => {
 
   React.useEffect(() => {
     if (currentUser && usersList) {
+      const RoomRef = firebase.database().ref(`Rooms/${currentRoomId}`);
+      if (usersList.length === 1) {
+        RoomRef.onDisconnect().remove();
+      } else {
+        RoomRef.onDisconnect().cancel();
+      }
       const playerRef = firebase
         .database()
         .ref(`Rooms/${currentRoomId}/players/${currentUser.playerId}`);
 
       playerRef.onDisconnect().remove();
-
-      const RoomRef = firebase.database().ref(`Rooms/${currentRoomId}`);
-      if (usersList.length === 1) {
-        RoomRef.onDisconnect().remove();
-      }
     }
   }, [currentUser, currentRoomId, usersList]);
 

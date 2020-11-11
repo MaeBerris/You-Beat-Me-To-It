@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import COLORS from "../../COLORS";
+import { AiFillGithub } from "react-icons/ai";
 
 const Background = ({ children }) => {
   return (
@@ -9,6 +10,15 @@ const Background = ({ children }) => {
       <Shape2></Shape2>
       <Shape3></Shape3>
       <ChildWrapper>{children}</ChildWrapper>
+      <Footer>
+        © Mae Berris 2020{" "}
+        <Link
+          href="https://github.com/MaeBerris/You-Beat-Me-To-It"
+          target="_blank"
+        >
+          <AiFillGithub size={20} />
+        </Link>
+      </Footer>
     </Wrapper>
   );
 };
@@ -58,4 +68,19 @@ const ChildWrapper = styled.div`
   min-height: 100vh;
 `;
 
+const Footer = styled.div`
+  position: absolute;
+  color: white;
+  right: 15px;
+  bottom: 15px;
+  font-size: 20px;
+  z-index: 3;
+`;
+
+const Link = styled.a`
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
+  margin-left: 5px;
+`;
 export default Background;
