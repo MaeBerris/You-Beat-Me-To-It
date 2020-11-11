@@ -21,7 +21,7 @@ const SelectedPlaylistPlayer = () => {
 
       if (playlist === false) {
         deletePlaylist();
-      } else {
+      } else if (playlist) {
         selectPlaylist(Object.values(playlist)[0]);
       }
     });

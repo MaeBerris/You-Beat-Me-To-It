@@ -20,6 +20,7 @@ const Wrapper = styled.div`
   font-family: "Echizen";
   margin: 0 auto;
   margin-top: 25px;
+  margin-bottom: 50px;
   text-shadow: 2px 2px 0px ${COLORS.midnight};
   line-height: 70%;
 `;

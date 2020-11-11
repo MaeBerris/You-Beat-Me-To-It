@@ -1,10 +1,12 @@
 import React from "react";
 import GameRoom from "./GameRoom";
 import GameOver from "./GameOver";
+import Spinner from "../Spinner/Spinner";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
+import { LobbyContext } from "../../LobbyContext";
 import { useHistory, useParams } from "react-router-dom";
-import FourOFour from "../FourOFour/FourOFour";
+import ErrorScreen from "../ErrorScreen/ErrorScreen";
 import * as firebase from "firebase";
 
 const GameRoomWrapper = () => {
@@ -14,8 +16,12 @@ const GameRoomWrapper = () => {
     gameRoomExists,
     setGameRoomExists,
     setGameStarted,
+    setHistoryArray,
   } = React.useContext(GameRoomContext);
-  const { currentUser, setCurrentUser } = React.useContext(CurrentUserContext);
+  const { currentUser, setCurrentUser, isHostPresent } = React.useContext(
+    CurrentUserContext
+  );
+  const { deletePlaylist } = React.useContext(LobbyContext);
   const history = useHistory();
   const { roomId } = useParams();
   console.log(gameRoomExists);
@@ -32,30 +38,27 @@ const GameRoomWrapper = () => {
     console.log(history.action);
 
     return () => {
-      if (history.action === "POP")
-        if (
-          window.confirm("do you really want to leave ?") &&
-          currentUser !== null
-        ) {
-          setCurrentUser(null);
+      if (history.action === "POP") {
+        history.push("/");
+        setCurrentUser(null);
+        setGameStarted(false);
+        deletePlaylist();
+        setHistoryArray([]);
 
-          fetch("/deleteUser", {
-            method: "DELETE",
-            body: JSON.stringify({ currentUser, roomId }),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              console.log(data);
-            });
-          return;
-        } else {
-          console.log("cancel");
-          history.push(`/gameroom/${roomId}`);
-        }
+        fetch("/deleteUser", {
+          method: "DELETE",
+          body: JSON.stringify({ currentUser, roomId }),
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+          });
+        return;
+      }
     };
   }, [history]);
 
@@ -64,18 +67,41 @@ const GameRoomWrapper = () => {
   }, []);
 
   if (gameRoomExists === false) {
-    return <FourOFour />;
+    return (
+      <ErrorScreen
+        title="404 - Room not found"
+        message={
+          "We're sorry, we couldn't find the room you are trying to join"
+        }
+      />
+    );
+  }
+  if (isHostPresent === false) {
+    return (
+      <ErrorScreen
+        title="The host has left"
+        message="We're sorry, the host has left and the game has ended. Return to the homepage to start a new game."
+      />
+    );
   }
 
   if (!currentUser && gameRoomExists) {
-    return <div>game in progrss</div>;
+    return <>{history.push(`/lobby/${roomId}`)}</>;
   }
 
-  if (round > 9 && gamePhase === "playing" && gameRoomExists === true) {
+  if (round > 1 && gamePhase === "playing" && gameRoomExists === true) {
     return <GameOver />;
   }
 
-  return <>{gameRoomExists === true && <GameRoom />}</>;
+  return (
+    <>
+      {gameRoomExists === true && isHostPresent === true && currentUser ? (
+        <GameRoom />
+      ) : (
+        <Spinner size={50} color={"lightgrey"} />
+      )}
+    </>
+  );
 };
 
 export default GameRoomWrapper;
