@@ -6,7 +6,7 @@ import Spinner from "../Spinner/Spinner";
 import { GameRoomContext } from "../../GameRoomContext";
 import { useParams } from "react-router-dom";
 
-const GameInProgress = ({}) => {
+const GameInProgress = () => {
   const { roomId } = useParams();
   const { round, setRoomId } = React.useContext(GameRoomContext);
   React.useEffect(() => {

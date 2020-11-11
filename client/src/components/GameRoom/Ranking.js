@@ -150,15 +150,6 @@ const UserName = styled.div`
   align-items: center;
 `;
 
-const Time = styled.div`
-  font-style: italic;
-  font-weight: 400;
-  font-size: 20px;
-  color: grey;
-  display: flex;
-  align-items: center;
-`;
-
 const ScoreInfoWrapper = styled.div`
   display: flex;
 `;

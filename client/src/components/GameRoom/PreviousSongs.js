@@ -11,7 +11,7 @@ const PreviousSong = () => {
 
   React.useEffect(() => {
     setRoomId(roomId);
-  }, [roomId]);
+  }, [roomId, setRoomId]);
 
   return (
     <Wrapper>
@@ -31,6 +31,7 @@ const PreviousSong = () => {
                 </SongInfoWrapper>
               );
             }
+            return;
           })
           .reverse()}
       </SongListWrapper>

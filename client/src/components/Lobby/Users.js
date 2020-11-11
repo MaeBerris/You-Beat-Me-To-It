@@ -1,7 +1,6 @@
 import React from "react";
 import styled, { keyframes } from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
-import Button from "../Button/Button";
 import COLORS from "../../COLORS";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useParams } from "react-router-dom";
