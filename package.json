@@ -1,5 +1,5 @@
 {
-  "name": "queue-backend",
+  "name": "you-beat-me-to-it",
   "version": "1.0.0",
   "description": "",
   "main": "backend/server.js",
@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@slack/web-api": "^5.8.0",
     "body-parser": "^1.19.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -20,8 +19,6 @@
     "morgan": "^1.9.1",
     "node-fetch": "^2.6.1",
     "nodemon": "^2.0.2",
-    "request": "^2.88.2",
-    "request-promise": "^4.2.5",
     "uuid": "^8.3.1"
   },
   "engines": {

@@ -89,7 +89,7 @@ const GameRoomWrapper = () => {
     return <>{history.push(`/lobby/${roomId}`)}</>;
   }
 
-  if (round > 1 && gamePhase === "playing" && gameRoomExists === true) {
+  if (round > 9 && gamePhase === "playing" && gameRoomExists === true) {
     return <GameOver />;
   }
 
