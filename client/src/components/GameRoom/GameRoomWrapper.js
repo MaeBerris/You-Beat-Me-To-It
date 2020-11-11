@@ -60,7 +60,7 @@ const GameRoomWrapper = () => {
         return;
       }
     };
-  }, [history]);
+  }, [history, currentUser, roomId]);
 
   React.useEffect(() => {
     setGameStarted(true);

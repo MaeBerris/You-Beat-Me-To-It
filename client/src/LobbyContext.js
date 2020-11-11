@@ -1,6 +1,6 @@
 import React from "react";
-import { useParams, useHistory } from "react-router-dom";
 import * as firebase from "firebase";
+
 export const LobbyContext = React.createContext(null);
 
 const initialState = {
@@ -34,15 +34,6 @@ const LobbyContextProvider = ({ children }) => {
   const [roomIdState, setRoomId] = React.useState(null);
   const [location, setLocation] = React.useState("lobby");
   const [roomExists, setRoomExists] = React.useState(null);
-  console.log("roomexists", roomExists);
-
-  // React.useEffect(() => {
-  //   const roomRef = firebase.database().ref(`Rooms/${roomIdState}`);
-
-  //   roomRef.once("value", (snapshot) => {
-  //     setRoomExists(snapshot.exists());
-  //   });
-  // }, [roomIdState]);
 
   React.useEffect(() => {
     const roomLocationRef = firebase
@@ -95,50 +86,3 @@ const LobbyContextProvider = ({ children }) => {
 };
 
 export default LobbyContextProvider;
-
-// export const SeatContext = React.createContext();
-
-// const initialState = {
-//   hasLoaded: false,
-//   seats: null,
-//   numOfRows: 0,
-//   seatsPerRow: 0,
-// };
-
-// function reducer(state, action) {
-//   switch (action.type) {
-//     case "receive-seat-info-from-server": {
-//       console.log("action", action);
-//       return {
-//         ...state,
-//         hasLoaded: true,
-//         seats: action.seats,
-//         numOfRows: action.numOfRows,
-//         seatsPerRow: action.seatsPerRow,
-//       };
-//     }
-//     default:
-//       throw new Error("Unrecognized Action");
-//   }
-// }
-
-// export const SeatProvider = ({ children }) => {
-//   const [state, dispatch] = React.useReducer(reducer, initialState);
-
-//   const receiveSeatInfoFromServer = (data) => {
-//     dispatch({
-//       type: "receive-seat-info-from-server",
-//       ...data,
-//     });
-//   };
-
-//   //to add markSeatAsPurchased ?? see exercise 1
-
-//   return (
-//     <SeatContext.Provider
-//       value={{ state, actions: { receiveSeatInfoFromServer } }}
-//     >
-//       {children}
-//     </SeatContext.Provider>
-//   );
-// };
