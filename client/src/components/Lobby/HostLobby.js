@@ -1,15 +1,15 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import COLORS from "../../COLORS";
 import Search from "./Search";
 import SelectedPlaylist from "./SelectedPlaylist";
 import Users from "./Users";
 import SelectedPlaylistPlayer from "./SelectedPlaylistPlayer";
+import Spinner from "../Spinner/Spinner";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { LobbyContext } from "../../LobbyContext";
 import { GameRoomContext } from "../../GameRoomContext";
 import { useParams, useHistory } from "react-router-dom";
-import * as firebase from "firebase";
 
 const validatePlaylist = async (roomId, playlist) => {
   const promise = await new Promise((resolve, reject) => {
@@ -35,27 +35,15 @@ const validatePlaylist = async (roomId, playlist) => {
   return promise;
 };
 
-// const changeRoomLocation = async (roomId) => {
-//   const promise = await fetch(`/changeRoomLocation?roomId=${roomId}`, {
-//     method: "GET",
-//     headers: {
-//       Accept: "application/json",
-//       "Content-Type": "application/json",
-//     },
-//   })
-//     .then((res) => res.json())
-//     .then((data) => console.log(data))
-//     .catch((err) => console.log(err));
-//   return promise;
-// };
-
 const HostLobby = () => {
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(false);
   const { currentUser } = React.useContext(CurrentUserContext);
-  const { playlistState, setRoomId, location } = React.useContext(LobbyContext);
+  const { playlistState, location } = React.useContext(LobbyContext);
   const { gameStarted } = React.useContext(GameRoomContext);
   const { roomId } = useParams();
   const history = useHistory();
-
+  console.log("error", error);
   React.useEffect(() => {
     if (location === "gameRoom" && gameStarted === false) {
       history.push(`/gameroom/${roomId}`);
@@ -83,14 +71,19 @@ const HostLobby = () => {
         <Users />
       </BottomSection>
       <ButtonWrapper>
+        {error && <ErrorMessage>Please select a playlist</ErrorMessage>}
         <BigButton
           onClick={async () => {
             if (Object.keys(playlistState.selectedPlaylist).length > 0) {
+              setError(false);
+              setLoading(true);
               await validatePlaylist(roomId, playlistState.selectedPlaylist);
+            } else {
+              setError(true);
             }
           }}
         >
-          Start Game !
+          {loading ? <Spinner /> : "Start Game"}
         </BigButton>
       </ButtonWrapper>
     </Wrapper>
@@ -115,6 +108,9 @@ const ButtonWrapper = styled.div`
   margin: 50px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
 `;
 
 const BigButton = styled.button`
@@ -127,6 +123,33 @@ const BigButton = styled.button`
   color: white;
   border: none;
   background: linear-gradient(to right, #ff33be, ${COLORS.midnight});
+  transition: filter 0.3s;
+
+  :hover {
+    filter: saturate(150%);
+  }
+  :focus {
+    outline: none;
+    border: 1px solid white;
+    border-radius: 30px;
+  }
+`;
+
+const ErrorAnimation = keyframes`
+from{
+  opacity: 0;
+  transform: translateY(100%)
+}to{
+  opacity: 1;
+  transform: translateY(0%)
+}`;
+
+const ErrorMessage = styled.div`
+  font-size: 20px;
+  color: white;
+  animation: ${ErrorAnimation} 200ms ease-in-out;
+  position: absolute;
+  top: -25px;
 `;
 
 const Text = styled.div`

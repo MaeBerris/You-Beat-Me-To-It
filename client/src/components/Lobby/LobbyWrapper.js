@@ -2,6 +2,7 @@ import React from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { LobbyContext } from "../../LobbyContext";
+import { GameRoomContext } from "../../GameRoomContext";
 import Spinner from "../Spinner/Spinner";
 import PlayerHandler from "../SignIn/PlayerHandler";
 import SignIn from "../SignIn/SignIn";
@@ -17,9 +18,14 @@ const LobbyWrapper = () => {
     isHostPresent,
     setCurrentRoomId,
   } = React.useContext(CurrentUserContext);
-  const { setRoomId, roomExists, setRoomExists, location } = React.useContext(
-    LobbyContext
-  );
+  const {
+    setRoomId,
+    roomExists,
+    setRoomExists,
+    location,
+    deletePlaylist,
+  } = React.useContext(LobbyContext);
+  const { setGameStarted, setHistoryArray } = React.useContext(GameRoomContext);
 
   const { roomId } = useParams();
   const history = useHistory();
@@ -52,6 +58,9 @@ const LobbyWrapper = () => {
           currentUser !== null
         ) {
           setCurrentUser(null);
+          setGameStarted(false);
+          deletePlaylist();
+          setHistoryArray([]);
           fetch("/deleteUser", {
             method: "DELETE",
             body: JSON.stringify({ currentUser, roomId }),

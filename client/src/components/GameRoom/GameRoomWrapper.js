@@ -4,6 +4,7 @@ import GameOver from "./GameOver";
 import Spinner from "../Spinner/Spinner";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
+import { LobbyContext } from "../../LobbyContext";
 import { useHistory, useParams } from "react-router-dom";
 import ErrorScreen from "../ErrorScreen/ErrorScreen";
 import * as firebase from "firebase";
@@ -15,10 +16,12 @@ const GameRoomWrapper = () => {
     gameRoomExists,
     setGameRoomExists,
     setGameStarted,
+    setHistoryArray,
   } = React.useContext(GameRoomContext);
   const { currentUser, setCurrentUser, isHostPresent } = React.useContext(
     CurrentUserContext
   );
+  const { deletePlaylist } = React.useContext(LobbyContext);
   const history = useHistory();
   const { roomId } = useParams();
   console.log(gameRoomExists);
@@ -38,6 +41,9 @@ const GameRoomWrapper = () => {
       if (history.action === "POP") {
         history.push("/");
         setCurrentUser(null);
+        setGameStarted(false);
+        deletePlaylist();
+        setHistoryArray([]);
 
         fetch("/deleteUser", {
           method: "DELETE",
