@@ -83,7 +83,11 @@ const SearchBar = () => {
           setResult(null);
         }}
         onKeyDown={(ev) => {
-          if (ev.key === "Enter" && gamePhase === "playing") {
+          if (
+            ev.key === "Enter" &&
+            gamePhase === "playing" &&
+            result !== "success"
+          ) {
             const artist = trackInfo.artist.name.toLowerCase();
 
             const songName = trackInfo.title_short
@@ -222,7 +226,7 @@ const Input = styled.input`
   margin-top: 10px;
 
   &::placeholder {
-    color: #eadaf0;
+    color: ${(props) => (props.result === "success" ? " #34eb98" : "#eadaf0")};
   }
 
   :focus {
