@@ -20,6 +20,9 @@ const {
 require("dotenv").config();
 const PORT = process.env.PORT || 8000;
 
+const main = (req, res) => {
+  res.status(200).json({ message: "ah ok" });
+};
 express()
   .use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -51,5 +54,6 @@ express()
   .get("/updateRound", updateRound)
   .get("/:roomId/lobbyReset", lobbyReset)
   .get("/:roomId/gameReset", gameReset)
+  .get("/", main)
 
   .listen(PORT, () => console.log(`Listening on port ${PORT}`));
