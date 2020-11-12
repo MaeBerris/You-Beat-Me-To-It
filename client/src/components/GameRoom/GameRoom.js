@@ -12,6 +12,30 @@ import Ranking from "./Ranking";
 import { FiVolume, FiVolumeX, FiVolume1, FiVolume2 } from "react-icons/fi";
 import { ip } from "../../ip";
 
+const asyncRequest = async (roomId) => {
+  await fetch(`${ip}/updatePhase`, {
+    method: "PUT",
+    body: JSON.stringify({ roomId, currentPhase: "playing" }),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => console.log(err));
+
+  fetch(`${ip}/updateRound?roomId=${roomId}`, {
+    method: "GET",
+    headers: { accept: "application/json" },
+  })
+    .then((res) => res.json())
+    .then((data) => console.log(data))
+    .catch((err) => console.log(err));
+};
+
 const GameRoom = () => {
   const { roomId } = useParams();
   const {
@@ -56,27 +80,7 @@ const GameRoom = () => {
         });
     }
     if (time === 0 && gamePhase === "playing" && currentUser.role === "host") {
-      fetch(`${ip}/updatePhase`, {
-        method: "PUT",
-        body: JSON.stringify({ roomId, currentPhase: "playing" }),
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-        })
-        .catch((err) => console.log(err));
-
-      fetch(`${ip}/updateRound?roomId=${roomId}`, {
-        method: "GET",
-        headers: { accept: "application/json" },
-      })
-        .then((res) => res.json())
-        .then((data) => console.log(data))
-        .catch((err) => console.log(err));
+      asyncRequest(roomId);
     }
     return () => {
       clearInterval(interval);
