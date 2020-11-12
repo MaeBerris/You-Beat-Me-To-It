@@ -9,6 +9,7 @@ import SignIn from "../SignIn/SignIn";
 import HostLobby from "../Lobby/HostLobby";
 import ErrorScreen from "../ErrorScreen/ErrorScreen";
 import GameInProgress from "../ErrorScreen/GameInProgress";
+import { ip } from "../../ip";
 import * as firebase from "firebase";
 
 const LobbyWrapper = () => {
@@ -61,7 +62,7 @@ const LobbyWrapper = () => {
           setGameStarted(false);
           deletePlaylist();
           setHistoryArray([]);
-          fetch("/deleteUser", {
+          fetch(`${ip}/deleteUser`, {
             method: "DELETE",
             body: JSON.stringify({ currentUser, roomId }),
             headers: {

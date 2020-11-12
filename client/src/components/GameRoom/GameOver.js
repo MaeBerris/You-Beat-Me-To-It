@@ -7,6 +7,7 @@ import { CurrentUserContext } from "../../CurrentUserContext";
 import { GameRoomContext } from "../../GameRoomContext";
 import { LobbyContext } from "../../LobbyContext";
 import { AiFillCrown } from "react-icons/ai";
+import { ip } from "../../ip";
 
 const GameOverScreen = () => {
   const { usersList, setCurrentRoomId, currentUser } = React.useContext(
@@ -85,7 +86,7 @@ const GameOverScreen = () => {
         <ButtonsWrapper>
           <Button
             handler={() => {
-              fetch(`/${roomId}/lobbyReset`, {
+              fetch(`${ip}/${roomId}/lobbyReset`, {
                 method: "GET",
                 headers: {
                   Accept: "application/json",
@@ -101,7 +102,7 @@ const GameOverScreen = () => {
           </Button>
           <Button
             handler={() => {
-              fetch(`/${roomId}/GameReset`, {
+              fetch(`${ip}/${roomId}/GameReset`, {
                 method: "GET",
                 headers: {
                   Accept: "application/json",

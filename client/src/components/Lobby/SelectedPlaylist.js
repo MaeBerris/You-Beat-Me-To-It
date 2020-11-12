@@ -4,13 +4,14 @@ import GenericLabel from "../Labels/GenericLabel";
 import { useParams } from "react-router-dom";
 import { LobbyContext } from "../../LobbyContext";
 import { FiX } from "react-icons/fi";
+import { ip } from "../../ip";
 
 const SelectedPlaylist = () => {
   const { playlistState, deletePlaylist } = React.useContext(LobbyContext);
   const { roomId } = useParams();
 
   React.useEffect(() => {
-    fetch("/updatePlaylist", {
+    fetch(`${ip}/updatePlaylist`, {
       method: "PUT",
       body: JSON.stringify({
         selectedPlaylist: playlistState.selectedPlaylist,
