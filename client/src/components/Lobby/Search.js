@@ -5,6 +5,7 @@ import GenericLabel from "../Labels/GenericLabel";
 import { LobbyContext } from "../../LobbyContext";
 import Results from "./Results";
 import Spinner from "../Spinner/Spinner";
+import { ip } from "../../ip";
 
 function searchToUrl(searchTerm) {
   const searchArray = searchTerm.split(" ");
@@ -32,7 +33,7 @@ const Search = () => {
                 if (searchTerm.length > 1) {
                   startSearch();
                   let string = searchToUrl(searchTerm);
-                  fetch(`/searchPlaylist?searchTerm=${string}`, {
+                  fetch(`${ip}/searchPlaylist?searchTerm=${string}`, {
                     method: "GET",
                     headers: {
                       Accept: "application/json",

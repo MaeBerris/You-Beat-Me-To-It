@@ -1,5 +1,5 @@
 const hostHandler = ({ nickName, setNickName, setCurrentUser, history }) => {
-  fetch("/createRoom", {
+  fetch("https://you-beat-me-to-it.herokuapp.com/createRoom", {
     method: "POST",
     body: JSON.stringify({
       nickName: nickName,

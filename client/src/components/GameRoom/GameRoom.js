@@ -10,6 +10,7 @@ import PreviousSong from "./PreviousSongs";
 import * as firebase from "firebase";
 import Ranking from "./Ranking";
 import { FiVolume, FiVolumeX, FiVolume1, FiVolume2 } from "react-icons/fi";
+import { ip } from "../../ip";
 
 const GameRoom = () => {
   const { roomId } = useParams();
@@ -41,7 +42,7 @@ const GameRoom = () => {
 
     //Host updates the phase when the host timer reaches 0
     if (time === 0 && gamePhase === "loading" && currentUser.role === "host") {
-      fetch("/updatePhase", {
+      fetch(`${ip}/updatePhase`, {
         method: "PUT",
         body: JSON.stringify({ currentPhase: "loading", roomId: roomId }),
         headers: {
@@ -55,7 +56,7 @@ const GameRoom = () => {
         });
     }
     if (time === 0 && gamePhase === "playing" && currentUser.role === "host") {
-      fetch("/updatePhase", {
+      fetch(`${ip}/updatePhase`, {
         method: "PUT",
         body: JSON.stringify({ roomId, currentPhase: "playing" }),
         headers: {
@@ -69,7 +70,7 @@ const GameRoom = () => {
         })
         .catch((err) => console.log(err));
 
-      fetch(`/updateRound?roomId=${roomId}`, {
+      fetch(`${ip}/updateRound?roomId=${roomId}`, {
         method: "GET",
         headers: { accept: "application/json" },
       })
@@ -113,7 +114,7 @@ const GameRoom = () => {
   React.useEffect(() => {
     if (gamePhase === "loading" && currentUser.role === "host") {
       console.log("in fetch track");
-      fetch(`/updateCurrentTrack`, {
+      fetch(`${ip}/updateCurrentTrack`, {
         method: "PUT",
         body: JSON.stringify({ roomId: roomId }),
         headers: {

@@ -4,9 +4,10 @@ import { GameRoomContext } from "../../GameRoomContext";
 import { useParams } from "react-router-dom";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import calculateDistance from "./LevenTest";
+import { ip } from "../../ip";
 
 function fetchHelper(roomId, currentUser, correctGuess) {
-  fetch("/validateAnswer", {
+  fetch(`${ip}/validateAnswer`, {
     method: "PATCH",
     body: JSON.stringify({
       currentUser: currentUser,

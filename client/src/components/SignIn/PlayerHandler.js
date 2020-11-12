@@ -5,7 +5,7 @@ const PlayerHandler = ({
   history,
   roomId,
 }) => {
-  fetch(`/${roomId}/createUser`, {
+  fetch(`https://you-beat-me-to-it.herokuapp.com/${roomId}/createUser`, {
     method: "POST",
     body: JSON.stringify({
       nickName: nickName,

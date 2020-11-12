@@ -8,6 +8,7 @@ import { LobbyContext } from "../../LobbyContext";
 import { useHistory, useParams } from "react-router-dom";
 import ErrorScreen from "../ErrorScreen/ErrorScreen";
 import * as firebase from "firebase";
+import { ip } from "../../ip";
 
 const GameRoomWrapper = () => {
   const {
@@ -45,7 +46,7 @@ const GameRoomWrapper = () => {
         deletePlaylist();
         setHistoryArray([]);
 
-        fetch("/deleteUser", {
+        fetch(`${ip}/deleteUser`, {
           method: "DELETE",
           body: JSON.stringify({ currentUser, roomId }),
           headers: {

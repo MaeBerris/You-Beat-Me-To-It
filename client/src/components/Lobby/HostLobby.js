@@ -10,10 +10,11 @@ import { CurrentUserContext } from "../../CurrentUserContext";
 import { LobbyContext } from "../../LobbyContext";
 import { GameRoomContext } from "../../GameRoomContext";
 import { useParams, useHistory } from "react-router-dom";
+import { ip } from "../../ip";
 
 const validatePlaylist = async (roomId, playlist) => {
   const promise = await new Promise((resolve, reject) => {
-    fetch("/validatePlaylist", {
+    fetch(`${ip}/validatePlaylist`, {
       method: "PUT",
       body: JSON.stringify({ roomId, selectedPlaylist: playlist }),
       headers: {
