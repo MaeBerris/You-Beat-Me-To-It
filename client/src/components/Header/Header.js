@@ -1,17 +1,22 @@
 import React from "react";
 import styled from "styled-components";
 import COLORS from "../../COLORS";
+import { useHistory } from "react-router-dom";
+import { ip } from "../../ip";
 
 const Header = () => {
+  const history = useHistory();
   return (
-    <Wrapper>
+    <Wrapper href={"https://you-beat-me-to-it.web.app/"}>
       You <Beat>Beat</Beat> Me To It !
       <Shape />
     </Wrapper>
   );
 };
 
-const Wrapper = styled.div`
+const Wrapper = styled.a`
+  display: block;
+  text-decoration: none;
   position: relative;
   text-align: center;
   width: fit-content;
@@ -23,6 +28,7 @@ const Wrapper = styled.div`
   margin-bottom: 50px;
   text-shadow: 2px 2px 0px ${COLORS.midnight};
   line-height: 70%;
+  cursor: pointer;
 `;
 
 const Beat = styled.div`
