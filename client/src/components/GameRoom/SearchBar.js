@@ -8,7 +8,7 @@ import { ip } from "../../ip";
 
 function fetchHelper(roomId, currentUser, correctGuess) {
   fetch(`${ip}/validateAnswer`, {
-    method: "PATCH",
+    method: "PUT",
     body: JSON.stringify({
       currentUser: currentUser,
       roomId: roomId,
