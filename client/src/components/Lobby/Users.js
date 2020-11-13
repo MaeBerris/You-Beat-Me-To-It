@@ -1,18 +1,45 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled, { keyframes } from "styled-components";
 import GenericLabel from "../Labels/GenericLabel";
 import COLORS from "../../COLORS";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { useParams } from "react-router-dom";
 import { AiFillCrown } from "react-icons/ai";
+import addUser from "../../assets/sounds/add2.mp3";
+import remove from "../../assets/sounds/remove2.mp3";
+
+function usePrevious(value) {
+  const ref = useRef();
+
+  React.useEffect(() => {
+    ref.current = value;
+  }, [value]); // Only re-run if value changes
+
+  return ref.current;
+}
 
 const Users = () => {
   const { usersList, currentUser, setCurrentRoomId } = React.useContext(
     CurrentUserContext
   );
+  const previousPlayers = usePrevious(usersList);
 
   const { roomId } = useParams();
   const [isCopied, setIsCopied] = React.useState(false);
+  const addUserRef = React.useRef(null);
+  const removeUserRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (previousPlayers) {
+      if (previousPlayers.length > usersList.length) {
+        console.log("lost a player");
+        removeUserRef.current.play();
+      } else {
+        console.log("won a player");
+        addUserRef.current.play();
+      }
+    }
+  }, [usersList, addUserRef]);
 
   React.useEffect(() => {
     setCurrentRoomId(roomId);
@@ -20,6 +47,8 @@ const Users = () => {
 
   return (
     <Wrapper>
+      <audio src={addUser} ref={addUserRef}></audio>
+      <audio src={remove} ref={removeUserRef}></audio>
       <GenericLabel>Players:</GenericLabel>
       {usersList !== null ? (
         <List>
