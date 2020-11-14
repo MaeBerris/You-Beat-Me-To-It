@@ -186,7 +186,7 @@ const GameRoom = () => {
         I'm sorry, your browser doesn't support audio
       </Player>
       <SearchBar />
-      <ProgressBar />
+      <ProgressBar time={time} />
       <Cassette time={time}></Cassette>
       <BottomSection>
         <PreviousSong />
