@@ -63,7 +63,7 @@ const Bar = styled.div`
   transition: transform 900ms;
   animation: ${(props) =>
       props.gamePhase === "playing" ? Transform(props.time) : null}
-    ${(props) => props.time * 1000}ms linear forwards;
+    ${(props) => props.time * 1010}ms linear forwards;
 `;
 
 const Guess = styled.div`
