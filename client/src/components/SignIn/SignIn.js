@@ -10,6 +10,7 @@ const SignInHost = ({ buttonHandler, buttonMessage }) => {
   console.log("inSignIn");
   const [nickName, setNickName] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(false);
   const { setCurrentUser } = React.useContext(CurrentUserContext);
   const history = useHistory();
   const { roomId } = useParams();
@@ -27,6 +28,8 @@ const SignInHost = ({ buttonHandler, buttonMessage }) => {
               setCurrentUser,
               history,
               roomId,
+              setLoading,
+              setError,
             });
           }
         }}
@@ -47,11 +50,16 @@ const SignInHost = ({ buttonHandler, buttonMessage }) => {
             setCurrentUser,
             history,
             roomId,
+            setLoading,
+            setError,
           });
         }}
       >
         {loading ? <Spinner /> : buttonMessage}
       </Button>
+      {error && (
+        <Error>Something went wrong, please refresh and try again</Error>
+      )}
     </Wrapper>
   );
 };
@@ -78,6 +86,11 @@ const Input = styled.input`
     outline: none;
     box-shadow: 0 0 5px black;
   }
+`;
+
+const Error = styled.div`
+  font-size: 20px;
+  color: white;
 `;
 
 export default SignInHost;
