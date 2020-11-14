@@ -10,7 +10,7 @@ const ProgressBar = ({ time }) => {
 
   const calculateGuessPosition = (time) => {
     if (barRef !== null) {
-      let position = (time * barRef.current.clientWidth) / 30;
+      let position = (time * barRef.current.clientWidth) / 31;
       position.toFixed(0);
       return position;
     }
@@ -22,7 +22,10 @@ const ProgressBar = ({ time }) => {
         Object.values(currentTrackGuesses).map((guess) => {
           if (guess.artist && guess.songName) {
             return (
-              <Guess position={calculateGuessPosition(guess.time)}>
+              <Guess
+                position={calculateGuessPosition(guess.time)}
+                key={guess.nickName}
+              >
                 {guess.nickName}
                 <Tip />
               </Guess>
@@ -65,10 +68,9 @@ const Bar = styled.div`
 
 const Guess = styled.div`
   max-width: 150px;
-  min-width: 50px;
+  min-width: 90px;
   font-size: 15px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  text-align: center;
   border-radius: 10px;
   height: 30px;
   display: flex;
