@@ -15,6 +15,7 @@ const CurrentUserContextProvider = ({ children }) => {
   const [currentTrackGuesses, setCurrentTrackGuesses] = React.useState({});
   const [isHostPresent, setIsHostPresent] = React.useState(undefined);
   console.log("isHostPresentContext", isHostPresent);
+  console.log("currentRoomId", currentRoomId);
 
   React.useEffect(() => {
     if (currentUser && usersList) {

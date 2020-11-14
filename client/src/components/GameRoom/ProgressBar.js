@@ -3,26 +3,29 @@ import styled, { keyframes } from "styled-components";
 import { GameRoomContext } from "../../GameRoomContext";
 import { CurrentUserContext } from "../../CurrentUserContext";
 
-const ProgressBar = () => {
+const ProgressBar = ({ time }) => {
   const { gamePhase } = React.useContext(GameRoomContext);
   const { currentTrackGuesses } = React.useContext(CurrentUserContext);
   const barRef = React.useRef(null);
 
   const calculateGuessPosition = (time) => {
     if (barRef !== null) {
-      let position = (time * barRef.current.clientWidth) / 30;
+      let position = (time * barRef.current.clientWidth) / 31;
       position.toFixed(0);
       return position;
     }
   };
   return (
     <Wrapper>
-      <Bar gamePhase={gamePhase} ref={barRef}></Bar>
+      <Bar gamePhase={gamePhase} ref={barRef} time={time}></Bar>
       {currentTrackGuesses &&
         Object.values(currentTrackGuesses).map((guess) => {
           if (guess.artist && guess.songName) {
             return (
-              <Guess position={calculateGuessPosition(guess.time)}>
+              <Guess
+                position={calculateGuessPosition(guess.time)}
+                key={guess.nickName}
+              >
                 {guess.nickName}
                 <Tip />
               </Guess>
@@ -44,9 +47,9 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
-const Transform = keyframes`
+const Transform = (time) => keyframes`
 0%{
-  transform:scaleX(1)
+  transform:scaleX(${time / 30})
 }100%{
   transform: scaleX(0)
 }
@@ -57,13 +60,17 @@ const Bar = styled.div`
   border-radius: 40px;
   background: #ff33be;
   transform-origin: right;
-  animation: ${(props) => (props.gamePhase === "playing" ? Transform : null)}
-    31000ms linear;
+  transition: transform 900ms;
+  animation: ${(props) =>
+      props.gamePhase === "playing" ? Transform(props.time) : null}
+    ${(props) => props.time * 1000}ms linear forwards;
 `;
 
 const Guess = styled.div`
-  width: 150px;
+  max-width: 150px;
+  min-width: 90px;
   font-size: 15px;
+  text-align: center;
   border-radius: 10px;
   height: 30px;
   display: flex;

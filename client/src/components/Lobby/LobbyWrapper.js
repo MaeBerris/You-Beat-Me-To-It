@@ -2,31 +2,21 @@ import React from "react";
 import { useHistory, useParams } from "react-router-dom";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { LobbyContext } from "../../LobbyContext";
-import { GameRoomContext } from "../../GameRoomContext";
 import Spinner from "../Spinner/Spinner";
 import PlayerHandler from "../SignIn/PlayerHandler";
 import SignIn from "../SignIn/SignIn";
 import HostLobby from "../Lobby/HostLobby";
 import ErrorScreen from "../ErrorScreen/ErrorScreen";
 import GameInProgress from "../ErrorScreen/GameInProgress";
-import { ip } from "../../ip";
 import * as firebase from "firebase";
 
 const LobbyWrapper = () => {
-  const {
-    currentUser,
-    setCurrentUser,
-    isHostPresent,
-    setCurrentRoomId,
-  } = React.useContext(CurrentUserContext);
-  const {
-    setRoomId,
-    roomExists,
-    setRoomExists,
-    location,
-    deletePlaylist,
-  } = React.useContext(LobbyContext);
-  const { setGameStarted, setHistoryArray } = React.useContext(GameRoomContext);
+  const { currentUser, isHostPresent, setCurrentRoomId } = React.useContext(
+    CurrentUserContext
+  );
+  const { setRoomId, roomExists, setRoomExists, location } = React.useContext(
+    LobbyContext
+  );
 
   const { roomId } = useParams();
   const history = useHistory();
@@ -53,31 +43,11 @@ const LobbyWrapper = () => {
 
     return () => {
       console.log(history.action);
-      if (history.action === "POP" && location === "lobby" && currentUser)
-        if (
-          window.confirm("do you really want to leave ?") &&
-          currentUser !== null
-        ) {
-          setCurrentUser(null);
-          setGameStarted(false);
-          deletePlaylist();
-          setHistoryArray([]);
-          fetch(`${ip}/deleteUser`, {
-            method: "DELETE",
-            body: JSON.stringify({ currentUser, roomId }),
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          })
-            .then((res) => res.json())
-            .then((data) => console.log(data));
-          history.push("/");
-          return;
-        } else if (location === "lobby") {
-          console.log("history push from Lobby");
-          history.push(`/lobby/${roomId}`);
-        }
+      if (history.action === "POP" && location === "lobby") {
+        history.push("/");
+        window.location.replace("/");
+        return;
+      }
     };
   }, [history, location]);
 

@@ -321,7 +321,10 @@ const validateAnswer = async (req, res) => {
 
     let correctGuessTime;
     if (correctGuess.timeStamp) {
-      correctGuessTime = (correctGuess.timeStamp - songStartTime) / 1000;
+      let d = new Date();
+      let timeOfAnswer = d.getTime();
+      console.log(timeOfAnswer / 1000, correctGuess.timeStamp / 1000);
+      correctGuessTime = (timeOfAnswer - songStartTime) / 1000;
     } else {
       correctGuessTime = false;
     }
