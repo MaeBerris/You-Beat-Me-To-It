@@ -11,6 +11,7 @@ import * as firebase from "firebase";
 import Ranking from "./Ranking";
 import { FiVolume, FiVolumeX, FiVolume1, FiVolume2 } from "react-icons/fi";
 import { ip } from "../../ip";
+import * as workerTimers from "worker-timers";
 
 const asyncRequest = async (roomId) => {
   await fetch(`${ip}/updatePhase`, {
@@ -58,7 +59,7 @@ const GameRoom = () => {
 
   //This sets the interval for the timer
   React.useEffect(() => {
-    let interval = setInterval(() => {
+    let interval = workerTimers.setInterval(() => {
       if (time > 0) {
         setTime(time - 1);
       }
@@ -83,7 +84,7 @@ const GameRoom = () => {
       asyncRequest(roomId);
     }
     return () => {
-      clearInterval(interval);
+      workerTimers.clearInterval(interval);
     };
   }, [time, gamePhase]);
 
