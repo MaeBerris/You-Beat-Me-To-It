@@ -4,6 +4,9 @@ import { GameRoomContext } from "../../GameRoomContext";
 import { useParams } from "react-router-dom";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import calculateDistance from "./LevenTest";
+import wrong from "../../assets/sounds/wrong.mp3";
+import correct from "../../assets/sounds/correct.mp3";
+import success from "../../assets/sounds/success.mp3";
 import { ip } from "../../ip";
 
 function fetchHelper(roomId, currentUser, correctGuess) {
@@ -24,7 +27,7 @@ function fetchHelper(roomId, currentUser, correctGuess) {
     .catch((err) => console.log(err));
 }
 
-const SearchBar = () => {
+const SearchBar = ({ wrongRef, correctRef, successRef }) => {
   const { roomId } = useParams();
   const { currentUser, correctGuess, setCorrectGuess } = React.useContext(
     CurrentUserContext
@@ -71,8 +74,23 @@ const SearchBar = () => {
     }
   }, [result]);
 
+  React.useEffect(() => {
+    if (result === "fail" && wrongRef.current) {
+      wrongRef.current.play();
+    }
+    if (result === "artist" || (result === "songName" && correctRef.current)) {
+      correctRef.current.play();
+    }
+    if (result === "success" && successRef.current) {
+      successRef.current.play();
+    }
+  }, [result, wrongRef, correctRef, successRef]);
+
   return (
     <Wrapper>
+      <audio ref={wrongRef} src={wrong} />
+      <audio ref={correctRef} src={correct} />
+      <audio ref={successRef} src={success} />
       <Input
         result={result}
         value={searchTerm}

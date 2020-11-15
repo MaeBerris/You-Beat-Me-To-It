@@ -6,6 +6,7 @@ import SelectedPlaylist from "./SelectedPlaylist";
 import Users from "./Users";
 import SelectedPlaylistPlayer from "./SelectedPlaylistPlayer";
 import Spinner from "../Spinner/Spinner";
+import VolumeButton from "../Button/VolumeButton";
 import { CurrentUserContext } from "../../CurrentUserContext";
 import { LobbyContext } from "../../LobbyContext";
 import { GameRoomContext } from "../../GameRoomContext";
@@ -44,7 +45,17 @@ const HostLobby = () => {
   const { gameStarted } = React.useContext(GameRoomContext);
   const { roomId } = useParams();
   const history = useHistory();
-  console.log("error", error);
+  const addUserRef = React.useRef(null);
+  const removeUserRef = React.useRef(null);
+  const [volume, setVolume] = React.useState(0.5);
+
+  React.useEffect(() => {
+    if (addUserRef.current && removeUserRef.current) {
+      addUserRef.current.volume = volume;
+      removeUserRef.current.volume = volume;
+    }
+  }, [addUserRef, removeUserRef, volume]);
+
   React.useEffect(() => {
     if (location === "gameRoom" && gameStarted === false) {
       history.push(`/gameroom/${roomId}`);
@@ -54,9 +65,10 @@ const HostLobby = () => {
   if (currentUser.role === "player") {
     return (
       <Wrapper>
+        <VolumeButton volume={volume} setVolume={setVolume} />
         <BottomSection>
           <SelectedPlaylistPlayer />
-          <Users />
+          <Users addUserRef={addUserRef} removeUserRef={removeUserRef} />
         </BottomSection>
         <Text>
           Please wait for the host to select a playlist and to start game ...
@@ -66,10 +78,11 @@ const HostLobby = () => {
   }
   return (
     <Wrapper>
+      <VolumeButton volume={volume} setVolume={setVolume} />
       <Search />
       <BottomSection>
         <SelectedPlaylist />
-        <Users />
+        <Users removeUserRef={removeUserRef} addUserRef={addUserRef} />
       </BottomSection>
       <ButtonWrapper>
         {error && <ErrorMessage>Please select a playlist</ErrorMessage>}
@@ -95,7 +108,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   padding: 0 40px;
-  align-items: center;
+  /* align-items: center; */
 `;
 
 const BottomSection = styled.div`

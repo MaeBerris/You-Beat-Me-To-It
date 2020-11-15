@@ -18,7 +18,7 @@ function usePrevious(value) {
   return ref.current;
 }
 
-const Users = () => {
+const Users = ({ addUserRef, removeUserRef }) => {
   const { usersList, currentUser, setCurrentRoomId } = React.useContext(
     CurrentUserContext
   );
@@ -26,8 +26,6 @@ const Users = () => {
 
   const { roomId } = useParams();
   const [isCopied, setIsCopied] = React.useState(false);
-  const addUserRef = React.useRef(null);
-  const removeUserRef = React.useRef(null);
 
   React.useEffect(() => {
     if (previousPlayers) {

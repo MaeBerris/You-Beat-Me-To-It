@@ -27,32 +27,42 @@ const Cassette = ({ time }) => {
   }, [result, gamePhase]);
 
   return (
-    <Wrapper>
-      <Image src={cassette}></Image>
-      <Counter>{time}</Counter>
-      <Label>
-        <SongName>
-          <PlaceHolder>
-            {songName && (
-              <SongNameSpan songName={songName}>
-                {songName && songName}
-              </SongNameSpan>
-            )}
-          </PlaceHolder>
+    <MasterWrapper>
+      <Wrapper>
+        <Image src={cassette}></Image>
+        <Counter>{time}</Counter>
+        <Label>
+          <SongName>
+            <PlaceHolder>
+              {songName && (
+                <SongNameSpan songName={songName}>
+                  {songName && songName}
+                </SongNameSpan>
+              )}
+            </PlaceHolder>
 
-          <Separator>/</Separator>
-          <PlaceHolder>
-            {artist && (
-              <ArtistSpan artist={artist}>{artist && artist}</ArtistSpan>
-            )}
-          </PlaceHolder>
-        </SongName>
-      </Label>
-    </Wrapper>
+            <Separator>/</Separator>
+            <PlaceHolder>
+              {artist && (
+                <ArtistSpan artist={artist}>{artist && artist}</ArtistSpan>
+              )}
+            </PlaceHolder>
+          </SongName>
+        </Label>
+      </Wrapper>
+    </MasterWrapper>
   );
 };
 
 export default Cassette;
+
+const MasterWrapper = styled.div`
+  height: 340px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+`;
 
 const Wrapper = styled.div`
   display: flex;
