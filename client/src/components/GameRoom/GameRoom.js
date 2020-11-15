@@ -12,6 +12,7 @@ import Ranking from "./Ranking";
 import { FiVolume, FiVolumeX, FiVolume1, FiVolume2 } from "react-icons/fi";
 import { ip } from "../../ip";
 import * as workerTimers from "worker-timers";
+import VolumeButton from "../Button/VolumeButton";
 
 const asyncRequest = async (roomId) => {
   await fetch(`${ip}/updatePhase`, {
@@ -52,10 +53,22 @@ const GameRoom = () => {
   const [volume, setVolume] = React.useState(0.5);
 
   const audioRef = React.useRef(null);
+  const wrongRef = React.useRef(null);
+  const correctRef = React.useRef(null);
+  const successRef = React.useRef(null);
 
   React.useEffect(() => {
     audioRef.current.volume = volume;
-  }, [audioRef, volume]);
+    if (wrongRef.current) {
+      wrongRef.current.volume = volume * 2 <= 1 ? volume * 2 : 1;
+    }
+    if (correctRef.current) {
+      correctRef.current.volume = volume * 2 <= 1 ? volume * 2 : 1;
+    }
+    if (successRef.current) {
+      successRef.current.volume = volume * 2 <= 1 ? volume * 2 : 1;
+    }
+  }, [audioRef, wrongRef, correctRef, successRef, volume]);
 
   //This sets the interval for the timer
   React.useEffect(() => {
@@ -154,39 +167,15 @@ const GameRoom = () => {
 
   return (
     <Wrapper>
-      <SlidderWrapper>
-        <Button
-          onClick={() => {
-            if (volume > 0) {
-              setVolume(0);
-              return;
-            }
-            if (volume === 0) {
-              setVolume(0.5);
-              return;
-            }
-          }}
-        >
-          {volume === 0.5 && <FiVolume size={35} />}
-          {volume === 0 && <FiVolumeX size={35} />}
-          {volume < 0.5 && volume > 0 && <FiVolume1 size={35} />}
-          {volume > 0.5 && <FiVolume2 size={35} />}
-        </Button>
-        <Slider
-          type="range"
-          min="0"
-          max="100"
-          value={volume * 100}
-          onChange={(ev) => {
-            setVolume(ev.target.value / 100);
-          }}
-        />
-      </SlidderWrapper>
-
+      <VolumeButton volume={volume} setVolume={setVolume} />
       <Player src={trackUrl} ref={audioRef}>
         I'm sorry, your browser doesn't support audio
       </Player>
-      <SearchBar />
+      <SearchBar
+        wrongRef={wrongRef}
+        correctRef={correctRef}
+        successRef={successRef}
+      />
       <ProgressBar time={time} />
       <Cassette time={time}></Cassette>
       <BottomSection>
