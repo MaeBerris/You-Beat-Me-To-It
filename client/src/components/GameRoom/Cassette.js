@@ -31,6 +31,22 @@ const Cassette = ({ time }) => {
       <Wrapper>
         <Image src={cassette}></Image>
         <Counter>{time}</Counter>
+        <CogWrapper gamePhase={gamePhase}>
+          <Cog>
+            <Peg1></Peg1>
+            <Peg2 />
+            <Peg3></Peg3>
+            <Peg4 />
+          </Cog>
+        </CogWrapper>
+        <CogWrapper2 gamePhase={gamePhase}>
+          <Cog>
+            <Peg1></Peg1>
+            <Peg2 />
+            <Peg3></Peg3>
+            <Peg4 />
+          </Cog>
+        </CogWrapper2>
         <Label>
           <SongName>
             <PlaceHolder>
@@ -131,6 +147,84 @@ const Counter = styled.div`
   font-size: 60px;
   color: ${COLORS.midnight};
   font-family: "Digital";
+`;
+
+const Spin = keyframes`
+from{
+  transform: rotate(0deg)
+}to{
+  transform: rotate(360deg)
+}`;
+
+const CogWrapper2 = styled.div`
+  width: fit-content;
+  position: absolute;
+  top: 134px;
+  right: 141px;
+  animation: ${Spin} 2000ms linear infinite forwards;
+  animation-play-state: ${(props) =>
+    props.gamePhase === "playing" ? "running" : "paused"};
+`;
+
+const CogWrapper = styled.div`
+  width: fit-content;
+  position: absolute;
+  top: 135px;
+  left: 135px;
+  /* animation: ${(props) =>
+    props.gamePhase === "playing" ? Spin : null} 2000ms
+    linear infinite forwards; */
+  animation: ${Spin} 2000ms linear infinite forwards;
+  animation-play-state: ${(props) =>
+    props.gamePhase === "playing" ? "running" : "paused"};
+`;
+
+const Cog = styled.div`
+  position: relative;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 4px solid ${COLORS.midnight};
+`;
+
+const Peg1 = styled.div`
+  position: absolute;
+  border-left: 4px solid ${COLORS.midnight};
+  height: 15px;
+  border-radius: 3px;
+  left: 50%;
+  bottom: -3px;
+  transform: translateX(-2px);
+`;
+
+const Peg2 = styled.div`
+  position: absolute;
+  border-left: 4px solid ${COLORS.midnight};
+  border-radius: 3px;
+  height: 15px;
+  left: 50%;
+  top: -3px;
+  transform: translateX(-2px);
+`;
+
+const Peg3 = styled.div`
+  position: absolute;
+  border-bottom: 4px solid ${COLORS.midnight};
+  border-radius: 3px;
+  width: 15px;
+  left: -3px;
+  top: 50%;
+  transform: translateY(-2px);
+`;
+
+const Peg4 = styled.div`
+  position: absolute;
+  border-bottom: 4px solid ${COLORS.midnight};
+  border-radius: 3px;
+  width: 15px;
+  right: -3px;
+  top: 50%;
+  transform: translateY(-2px);
 `;
 
 const Label = styled.div`

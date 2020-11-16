@@ -60,10 +60,9 @@ const Bar = styled.div`
   border-radius: 40px;
   background: #ff33be;
   transform-origin: right;
-  transition: transform 900ms;
   animation: ${(props) =>
       props.gamePhase === "playing" ? Transform(props.time) : null}
-    ${(props) => props.time * 1010}ms linear forwards;
+    ${(props) => props.time * 1030}ms linear;
 `;
 
 const Guess = styled.div`
