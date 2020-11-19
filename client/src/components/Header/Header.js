@@ -1,13 +1,10 @@
 import React from "react";
 import styled from "styled-components";
 import COLORS from "../../COLORS";
-import { useHistory } from "react-router-dom";
-import { ip } from "../../ip";
 
 const Header = () => {
-  const history = useHistory();
   return (
-    <Wrapper href={"https://you-beat-me-to-it.web.app/"}>
+    <Wrapper href={"https://you-beat-me-to-it.netlify.app"}>
       You <Beat>Beat</Beat> Me To It !
       <Shape />
     </Wrapper>

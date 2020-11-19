@@ -9,7 +9,6 @@ import SearchBar from "./SearchBar";
 import PreviousSong from "./PreviousSongs";
 import * as firebase from "firebase";
 import Ranking from "./Ranking";
-import { FiVolume, FiVolumeX, FiVolume1, FiVolume2 } from "react-icons/fi";
 import { ip } from "../../ip";
 import * as workerTimers from "worker-timers";
 import VolumeButton from "../Button/VolumeButton";
@@ -66,7 +65,7 @@ const GameRoom = () => {
       correctRef.current.volume = volume * 2 <= 1 ? volume * 2 : 1;
     }
     if (successRef.current) {
-      successRef.current.volume = volume * 2 <= 1 ? volume * 2 : 1;
+      successRef.current.volume = volume * 1.2 <= 1 ? volume * 1.2 : 1;
     }
   }, [audioRef, wrongRef, correctRef, successRef, volume]);
 
@@ -200,41 +199,6 @@ const BottomSection = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: 50% 50%;
-`;
-
-const Slider = styled.input`
-  width: 100%;
-`;
-
-const SlidderWrapper = styled.div`
-  display: flex;
-  padding: 5px;
-  align-items: center;
-  background: white;
-  border-radius: 10px;
-  width: 50px;
-  transition: width 1s, opacity 1s;
-  margin-bottom: 15px;
-
-  input:nth-child(2) {
-    opacity: 0;
-    transition: opacity 0.8s;
-  }
-
-  :hover {
-    width: 200px;
-    input:nth-child(2) {
-      opacity: 1;
-    }
-  }
-`;
-
-const Button = styled.button`
-  background: none;
-  border: none;
-  width: 45px;
-  height: 45px;
-  cursor: pointer;
 `;
 
 export default GameRoom;
