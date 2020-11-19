@@ -77,7 +77,7 @@ const MasterWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 `;
 
 const Wrapper = styled.div`
@@ -98,7 +98,8 @@ to{
 }`;
 
 const SongNameSpan = styled.div`
-  font-family: "Echizen";
+  font-family: "Permanent Marker", cursive;
+  /* font-family: "Echizen"; */
   color: black;
   /* width: 250px; */
 
@@ -106,23 +107,26 @@ const SongNameSpan = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 40px;
+  font-size: 20px;
   transform-origin: left;
+  line-height: 2.3;
   animation: ${(props) =>
       props.songName !== null || props.artist !== null ? Appear : null}
     500ms;
 `;
 
 const ArtistSpan = styled.div`
-  font-family: "Echizen";
+  font-family: "Permanent Marker", cursive;
+  /* font-family: "Echizen"; */
   color: black;
   /* width: 250px; */
   max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 40px;
+  font-size: 20px;
   transform-origin: left;
+  line-height: 2.3;
   animation: ${(props) =>
       props.songName !== null || props.artist !== null ? Appear : null}
     500ms ease-in-out;
